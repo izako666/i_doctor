@@ -1,0 +1,35 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The INTERNET permission is required for development. Specifically,
+         the Flutter tool needs it to communicate with the running application
+         to allow setting breakpoints, to provide hot reload, etc.
+    -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- SDK 32 or lower -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- SDK 33 (Android13) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- SDK 34 (Android14) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
+    <queries>
+  <!-- If your app checks for SMS support -->
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="sms" />
+  </intent>
+  <!-- If your app checks for call support -->
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="tel" />
+  </intent>
+  <!-- If your application checks for inAppBrowserView launch mode support -->
+  <intent>
+    <action android:name="android.support.customtabs.action.CustomTabsService" />
+  </intent>
+</queries>
+
+</manifest>

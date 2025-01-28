@@ -1,0 +1,436 @@
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:i_doctor/UI/pages/review_view.dart';
+import 'package:i_doctor/UI/util/filter_sort_sheet.dart';
+import 'package:i_doctor/api/data_classes/appointment.dart';
+import 'package:i_doctor/api/data_classes/clinic.dart';
+import 'package:i_doctor/api/data_classes/message.dart';
+import 'package:i_doctor/api/data_classes/notification.dart';
+import 'package:i_doctor/api/data_classes/product.dart';
+import 'package:i_doctor/api/data_classes/user.dart';
+
+List<Review> reviews = [
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+  Review(
+    user: User(
+        id: 1,
+        custArbName: '',
+        nationalityId: "1",
+        email: '',
+        mobile: '',
+        countryId: "1",
+        gender: '',
+        dateOfBirth: '',
+        cityId: "1"),
+    review:
+        'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
+    rating: 3.5,
+    date: DateTime.now().subtract(const Duration(days: 124)),
+    productName: 'منتج 123123',
+  ),
+];
+
+Clinic clinic = Clinic(
+    id: '1223',
+    name: 'ألعيادة',
+    location: Position(
+      longitude: 2.2945,
+      latitude: 48.8584,
+      timestamp: DateTime.now(),
+      accuracy: 5.0,
+      altitude: 35.0,
+      altitudeAccuracy: 2.0,
+      heading: 90.0,
+      headingAccuracy: 1.0,
+      speed: 2.5,
+      speedAccuracy: 0.5,
+    ),
+    address: const Placemark(
+      name: "طريق الملك عبد العزيز",
+      locality: "الرياض",
+      subLocality: "المرقب",
+      administrativeArea: "الرياض",
+      postalCode: "12345",
+      country: "المملكة العربية السعودية",
+      isoCountryCode: "SA",
+      thoroughfare: "طريق الملك عبد العزيز",
+      subThoroughfare: "المبنى 10",
+    ),
+    subcategories: ['فئة 1', 'فئة 2'],
+    products: [],
+    logoUrl: 'assets/images/dummy-logo.png',
+    imageUrl: 'assets/images/placeholder.png');
+
+List<SortCategory> categories = [
+  SortCategory("distance", 'من القريب للبعيد'),
+  SortCategory('rating', 'التقييم الاعلى'),
+  SortCategory('price_high_first', 'من اعلى سعر'),
+  SortCategory('price_low_first', 'من اقل سعر'),
+  SortCategory('appointment_time', 'من اقرب موعد')
+];
+
+// List<String> cities = [
+//   "الرياض",
+//   "جدة",
+//   "مكة المكرمة",
+//   "المدينة المنورة",
+//   "الدمام",
+//   "الخبر",
+//   "تبوك",
+//   "أبها",
+//   "جازان",
+//   "حائل",
+//   "بريدة",
+//   "نجران",
+//   "الطائف",
+//   "سكاكا"
+// ];
+
+List<Message> messages = [
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق ', false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص ', true, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق ', false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص ', true, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق ', false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص ', true, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق ', false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص ', true, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق ', false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+  Message('شصيشصيشصي يشص ', true, '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص', true,
+      '', DateTime.now()),
+  Message('شصيشصيشصي يشص يشصبق لاقلصث بصث لثا صثبصثب ثقاص بصثل ثقصث ليضص',
+      false, '', DateTime.now()),
+];
+
+List<Notification> notifications = [
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: false),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: true),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: false),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: true),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: false),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: true),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: false),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: true),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: false),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: true),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: false),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: true),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: false),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: true),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: false),
+  Notification(
+      message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
+      category: 'ad',
+      date: DateTime.now(),
+      seen: true),
+];
