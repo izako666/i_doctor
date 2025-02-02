@@ -13,9 +13,15 @@ import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/router.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool loggingIn = false;
   @override
   Widget build(BuildContext context) {
     AuthController auth = Get.find<AuthController>();
@@ -126,12 +132,13 @@ class LoginPage extends StatelessWidget {
                                       controller: auth.passwordController,
                                       obscureText: !auth.showPassword.value,
                                       decoration: const InputDecoration(
-                                        hintText: 'الشفرة',
+                                        hintText: 'كلمة المرور',
                                         border: InputBorder.none,
                                         isDense: true,
                                       ),
                                       textDirection: TextDirection.ltr,
-                                      validator: (value) => 'الشفرة غير صحيحة',
+                                      validator: (value) =>
+                                          'كلمة المرور غير صحيحة',
                                     ),
                                   )),
                                 ],
@@ -174,7 +181,10 @@ class LoginPage extends StatelessWidget {
               child: WideButton(
                   title:
                       Text('تم', style: Theme.of(context).textTheme.titleLarge),
+                  disabled: loggingIn,
                   onTap: () async {
+                    loggingIn = true;
+                    setState(() {});
                     auth.emailError.value =
                         auth.validateEmail(auth.emailController.text);
                     auth.passwordError.value =
@@ -186,8 +196,6 @@ class LoginPage extends StatelessWidget {
                           auth.emailController.text,
                           auth.passwordController.text);
                       if (resp.statusCode == 200) {
-                        auth.emailController.clear();
-                        auth.passwordController.clear();
                         Map<String, dynamic> data =
                             resp.data as Map<String, dynamic>;
                         String encryptedPassword =
@@ -199,11 +207,13 @@ class LoginPage extends StatelessWidget {
                         auth.currentUser.value = User.fromJson(nestData);
                         auth.authToken.value = nestData['token'];
 
-                        Future.delayed(const Duration(seconds: 2), () {
+                        Future.delayed(const Duration(milliseconds: 200), () {
                           if (context.mounted) {
                             GoRouter.of(context).clearStackAndNavigate('/feed');
                           }
                         });
+                        auth.emailController.clear();
+                        auth.passwordController.clear();
                       } else if (resp.statusCode == 404) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -219,6 +229,8 @@ class LoginPage extends StatelessWidget {
                                   content: Text('حدث خطأ ما')));
                         }
                       }
+                      loggingIn = false;
+                      setState(() {});
                     }
                   }),
             ),

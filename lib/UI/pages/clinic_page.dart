@@ -12,6 +12,7 @@ import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
 import 'package:i_doctor/fake_data.dart';
 import 'package:i_doctor/portable_api/helper.dart';
+import 'package:i_doctor/portable_api/maps/map_utils.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 
@@ -137,7 +138,35 @@ class _ClinicPageState extends State<ClinicPage> {
                               ),
                               const Spacer(),
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    Country? country =
+                                        Get.find<AuthController>()
+                                            .countries!
+                                            .where((country) =>
+                                                country.id ==
+                                                provider!.countryId)
+                                            .firstOrNull;
+                                    List<String> addressParts = [
+                                      provider!.street,
+                                      provider!.district,
+                                      provider!.shortAddress
+                                    ];
+
+                                    if (country != null) {
+                                      addressParts.add(country.arbName);
+                                    }
+                                    String formattedAddress = addressParts
+                                        .where((part) => part.trim().isNotEmpty)
+                                        .join(', ');
+                                    List<double>? numbers =
+                                        await MapUtils.getCoordinates(
+                                            formattedAddress);
+                                    if (numbers != null) {
+                                      MapUtils.openMap(numbers[0], numbers[1]);
+                                    }
+                                    print(
+                                        "MapUtils get coords found ${await MapUtils.getCoordinates(provider!.shortAddress) == null ? "nothing" : "something"}");
+                                  },
                                   icon: Icon(
                                     Icons.location_pin,
                                     color: secondaryColor.darken(0.5),
@@ -167,37 +196,41 @@ class _ClinicPageState extends State<ClinicPage> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "الفئة الرئيسية",
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
-                                const Spacer(),
-                                TextButton(
-                                    onPressed: () {
-                                      String branch = GoRouter.of(context)
-                                          .routeInformationProvider
-                                          .value
-                                          .uri
-                                          .pathSegments[0];
+                        if (category != null)
+                          Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "الفئة الرئيسية",
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  const Spacer(),
+                                  TextButton(
+                                      onPressed: () {
+                                        if (category == null) return;
+                                        String branch = GoRouter.of(context)
+                                            .routeInformationProvider
+                                            .value
+                                            .uri
+                                            .pathSegments[0];
 
-                                      context.push(
-                                          '/$branch/category/${category!.id}');
-                                    },
-                                    child: Text(
-                                      formatCatName(category!.name),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall!
-                                          .copyWith(
-                                              color: primaryColor.darken(0.4)),
-                                    ))
-                              ],
-                            )),
+                                        context.push(
+                                            '/$branch/category/${category!.id}');
+                                      },
+                                      child: Text(
+                                        formatCatName(category!.name),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall!
+                                            .copyWith(
+                                                color:
+                                                    primaryColor.darken(0.4)),
+                                      ))
+                                ],
+                              )),
                         const SizedBox(height: 4)
                       ]),
                   const SizedBox(height: 16),

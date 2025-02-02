@@ -636,7 +636,7 @@ class SignupPage extends StatelessWidget {
                                           obscureText:
                                               !auth.showSPassword.value,
                                           decoration: const InputDecoration(
-                                            hintText: 'الشفرة',
+                                            hintText: 'كلمة المرور',
                                             border: InputBorder.none,
                                             isDense: true,
                                           ),
@@ -699,7 +699,7 @@ class SignupPage extends StatelessWidget {
                                           obscureText:
                                               !auth.showRePassword.value,
                                           decoration: const InputDecoration(
-                                            hintText: 'تكرار الشفرة',
+                                            hintText: 'تكرار كلمة المرور',
                                             border: InputBorder.none,
                                             isDense: true,
                                           ),

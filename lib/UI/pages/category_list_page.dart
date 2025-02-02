@@ -40,7 +40,6 @@ class _CategoryListPageState extends State<CategoryListPage> {
     if (category == null) {
       return const LoadingIndicator();
     }
-    List<Provider> allProviders = Get.find<CommerceController>().providers;
     List<Provider> providers = Get.find<CommerceController>()
         .providers
         .where((test) => category.id == int.parse(test.code))
