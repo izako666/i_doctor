@@ -139,31 +139,13 @@ class _ClinicPageState extends State<ClinicPage> {
                               const Spacer(),
                               IconButton(
                                   onPressed: () async {
-                                    Country? country =
-                                        Get.find<AuthController>()
-                                            .countries!
-                                            .where((country) =>
-                                                country.id ==
-                                                provider!.countryId)
-                                            .firstOrNull;
-                                    List<String> addressParts = [
-                                      provider!.street,
-                                      provider!.district,
-                                      provider!.shortAddress
-                                    ];
+                                    List<double> numbers = provider!.location
+                                        .split(',')
+                                        .map((e) => double.parse(e))
+                                        .toList();
 
-                                    if (country != null) {
-                                      addressParts.add(country.arbName);
-                                    }
-                                    String formattedAddress = addressParts
-                                        .where((part) => part.trim().isNotEmpty)
-                                        .join(', ');
-                                    List<double>? numbers =
-                                        await MapUtils.getCoordinates(
-                                            formattedAddress);
-                                    if (numbers != null) {
-                                      MapUtils.openMap(numbers[0], numbers[1]);
-                                    }
+                                    MapUtils.openMap(numbers[0], numbers[1]);
+
                                     print(
                                         "MapUtils get coords found ${await MapUtils.getCoordinates(provider!.shortAddress) == null ? "nothing" : "something"}");
                                   },
