@@ -10,6 +10,7 @@ import 'package:i_doctor/api/data_classes/basket_item.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/networking/rest_functions.dart';
 import 'package:i_doctor/portable_api/helper.dart';
+import 'package:i_doctor/portable_api/maps/map_utils.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/realm_controller.dart';
@@ -217,7 +218,16 @@ class _AdPageState extends State<AdPage> {
                                       ],
                                     ),
                                     IconButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          List<double> numbers = provider!
+                                              .location
+                                              .split(',')
+                                              .map((e) => double.parse(e))
+                                              .toList();
+
+                                          MapUtils.openMap(
+                                              numbers[0], numbers[1]);
+                                        },
                                         icon: Icon(
                                           Icons.location_pin,
                                           color: secondaryColor.darken(0.5),

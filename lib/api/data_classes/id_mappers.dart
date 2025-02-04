@@ -210,6 +210,8 @@ class Provider {
   final String createdAt;
   final String updatedAt;
   final String? deletedAt;
+  final String photo;
+  final String logo;
 
   Provider(
       {required this.id,
@@ -230,7 +232,9 @@ class Provider {
       required this.salesId,
       required this.createdAt,
       required this.updatedAt,
-      required this.deletedAt});
+      required this.deletedAt,
+      required this.photo,
+      required this.logo});
 
   factory Provider.fromJson(Map<String, dynamic> json) {
     return Provider(
@@ -252,6 +256,8 @@ class Provider {
         salesId: json['SalesID'],
         createdAt: json['created_at'],
         updatedAt: json['updated_at'],
-        deletedAt: json['deleted_at']);
+        deletedAt: json['deleted_at'],
+        photo: json['Photo'],
+        logo: json['Logo']);
   }
 }

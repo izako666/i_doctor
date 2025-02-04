@@ -10,6 +10,7 @@ import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/api/data_classes/category.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
+import 'package:i_doctor/api/networking/rest_functions.dart';
 import 'package:i_doctor/fake_data.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/maps/map_utils.dart';
@@ -74,14 +75,15 @@ class _ClinicPageState extends State<ClinicPage> {
                   const SizedBox(height: 16),
                   ElevatedContainer(
                       blackWhite: getBlackWhite(context),
+                      padding: const EdgeInsets.all(8),
                       children: [
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Image.asset(
-                                  clinic.logoUrl,
+                            ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.network(
+                                  '$hostUrlBase/public/storage/${provider!.logo}',
                                   width: 64,
                                   height: 64,
                                 )),
@@ -97,17 +99,13 @@ class _ClinicPageState extends State<ClinicPage> {
                       CarouselAdBanner(
                         onTap: () {},
                         banners: [
-                          AdBanner(url: 'assets/images/placeholder.png'),
-                          AdBanner(url: 'assets/images/placeholder.png'),
-                          AdBanner(url: 'assets/images/placeholder.png'),
-                          AdBanner(url: 'assets/images/placeholder.png'),
-                          AdBanner(url: 'assets/images/placeholder.png'),
+                          AdBanner(url: provider!.photo),
                         ],
                         skeleton: false,
                         autoPlay: false,
-                        infinityScroll: true,
+                        infinityScroll: false,
                         blackWhite: getBlackWhite(context),
-                        showIndicator: true,
+                        showIndicator: false,
                       ),
                     ],
                   ),
@@ -145,9 +143,6 @@ class _ClinicPageState extends State<ClinicPage> {
                                         .toList();
 
                                     MapUtils.openMap(numbers[0], numbers[1]);
-
-                                    print(
-                                        "MapUtils get coords found ${await MapUtils.getCoordinates(provider!.shortAddress) == null ? "nothing" : "something"}");
                                   },
                                   icon: Icon(
                                     Icons.location_pin,
@@ -291,6 +286,11 @@ class _ClinicPageState extends State<ClinicPage> {
                           products.length,
                           (i) => BigProductCard(
                                 product: products[i],
+                                provider: Get.find<CommerceController>()
+                                    .providers
+                                    .where(
+                                        (test) => test.name == products[i].spId)
+                                    .firstOrNull,
                               ))
                       // padding: EdgeInsets.all(8), child: BigProductCard())),
                       ),

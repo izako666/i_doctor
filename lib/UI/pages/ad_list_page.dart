@@ -8,11 +8,14 @@ import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/util/filter_sort_sheet.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/UI/util/price_text.dart';
+import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
 import 'package:i_doctor/api/networking/rest_functions.dart';
 import 'package:i_doctor/portable_api/helper.dart';
+import 'package:i_doctor/portable_api/maps/map_utils.dart';
 import 'package:i_doctor/portable_api/ui/bottom_sheet.dart';
 import 'package:i_doctor/router.dart';
+import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/filter_controller.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -82,7 +85,14 @@ class _AdListPageState extends State<AdListPage> {
                         itemBuilder: (ctx, i) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: BigProductCard(product: products[i]),
+                            child: BigProductCard(
+                              product: products[i],
+                              provider: Get.find<CommerceController>()
+                                  .providers
+                                  .where(
+                                      (test) => test.name == products[i].spId)
+                                  .firstOrNull,
+                            ),
                           );
                         },
                         itemCount: products.length,
@@ -103,8 +113,10 @@ class _AdListPageState extends State<AdListPage> {
 }
 
 class BigProductCard extends StatefulWidget {
-  const BigProductCard({super.key, required this.product});
+  const BigProductCard(
+      {super.key, required this.product, required this.provider});
   final Product product;
+  final Provider? provider;
 
   @override
   State<BigProductCard> createState() => _BigProductCardState();
@@ -219,18 +231,41 @@ class _BigProductCardState extends State<BigProductCard> {
                     const SizedBox(height: 8),
                     Text(widget.product.spId),
                     const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text("العنوان"),
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.location_pin,
-                              color: secondaryColor.darken(0.5),
-                            ))
-                      ],
-                    ),
+                    if (widget.provider != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  '${Get.find<AuthController>().countries!.where((test) => test.id == widget.provider!.countryId).first.arbName}, ${widget.provider!.shortAddress}',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
+                              Text(
+                                  '${widget.provider!.district}, ${widget.provider!.street}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall!
+                                      .copyWith(
+                                          color: Colors.grey.darken(0.3))),
+                            ],
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                List<double> numbers = widget.provider!.location
+                                    .split(',')
+                                    .map((e) => double.parse(e))
+                                    .toList();
+
+                                MapUtils.openMap(numbers[0], numbers[1]);
+                              },
+                              icon: Icon(
+                                Icons.location_pin,
+                                color: secondaryColor.darken(0.5),
+                              ))
+                        ],
+                      ),
                     const SizedBox(height: 4),
                     PriceText(
                       price: double.parse(widget.product.idocPrice),

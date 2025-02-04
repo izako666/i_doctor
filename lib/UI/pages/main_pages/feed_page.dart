@@ -8,6 +8,7 @@ import 'package:i_doctor/UI/util/filter_sort_sheet.dart';
 import 'package:i_doctor/api/data_classes/category.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
+import 'package:i_doctor/api/networking/rest_functions.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/ui/bottom_sheet.dart';
 import 'package:i_doctor/state/auth_controller.dart';
@@ -171,7 +172,14 @@ class FeedPage extends StatelessWidget {
                               return Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 8.0),
-                                child: BigProductCard(product: products[i]),
+                                child: BigProductCard(
+                                  product: products[i],
+                                  provider: Get.find<CommerceController>()
+                                      .providers
+                                      .where((test) =>
+                                          test.name == products[i].spId)
+                                      .firstOrNull,
+                                ),
                               );
                             },
                             itemCount: products.length,
@@ -419,8 +427,8 @@ class ClinicButton extends StatelessWidget {
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(16),
                             topRight: Radius.circular(16)),
-                        child: Image.asset(
-                          'assets/images/placeholder.png',
+                        child: Image.network(
+                          '$hostUrlBase/public/storage/${provider.photo}',
                           fit: BoxFit.fill,
                         ),
                       )),
@@ -535,6 +543,7 @@ class ElevatedContainer extends StatelessWidget {
     this.width,
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.padding,
+    this.mainAxisAlignment = MainAxisAlignment.start,
   });
 
   final Color blackWhite;
@@ -542,6 +551,7 @@ class ElevatedContainer extends StatelessWidget {
   final double? width;
   final CrossAxisAlignment crossAxisAlignment;
   final EdgeInsets? padding;
+  final MainAxisAlignment mainAxisAlignment;
 
   @override
   Widget build(BuildContext context) {
@@ -559,7 +569,9 @@ class ElevatedContainer extends StatelessWidget {
                   : black.lighten(0.08),
             ),
             child: Column(
-                crossAxisAlignment: crossAxisAlignment, children: children)));
+                crossAxisAlignment: crossAxisAlignment,
+                mainAxisAlignment: mainAxisAlignment,
+                children: children)));
   }
 }
 
@@ -740,22 +752,9 @@ class _CarouselAdBannerState extends State<CarouselAdBanner> {
                       ? Container(
                           color: Colors.grey,
                         )
-                      : Ink(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              image: DecorationImage(
-                                  image: AssetImage(
-                                    banner.url,
-                                  ),
-                                  fit: BoxFit.fill)),
-                          child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                  borderRadius: BorderRadius.circular(16),
-                                  splashColor:
-                                      widget.blackWhite.inverse.withAlpha(60),
-                                  splashFactory: InkRipple.splashFactory,
-                                  onTap: widget.onTap)),
+                      : BannerImage(
+                          widget: widget,
+                          banner: banner,
                         ),
                 ),
               ),
@@ -786,6 +785,49 @@ class _CarouselAdBannerState extends State<CarouselAdBanner> {
             }).toList(),
           ),
       ],
+    );
+  }
+}
+
+class BannerImage extends StatefulWidget {
+  const BannerImage({
+    super.key,
+    required this.widget,
+    required this.banner,
+  });
+
+  final CarouselAdBanner widget;
+  final AdBanner banner;
+
+  @override
+  State<BannerImage> createState() => _BannerImageState();
+}
+
+class _BannerImageState extends State<BannerImage> {
+  bool errored = false;
+  @override
+  Widget build(BuildContext context) {
+    return Ink(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          image: DecorationImage(
+              image: errored
+                  ? const AssetImage('assets/images/placeholder.png')
+                  : NetworkImage(
+                      '$hostUrlBase/public/storage/${widget.banner.url}',
+                    ),
+              onError: (e, s) {
+                errored = true;
+                setState(() {});
+              },
+              fit: BoxFit.fill)),
+      child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              splashColor: widget.widget.blackWhite.inverse.withAlpha(60),
+              splashFactory: InkRipple.splashFactory,
+              onTap: widget.widget.onTap)),
     );
   }
 }

@@ -148,8 +148,11 @@ class _CategoryListPageState extends State<CategoryListPage> {
               itemBuilder: (ctx, i) => Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: BigProductCard(
-                  product: products[i],
-                ),
+                    product: products[i],
+                    provider: Get.find<CommerceController>()
+                        .providers
+                        .where((test) => test.name == products[i].spId)
+                        .firstOrNull),
               ),
               itemCount: products.length,
             ),
