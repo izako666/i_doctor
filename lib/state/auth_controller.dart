@@ -8,7 +8,6 @@ import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/user.dart';
 import 'package:i_doctor/api/encryption.dart';
 import 'package:i_doctor/api/networking/rest_functions.dart';
-import 'package:i_doctor/fake_data.dart';
 import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 

@@ -7,13 +7,8 @@ import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
-import 'package:i_doctor/api/data_classes/user.dart';
-import 'package:i_doctor/api/encryption.dart';
 import 'package:i_doctor/api/networking/rest_functions.dart';
-import 'package:i_doctor/fake_data.dart';
 import 'package:i_doctor/portable_api/helper.dart';
-import 'package:i_doctor/portable_api/local_data/local_data.dart';
-import 'package:i_doctor/router.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 

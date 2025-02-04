@@ -14,7 +14,6 @@ import 'package:i_doctor/api/networking/rest_functions.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/maps/map_utils.dart';
 import 'package:i_doctor/portable_api/ui/bottom_sheet.dart';
-import 'package:i_doctor/router.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/filter_controller.dart';
@@ -30,6 +29,7 @@ class AdListPage extends StatefulWidget {
 
 class _AdListPageState extends State<AdListPage> {
   bool loaded = true;
+  bool loading = false;
   bool favorited = false;
   List<Product> products = List.empty(growable: true);
   @override
@@ -39,7 +39,10 @@ class _AdListPageState extends State<AdListPage> {
 
     FilterController filterController = Get.put(FilterController(
         categoryType: 0, categoriesTotal: commerceController.categories ?? []));
+
     filterController.onInit();
+    products = commerceController.products ?? [];
+    products = filterController.filterProducts(products);
   }
 
   @override
@@ -53,62 +56,79 @@ class _AdListPageState extends State<AdListPage> {
     CommerceController commerceController = Get.find<CommerceController>();
 
     FilterController filterController = Get.find<FilterController>();
-    products = commerceController.products ?? [];
-    products = filterController.filterProducts(products);
     //filterController.filterProducts(commerceController.products ?? []);
     return Scaffold(
         extendBodyBehindAppBar: true,
-        floatingActionButton: FloatingActionButton(
-          shape: const CircleBorder(),
-          onPressed: () async {
-            await showIzBottomSheet(
-                context: context,
-                child: FilterSortSheet(filterController: filterController));
-            setState(() {});
-          },
-          child: Icon(
-            Icons.filter_alt,
-            color: secondaryColor.darken(0.5),
-          ),
-        ),
+        floatingActionButton: loading
+            ? null
+            : FloatingActionButton(
+                shape: const CircleBorder(),
+                onPressed: () async {
+                  await showIzBottomSheet(
+                      context: context,
+                      child:
+                          FilterSortSheet(filterController: filterController));
+                  loading = true;
+                  setState(() {});
+                  if (context.mounted) {
+                    products = await filterController.sortProducts(
+                        filterController
+                            .filterProducts(commerceController.products),
+                        context);
+                    loading = false;
+                    setState(() {});
+                  } else {
+                    loading = false;
+                    setState(() {});
+                  }
+                },
+                child: Icon(
+                  Icons.filter_alt,
+                  color: secondaryColor.darken(0.5),
+                ),
+              ),
         appBar: IAppBar(
           title: 'اعلانات',
           hasBackButton: widget.hasBackButton,
           toolbarHeight: widget.hasBackButton ? null : kToolbarHeight,
         ),
-        body: Skeletonizer(
-            enabled: !loaded,
-            child: Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
-                child: loaded
-                    ? ListView.builder(
-                        itemBuilder: (ctx, i) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: BigProductCard(
-                              product: products[i],
-                              provider: Get.find<CommerceController>()
-                                  .providers
-                                  .where(
-                                      (test) => test.name == products[i].spId)
-                                  .firstOrNull,
-                            ),
-                          );
-                        },
-                        itemCount: products.length,
-                      )
-                    : ListView.builder(
-                        itemBuilder: (ctx, i) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Container(
-                                color: Colors.grey,
-                                width: getScreenWidth(context),
-                                height: 256),
-                          );
-                        },
-                        itemCount: 12,
-                      ))));
+        body: loading
+            ? const LoadingIndicator()
+            : Skeletonizer(
+                enabled: !loaded,
+                child: Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 8, top: 8),
+                    child: loaded
+                        ? ListView.builder(
+                            itemBuilder: (ctx, i) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: BigProductCard(
+                                  product: products[i],
+                                  provider: Get.find<CommerceController>()
+                                      .providers
+                                      .where((test) =>
+                                          test.name == products[i].spId)
+                                      .firstOrNull,
+                                ),
+                              );
+                            },
+                            itemCount: products.length,
+                          )
+                        : ListView.builder(
+                            itemBuilder: (ctx, i) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Container(
+                                    color: Colors.grey,
+                                    width: getScreenWidth(context),
+                                    height: 256),
+                              );
+                            },
+                            itemCount: 12,
+                          ))));
   }
 }
 

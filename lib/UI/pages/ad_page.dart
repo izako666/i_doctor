@@ -14,7 +14,6 @@ import 'package:i_doctor/portable_api/maps/map_utils.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/realm_controller.dart';
-import 'package:realm/realm.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../api/data_classes/product.dart';
@@ -413,6 +412,15 @@ class _AdPageState extends State<AdPage> {
                                     Get.find<RealmController>();
                                 AuthController authController =
                                     Get.find<AuthController>();
+                                if (realmController.containsBasketItem(
+                                    basketItem,
+                                    authController.currentUser.value!.email)) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'هذا المنتج موجود في سلتك.')));
+                                  return;
+                                }
                                 realmController.addItem(basketItem);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(

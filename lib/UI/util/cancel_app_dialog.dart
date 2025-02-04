@@ -19,7 +19,7 @@ class CancelAppointmentDialog extends StatelessWidget {
             Expanded(
                 child: InkWell(
                     onTap: () {
-                      context.pop();
+                      context.pop(false);
                     },
                     child: Container(
                       height: 64,
@@ -32,7 +32,7 @@ class CancelAppointmentDialog extends StatelessWidget {
             Expanded(
                 child: InkWell(
                     onTap: () {
-                      context.pop();
+                      context.pop(true);
                     },
                     child: Container(
                       height: 64,

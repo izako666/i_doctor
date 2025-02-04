@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
@@ -27,7 +28,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
   double startPrice = 0.0;
   double endPrice = 2000.0;
   double requiredRating = 0.0;
-  String selectedCategory = 'distance';
+  String selectedCategory = '';
 
   List<Category> selectedCategories = List.empty(growable: true);
   List<Subcategory> selectedSubcategories = List.empty(growable: true);
@@ -45,6 +46,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
     selectedSubcategories =
         List.from(widget.filterController.subcategoriesSelected);
     requiredRating = widget.filterController.requiredRating.value;
+    selectedCategory = widget.filterController.selectedSortCategory.value;
   }
 
   @override
@@ -57,10 +59,22 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: false,
-      appBar: const IAppBar(
+      appBar: IAppBar(
         title: 'فلتر و ترتيب',
         hasBackButton: false,
         toolbarHeight: kToolbarHeight * 2,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                bool reset = await _showCancelDialog(context);
+
+                if (reset && context.mounted) {
+                  widget.filterController.resetValues();
+                  context.pop();
+                } else {}
+              },
+              icon: const Icon(Icons.refresh))
+        ],
       ),
       body: Hero(
         tag: 'filter',
@@ -448,7 +462,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                     ),
                     Column(
                       children: [
-                        ...categories.map((category) {
+                        ...sortCategories.map((category) {
                           return RadioListTile<String>(
                             title: Text(category.name),
                             value: category.id, // Unique ID for this category
@@ -471,7 +485,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
               alignment: Alignment.bottomCenter,
               child: WideButton(
                 title: const Text('ثبت'),
-                onTap: () {
+                onTap: () async {
                   widget.filterController.startTime.value = startTime;
                   widget.filterController.endTime.value = endTime;
                   widget.filterController.startPrice.value = startPrice;
@@ -483,11 +497,94 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                   widget.filterController.subcategoriesSelected.clear();
                   widget.filterController.subcategoriesSelected
                       .addAll(selectedSubcategories);
-                  context.pop();
+                  if (selectedCategory == 'distance') {
+                    Position? pos = await getCurrentLocation(context);
+                    if (pos == null) {
+                      selectedCategory = "";
+                    }
+                  }
+                  widget.filterController.selectedSortCategory.value =
+                      selectedCategory;
+                  if (context.mounted) {
+                    context.pop();
+                  }
                 },
               ))
         ]),
       ),
+    );
+  }
+
+  Future<bool> _showCancelDialog(
+    BuildContext context,
+  ) async {
+    return await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: Container(
+          decoration: BoxDecoration(
+              color: secondaryColor.lighten(0.1),
+              borderRadius: BorderRadius.circular(16)),
+          width: getScreenWidth(ctx) * 0.5,
+          height: getScreenWidth(ctx) * 0.5,
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 32,
+              ),
+              Text(
+                'هل تريد إعادة ضبط قيم التصفية؟',
+                style: Theme.of(ctx).textTheme.titleMedium,
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                      child: InkWell(
+                          onTap: () {
+                            ctx.pop(false);
+                          },
+                          child: Container(
+                            height: 32,
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(16))),
+                            child: Center(
+                                child: Text(
+                              'ابطال',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(color: Colors.red.lighten(0.1)),
+                            )),
+                          ))),
+                  Expanded(
+                      child: InkWell(
+                          onTap: () {
+                            ctx.pop(true);
+                          },
+                          child: Container(
+                            height: 32,
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(16))),
+                            child: Center(
+                                child: Text(
+                              'التاكيد',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(color: Colors.green.lighten(0.1)),
+                            )),
+                          )))
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
     );
   }
 }
@@ -534,4 +631,44 @@ class SortCategory {
   final String name;
 
   SortCategory(this.id, this.name);
+}
+
+Future<Position?> getCurrentLocation(BuildContext context) async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  // Check if location services are enabled
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text("خدمات الموقع معطلة، يرجى تفعيلها من الإعدادات.")),
+    );
+    return null;
+  }
+
+  // Check permission status
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("يرجى السماح للتطبيق بالوصول إلى الموقع.")),
+      );
+      return null;
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text(
+              "لقد منعت التطبيق من الوصول إلى الموقع بشكل دائم، يرجى تغييره من الإعدادات.")),
+    );
+    return null;
+  }
+
+  // Get the current location
+  return await Geolocator.getCurrentPosition();
 }

@@ -2,11 +2,9 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:i_doctor/UI/pages/review_view.dart';
 import 'package:i_doctor/UI/util/filter_sort_sheet.dart';
-import 'package:i_doctor/api/data_classes/appointment.dart';
 import 'package:i_doctor/api/data_classes/clinic.dart';
 import 'package:i_doctor/api/data_classes/message.dart';
 import 'package:i_doctor/api/data_classes/notification.dart';
-import 'package:i_doctor/api/data_classes/product.dart';
 import 'package:i_doctor/api/data_classes/user.dart';
 
 List<Review> reviews = [
@@ -264,7 +262,8 @@ Clinic clinic = Clinic(
     logoUrl: 'assets/images/dummy-logo.png',
     imageUrl: 'assets/images/placeholder.png');
 
-List<SortCategory> categories = [
+List<SortCategory> sortCategories = [
+  SortCategory("", "بدون ترتيب"),
   SortCategory("distance", 'من القريب للبعيد'),
   SortCategory('rating', 'التقييم الاعلى'),
   SortCategory('price_high_first', 'من اعلى سعر'),

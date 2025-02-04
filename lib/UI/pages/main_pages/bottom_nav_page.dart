@@ -7,7 +7,6 @@ import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/router.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
-import 'package:i_doctor/state/dio_controller.dart';
 import 'package:i_doctor/state/realm_controller.dart';
 import 'package:i_doctor/state/settings_controller.dart';
 

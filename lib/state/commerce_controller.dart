@@ -7,9 +7,7 @@ import 'package:i_doctor/api/data_classes/product.dart';
 import 'package:i_doctor/api/data_classes/subcategory.dart';
 import 'package:i_doctor/api/networking/rest_functions.dart' as rest;
 import 'package:i_doctor/state/auth_controller.dart';
-import 'package:i_doctor/state/feed_controller.dart';
 import 'package:i_doctor/state/realm_controller.dart';
-import 'package:realm/realm.dart';
 
 class CommerceController extends GetxController {
   RxList<Category> categories = RxList.empty(growable: true);

@@ -53,6 +53,11 @@ class RealmController extends GetxController {
     });
   }
 
+  bool containsBasketItem(BasketItem basketItem, String userId) {
+    return !realm.all<BasketItem>().query(r'userId == $0 AND productId == $1',
+        [userId, basketItem.productId]).isEmpty;
+  }
+
   Stream<RealmResultsChanges<BasketItem>> listenStream(String userId) {
     return realm.all<BasketItem>().query(r'userId == $0', [userId]).changes;
   }

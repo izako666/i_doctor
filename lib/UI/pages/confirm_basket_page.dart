@@ -7,13 +7,10 @@ import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/api/data_classes/basket_item.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
-import 'package:i_doctor/fake_data.dart';
 import 'package:i_doctor/portable_api/helper.dart';
-import 'package:i_doctor/router.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/realm_controller.dart';
-import 'package:realm/realm.dart';
 
 class ConfirmBasketPage extends StatefulWidget {
   const ConfirmBasketPage({super.key});

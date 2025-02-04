@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
-import 'package:i_doctor/api/data_classes/subcategory.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/filter_controller.dart';
-
-import '../api/data_classes/category.dart';
 
 class FeedController extends GetxController {
   late TextEditingController searchController;
@@ -46,9 +43,11 @@ class FeedController extends GetxController {
     searchController.dispose();
   }
 
-  List<Product> filterSearch(List<Product> products) {
+  Future<List<Product>> filterSearch(
+      List<Product> products, BuildContext context) async {
     if (controller == null) return products;
     List<Product> filteredProducts = controller!.filterProducts(products);
+
     List<Product> searchedProducts = List.empty(growable: true);
 
     for (Product prod in filteredProducts) {
@@ -57,6 +56,9 @@ class FeedController extends GetxController {
         searchedProducts.add(prod);
       }
     }
-    return searchedProducts;
+    List<Product> sortedProducts =
+        await controller!.sortProducts(searchedProducts, context);
+
+    return sortedProducts;
   }
 }

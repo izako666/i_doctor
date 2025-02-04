@@ -9,12 +9,12 @@ import 'package:i_doctor/UI/util/leave_review_dialog.dart';
 import 'package:i_doctor/UI/util/price_text.dart';
 import 'package:i_doctor/api/data_classes/appointment.dart';
 import 'package:i_doctor/api/data_classes/basket_item.dart';
-import 'package:i_doctor/fake_data.dart';
+import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/maps/map_utils.dart';
 import 'package:i_doctor/state/auth_controller.dart';
+import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/realm_controller.dart';
-import 'package:realm/realm.dart';
 
 class AppointmentsPage extends StatefulWidget {
   const AppointmentsPage({super.key});
@@ -321,43 +321,18 @@ class BasketCard extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  Text(basketItem.name),
+                  const SizedBox(
+                    height: 4,
+                  ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if (!isDisplay)
-                        IconButton(
-                            onPressed: () {
-                              int newQuantity = basketItem.quantity - 1;
-                              if (newQuantity == 0) {
-                              } else {
-                                realmController.updateQuantity(
-                                    basketItem, newQuantity);
-                                onDelete();
-                              }
-                            },
-                            icon: const Icon(
-                              Icons.remove,
-                              fill: 1,
-                            )),
-                      Text(basketItem.quantity.toString()),
-                      if (!isDisplay)
-                        IconButton(
-                            onPressed: () {
-                              if (basketItem.availablePurchases <=
-                                  (basketItem.quantity + 1)) return;
-                              realmController.updateQuantity(
-                                  basketItem, basketItem.quantity + 1);
-                              onDelete();
-                            },
-                            icon: const Icon(
-                              Icons.add,
-                              fill: 1.0,
-                            ))
+                      const Text("العرض"),
+                      Text(basketItem.name),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -371,15 +346,39 @@ class BasketCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(basketItem.spId),
-                  IconButton(
-                    onPressed: () {},
-                    // onPressed: () => MapUtils.openMap(
-                    //     appointment.location.latitude,
-                    //     appointment.location.longitude),
-                    icon: const Icon(
-                      Icons.location_pin,
-                    ),
+                  const Text("مزود الخدمة"),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(basketItem.spId),
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: IconButton(
+                          iconSize: 12,
+                          onPressed: () {
+                            Provider? provider = Get.find<CommerceController>()
+                                .providers
+                                .where((test) => test.name == basketItem.spId)
+                                .firstOrNull;
+                            if (provider != null) {
+                              List<double> numbers = provider.location
+                                  .split(',')
+                                  .map((e) => double.parse(e))
+                                  .toList();
+
+                              MapUtils.openMap(numbers[0], numbers[1]);
+                            }
+                          },
+                          // onPressed: () => MapUtils.openMap(
+                          //     appointment.location.latitude,
+                          //     appointment.location.longitude),
+                          icon: const Icon(
+                            Icons.location_pin,
+                          ),
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -395,6 +394,7 @@ class BasketCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  const Text('التاريخ'),
                   Text(
                       ' ${formatDate(DateTime.parse(basketItem.startDate))} - ${formatDate(DateTime.parse(basketItem.endDate))}')
                 ],
@@ -415,6 +415,71 @@ class BasketCard extends StatelessWidget {
                   PriceText(
                       price: double.parse(basketItem.idocPrice),
                       discount: double.parse(basketItem.idocDiscountAmt))
+                ],
+              ),
+            ),
+            Divider(
+              indent: 8,
+              endIndent: 8,
+              color: secondaryColor.darken(0.5),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('العدد'),
+                  Row(
+                    children: [
+                      if (!isDisplay)
+                        SizedBox(
+                          width: 36,
+                          height: 36,
+                          child: IconButton(
+                              iconSize: 16,
+                              onPressed: () {
+                                int newQuantity = basketItem.quantity - 1;
+                                if (newQuantity == 0) {
+                                } else {
+                                  realmController.updateQuantity(
+                                      basketItem, newQuantity);
+                                  onDelete();
+                                }
+                              },
+                              icon: const Icon(
+                                Icons.remove,
+                                fill: 1,
+                              )),
+                        ),
+                      Text(basketItem.quantity.toString()),
+                      if (!isDisplay)
+                        SizedBox(
+                          width: 36,
+                          height: 36,
+                          child: IconButton(
+                              iconSize: 16,
+                              onPressed: () {
+                                if (basketItem.availablePurchases <=
+                                    (basketItem.quantity + 1)) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'لا يمكنك طلب المزيد من هذا المنتج.')));
+
+                                  return;
+                                }
+                                realmController.updateQuantity(
+                                    basketItem, basketItem.quantity + 1);
+                                onDelete();
+                              },
+                              icon: const Icon(
+                                Icons.add,
+                                fill: 1.0,
+                              )),
+                        )
+                    ],
+                  ),
                 ],
               ),
             ),

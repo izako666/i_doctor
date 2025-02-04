@@ -1,5 +1,4 @@
 import 'package:realm/realm.dart';
-import 'dart:io';
 
 part 'basket_item.realm.dart';
 

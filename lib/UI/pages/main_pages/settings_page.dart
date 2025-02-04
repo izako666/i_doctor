@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
-import 'package:i_doctor/UI/util/city_select_dialog.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
-import 'package:i_doctor/api/encryption.dart';
 import 'package:i_doctor/portable_api/helper.dart';
-import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/settings_controller.dart';
 

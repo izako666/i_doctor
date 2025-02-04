@@ -16,13 +16,28 @@ import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/feed_controller.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:i_doctor/state/filter_controller.dart';
-import 'package:i_doctor/state/main_controller.dart';
 import 'dart:math' as math;
 
 import 'package:skeletonizer/skeletonizer.dart';
 
-class FeedPage extends StatelessWidget {
+class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
+
+  @override
+  State<FeedPage> createState() => _FeedPageState();
+}
+
+class _FeedPageState extends State<FeedPage> {
+  bool loading = false;
+
+  List<Product> products = [];
+
+  @override
+  void initState() {
+    super.initState();
+    CommerceController commerceController = Get.find<CommerceController>();
+    products = commerceController.products.toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +47,10 @@ class FeedPage extends StatelessWidget {
       FeedController controller = Get.find<FeedController>();
       CommerceController commerceController = Get.find<CommerceController>();
       controller.searchVal.value;
-      List<Product> products = [];
-      if (!controller.openFeedView.value) {
-        products =
-            controller.filterSearch(commerceController.products.toList() ?? []);
-      }
+
       return Scaffold(
         extendBodyBehindAppBar: true,
-        floatingActionButton: (!controller.openFeedView.value)
+        floatingActionButton: (!controller.openFeedView.value && !loading)
             ? FloatingActionButton(
                 shape: const CircleBorder(),
                 onPressed: () async {
@@ -47,6 +58,19 @@ class FeedPage extends StatelessWidget {
                       context: context,
                       child: FilterSortSheet(
                           filterController: controller.controller!));
+                  if (context.mounted) {
+                    loading = true;
+                    controller
+                        .filterSearch(
+                            commerceController.products.toList(), context)
+                        .then((val) {
+                      products = val;
+                      loading = false;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {});
+                      });
+                    });
+                  }
                 },
                 child: Icon(
                   Icons.filter_alt,
@@ -65,330 +89,371 @@ class FeedPage extends StatelessWidget {
             ),
           ),
         ),
-        body: Obx(
-          () => Skeletonizer(
-              enabled: controller.skeleton.value,
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: kToolbarHeight * 0.7,
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.only(left: 4, right: 4, bottom: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: blackWhite.inverse,
-                    ),
-                    width: getScreenWidth(context),
-                    child: Row(
-                      mainAxisAlignment: (!controller.openFeedView.value)
-                          ? MainAxisAlignment.start
-                          : MainAxisAlignment.spaceBetween,
+        body: loading
+            ? const LoadingIndicator()
+            : Obx(
+                () => Skeletonizer(
+                    enabled: controller.skeleton.value,
+                    child: Column(
                       children: [
-                        Material(
-                          borderRadius: BorderRadius.circular(24),
-                          elevation: 0,
-                          color: Colors.transparent,
-                          child: Obx(
-                            () => InkWell(
+                        const SizedBox(
+                          height: kToolbarHeight * 0.7,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.only(
+                              left: 4, right: 4, bottom: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: blackWhite.inverse,
+                          ),
+                          width: getScreenWidth(context),
+                          child: Row(
+                            mainAxisAlignment: (!controller.openFeedView.value)
+                                ? MainAxisAlignment.start
+                                : MainAxisAlignment.spaceBetween,
+                            children: [
+                              Material(
                                 borderRadius: BorderRadius.circular(24),
-                                onTap: Get.find<AuthController>()
-                                            .currentUser
-                                            .value ==
-                                        null
-                                    ? () {
-                                        context.go('/feed/login');
-                                      }
-                                    : () {
-                                        context.go('/feed/user_info');
-                                      },
-                                splashFactory: InkRipple.splashFactory,
-                                child: Container(
-                                    width: 36,
-                                    height: 36,
-                                    decoration: BoxDecoration(
+                                elevation: 0,
+                                color: Colors.transparent,
+                                child: Obx(
+                                  () => InkWell(
                                       borderRadius: BorderRadius.circular(24),
-                                    ),
-                                    child: Icon(
-                                      Get.find<AuthController>()
+                                      onTap: Get.find<AuthController>()
                                                   .currentUser
                                                   .value ==
                                               null
-                                          ? Icons.login
-                                          : Icons.person,
-                                    ))),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Expanded(
-                            child: Skeleton.leaf(
-                                child: SearchBox(
-                          controller: controller,
-                          closeable:
-                              (!controller.openFeedView.value) ? true : false,
-                          onClose: () async {
-                            controller.controller = null;
-
-                            await Get.delete<FilterController>(force: true);
-
-                            controller.node.unfocus();
-                            controller.openFeedView.value = true;
-                          },
-                        ))),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        if (controller.openFeedView.value)
-                          Material(
-                            borderRadius: BorderRadius.circular(24),
-                            elevation: 0,
-                            color: Colors.transparent,
-                            child: InkWell(
-                                borderRadius: BorderRadius.circular(24),
-                                onTap: () {
-                                  context.push('/feed/notifications');
-                                },
-                                splashFactory: InkRipple.splashFactory,
-                                child: Container(
-                                    width: 36,
-                                    height: 36,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(24),
-                                    ),
-                                    child: const Icon(
-                                      Icons.notifications,
-                                    ))),
-                          )
-                      ],
-                    ),
-                  ),
-                  (!controller.openFeedView.value)
-                      ? Expanded(
-                          child: ListView.builder(
-                            itemBuilder: (ctx, i) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: BigProductCard(
-                                  product: products[i],
-                                  provider: Get.find<CommerceController>()
-                                      .providers
-                                      .where((test) =>
-                                          test.name == products[i].spId)
-                                      .firstOrNull,
-                                ),
-                              );
-                            },
-                            itemCount: products.length,
-                          ),
-                        )
-                      : Expanded(
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8, right: 8),
-                              child: Column(children: [
-                                const SizedBox(height: 16),
-                                CarouselAdBanner(
-                                  onTap: () {
-                                    context.push('/feed/advert/1234');
-                                  },
-                                  skeleton: controller.skeleton.value,
-                                  blackWhite: blackWhite,
-                                  banners: [
-                                    AdBanner(
-                                        url: 'assets/images/placeholder.png'),
-                                    AdBanner(
-                                        url: 'assets/images/placeholder.png'),
-                                    AdBanner(
-                                        url: 'assets/images/placeholder.png'),
-                                    AdBanner(
-                                        url: 'assets/images/placeholder.png'),
-                                    AdBanner(
-                                        url: 'assets/images/placeholder.png'),
-                                    AdBanner(
-                                        url: 'assets/images/placeholder.png'),
-                                  ],
-                                  autoPlay: true,
-                                  showIndicator: true,
-                                ),
-                                const SizedBox(height: 16),
-                                Material(
-                                  borderRadius: BorderRadius.circular(16),
-                                  elevation: 2,
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 96,
-                                    decoration: BoxDecoration(
-                                      color: blackWhite == black
-                                          ? white.darken(0.07)
-                                          : black.lighten(0.08),
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: Skeleton.leaf(
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(16),
-                                        child: Scrollbar(
-                                          child: ListView.builder(
-                                              scrollDirection: Axis.horizontal,
-                                              padding:
-                                                  const EdgeInsets.only(top: 8),
-                                              itemCount: (commerceController
-                                                          .categories ??
-                                                      [])
-                                                  .length,
-                                              itemBuilder: (ctx, i) {
-                                                return Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 24),
-                                                    child: CategoryCircleButton(
-                                                        category:
-                                                            commerceController
-                                                                    .categories[
-                                                                i]));
-                                              }),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                DealsBox(
-                                    blackWhite: blackWhite,
-                                    controller: controller),
-                                const SizedBox(height: 16),
-                                SizedBox(
-                                  width: getScreenWidth(context),
-                                  child: ElevatedContainer(
-                                    blackWhite: blackWhite,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Text(
-                                              'عيادات',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge,
-                                            ),
-                                          ),
-                                          TextButton(
-                                            style: ButtonStyle(
-                                                overlayColor: WidgetStateColor
-                                                    .resolveWith((states) =>
-                                                        states.contains(
-                                                                WidgetState
-                                                                    .pressed)
-                                                            ? secondaryColor
-                                                            : Colors
-                                                                .transparent)),
-                                            onPressed: () {
-                                              context.push('/feed/clinics');
+                                          ? () {
+                                              context.go('/feed/login');
+                                            }
+                                          : () {
+                                              context.go('/feed/user_info');
                                             },
-                                            child: Text('إظهار الكل',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
-                                                        color: secondaryColor
-                                                            .darken(0.5))),
-                                          )
-                                        ],
-                                      ),
-                                      MediaQuery.removePadding(
-                                        context: context,
-                                        child: GridView.builder(
-                                            padding: EdgeInsets.zero,
-                                            shrinkWrap: true,
-                                            itemCount: commerceController
-                                                        .providers.length >
-                                                    4
-                                                ? 4
-                                                : commerceController
-                                                    .providers.length,
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            gridDelegate:
-                                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisCount: 2,
-                                                    childAspectRatio: 0.7),
-                                            itemBuilder: (ctx, i) {
-                                              return ClinicButton(
-                                                  provider: commerceController
-                                                      .providers[i]);
-                                            }),
-                                      )
-                                    ],
-                                  ),
+                                      splashFactory: InkRipple.splashFactory,
+                                      child: Container(
+                                          width: 36,
+                                          height: 36,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(24),
+                                          ),
+                                          child: Icon(
+                                            Get.find<AuthController>()
+                                                        .currentUser
+                                                        .value ==
+                                                    null
+                                                ? Icons.login
+                                                : Icons.person,
+                                          ))),
                                 ),
-                                const SizedBox(height: 16),
-                                ElevatedContainer(
-                                    blackWhite: blackWhite,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0),
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Text('كمان عروض',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge),
-                                        ),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Expanded(
+                                  child: Skeleton.leaf(
+                                      child: SearchBox(
+                                controller: controller,
+                                closeable: (!controller.openFeedView.value)
+                                    ? true
+                                    : false,
+                                onClose: () async {
+                                  controller.controller = null;
+
+                                  await Get.delete<FilterController>(
+                                      force: true);
+
+                                  controller.node.unfocus();
+                                  controller.openFeedView.value = true;
+                                },
+                              ))),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              if (controller.openFeedView.value)
+                                Material(
+                                  borderRadius: BorderRadius.circular(24),
+                                  elevation: 0,
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                      borderRadius: BorderRadius.circular(24),
+                                      onTap: () {
+                                        context.push('/feed/notifications');
+                                      },
+                                      splashFactory: InkRipple.splashFactory,
+                                      child: Container(
+                                          width: 36,
+                                          height: 36,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(24),
+                                          ),
+                                          child: const Icon(
+                                            Icons.notifications,
+                                          ))),
+                                )
+                            ],
+                          ),
+                        ),
+                        (!controller.openFeedView.value)
+                            ? Expanded(
+                                child: ListView.builder(
+                                  itemBuilder: (ctx, i) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: BigProductCard(
+                                        product: products[i],
+                                        provider: Get.find<CommerceController>()
+                                            .providers
+                                            .where((test) =>
+                                                test.name == products[i].spId)
+                                            .firstOrNull,
                                       ),
-                                      const SizedBox(
-                                        height: 16,
+                                    );
+                                  },
+                                  itemCount: products.length,
+                                ),
+                              )
+                            : Expanded(
+                                child: SingleChildScrollView(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8, right: 8),
+                                    child: Column(children: [
+                                      const SizedBox(height: 16),
+                                      CarouselAdBanner(
+                                        onTap: () {
+                                          context.push('/feed/advert/1234');
+                                        },
+                                        skeleton: controller.skeleton.value,
+                                        blackWhite: blackWhite,
+                                        banners: [
+                                          AdBanner(
+                                              url:
+                                                  'assets/images/placeholder.png'),
+                                          AdBanner(
+                                              url:
+                                                  'assets/images/placeholder.png'),
+                                          AdBanner(
+                                              url:
+                                                  'assets/images/placeholder.png'),
+                                          AdBanner(
+                                              url:
+                                                  'assets/images/placeholder.png'),
+                                          AdBanner(
+                                              url:
+                                                  'assets/images/placeholder.png'),
+                                          AdBanner(
+                                              url:
+                                                  'assets/images/placeholder.png'),
+                                        ],
+                                        autoPlay: true,
+                                        showIndicator: true,
                                       ),
-                                      ...[1, 2, 3, 4].map(
-                                        (c) => Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8),
-                                          child: Material(
-                                            child: Ink(
-                                              width: getScreenWidth(context),
-                                              height: 196,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                  image: const DecorationImage(
-                                                      image: AssetImage(
-                                                        'assets/images/placeholder.png',
-                                                      ),
-                                                      fit: BoxFit.fill)),
-                                              child: Material(
-                                                  color: Colors.transparent,
-                                                  child: InkWell(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              16),
-                                                      splashColor: blackWhite
-                                                          .inverse
-                                                          .withAlpha(60),
-                                                      splashFactory: InkRipple
-                                                          .splashFactory,
-                                                      onTap: () {
-                                                        context.push(
-                                                            '/feed/advert/1234');
-                                                      })),
+                                      const SizedBox(height: 16),
+                                      Material(
+                                        borderRadius: BorderRadius.circular(16),
+                                        elevation: 2,
+                                        child: Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          height: 96,
+                                          decoration: BoxDecoration(
+                                            color: blackWhite == black
+                                                ? white.darken(0.07)
+                                                : black.lighten(0.08),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                          ),
+                                          child: Skeleton.leaf(
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              child: Scrollbar(
+                                                child: ListView.builder(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 8),
+                                                    itemCount: (commerceController
+                                                                .categories ??
+                                                            [])
+                                                        .length,
+                                                    itemBuilder: (ctx, i) {
+                                                      return Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      24),
+                                                          child: CategoryCircleButton(
+                                                              category:
+                                                                  commerceController
+                                                                          .categories[
+                                                                      i]));
+                                                    }),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ])
-                              ]),
-                            ),
-                          ),
-                        ),
-                ],
-              )),
-        ),
+                                      const SizedBox(height: 16),
+                                      DealsBox(
+                                          blackWhite: blackWhite,
+                                          controller: controller),
+                                      const SizedBox(height: 16),
+                                      SizedBox(
+                                        width: getScreenWidth(context),
+                                        child: ElevatedContainer(
+                                          blackWhite: blackWhite,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 8.0),
+                                                  child: Text(
+                                                    'عيادات',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleLarge,
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  style: ButtonStyle(
+                                                      overlayColor: WidgetStateColor
+                                                          .resolveWith((states) =>
+                                                              states.contains(
+                                                                      WidgetState
+                                                                          .pressed)
+                                                                  ? secondaryColor
+                                                                  : Colors
+                                                                      .transparent)),
+                                                  onPressed: () {
+                                                    context
+                                                        .push('/feed/clinics');
+                                                  },
+                                                  child: Text('إظهار الكل',
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium!
+                                                          .copyWith(
+                                                              color:
+                                                                  secondaryColor
+                                                                      .darken(
+                                                                          0.5))),
+                                                )
+                                              ],
+                                            ),
+                                            MediaQuery.removePadding(
+                                              context: context,
+                                              child: GridView.builder(
+                                                  padding: EdgeInsets.zero,
+                                                  shrinkWrap: true,
+                                                  itemCount: commerceController
+                                                              .providers
+                                                              .length >
+                                                          4
+                                                      ? 4
+                                                      : commerceController
+                                                          .providers.length,
+                                                  physics:
+                                                      const NeverScrollableScrollPhysics(),
+                                                  gridDelegate:
+                                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                                          crossAxisCount: 2,
+                                                          childAspectRatio:
+                                                              0.7),
+                                                  itemBuilder: (ctx, i) {
+                                                    return ClinicButton(
+                                                        provider:
+                                                            commerceController
+                                                                .providers[i]);
+                                                  }),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      ElevatedContainer(
+                                          blackWhite: blackWhite,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Text('كمان عروض',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleLarge),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 16,
+                                            ),
+                                            ...[1, 2, 3, 4].map(
+                                              (c) => Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 8),
+                                                child: Material(
+                                                  child: Ink(
+                                                    width:
+                                                        getScreenWidth(context),
+                                                    height: 196,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16),
+                                                        image:
+                                                            const DecorationImage(
+                                                                image:
+                                                                    AssetImage(
+                                                                  'assets/images/placeholder.png',
+                                                                ),
+                                                                fit: BoxFit
+                                                                    .fill)),
+                                                    child: Material(
+                                                        color: Colors
+                                                            .transparent,
+                                                        child: InkWell(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        16),
+                                                            splashColor:
+                                                                blackWhite
+                                                                    .inverse
+                                                                    .withAlpha(
+                                                                        60),
+                                                            splashFactory:
+                                                                InkRipple
+                                                                    .splashFactory,
+                                                            onTap: () {
+                                                              context.push(
+                                                                  '/feed/advert/1234');
+                                                            })),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ])
+                                    ]),
+                                  ),
+                                ),
+                              ),
+                      ],
+                    )),
+              ),
       );
     });
   }

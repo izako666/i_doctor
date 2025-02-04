@@ -1,4 +1,3 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
@@ -7,7 +6,6 @@ import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
-import 'package:i_doctor/fake_data.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
