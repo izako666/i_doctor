@@ -43,24 +43,12 @@ class _ClinicListPageState extends State<ClinicListPage> {
     FilterController filterController =
         Get.put(FilterController(categoryType: 0, categoriesTotal: []));
     filterController.onInit();
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        onPressed: () {
-          showIzBottomSheet(
-              context: context,
-              child: FilterSortSheet(filterController: filterController));
-        },
-        child: Icon(
-          Icons.filter_alt,
-          color: secondaryColor.darken(0.5),
-        ),
-      ),
-      appBar: const IAppBar(
+    return const Scaffold(
+      appBar: IAppBar(
         title: 'العيادات',
         hasBackButton: true,
       ),
-      body: const CustomScrollView(slivers: [ClinicListView()]),
+      body: CustomScrollView(slivers: [ClinicListView()]),
     );
   }
 }

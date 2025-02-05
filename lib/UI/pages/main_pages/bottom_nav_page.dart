@@ -1,7 +1,11 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
+import 'package:i_doctor/main.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/router.dart';
@@ -11,6 +15,7 @@ import 'package:i_doctor/state/realm_controller.dart';
 import 'package:i_doctor/state/settings_controller.dart';
 
 import 'package:intl/date_symbol_data_local.dart' as date_symbol;
+import 'package:restart_app/restart_app.dart';
 
 class BottomNavPage extends StatefulWidget {
   const BottomNavPage(
@@ -25,6 +30,8 @@ class BottomNavPage extends StatefulWidget {
 
 class _BottomNavPageState extends State<BottomNavPage> {
   bool loaded = false;
+  StreamSubscription<List<ConnectivityResult>>? _subscription;
+  bool _isSnackbarVisible = false;
   @override
   void initState() {
     super.initState();
@@ -50,6 +57,50 @@ class _BottomNavPageState extends State<BottomNavPage> {
       loaded = true;
       setState(() {});
     });
+    _monitorInternetConnection();
+  }
+
+  void _monitorInternetConnection() {
+    _subscription = Connectivity().onConnectivityChanged.listen((result) {
+      if (result.contains(ConnectivityResult.none)) {
+        _showPersistentSnackbar();
+      } else {
+        // _hideSnackbar();
+      }
+    });
+  }
+
+  void _showPersistentSnackbar() {
+    if (!_isSnackbarVisible) {
+      _isSnackbarVisible = true;
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: const Text('لا يوجد اتصال بالإنترنت'),
+          backgroundColor: Colors.red,
+          duration: const Duration(days: 1), // Keep visible indefinitely
+          action: SnackBarAction(
+            label: 'أعد المحاولة',
+            textColor: Colors.white,
+            onPressed: () async {
+              Restart.restartApp();
+            }, // Can be left empty
+          ),
+        ),
+      );
+    }
+  }
+
+  void _hideSnackbar() {
+    if (_isSnackbarVisible) {
+      _isSnackbarVisible = false;
+      scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 
   @override

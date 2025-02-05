@@ -12,9 +12,15 @@ import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  bool loadingSignUpButton = false;
   @override
   Widget build(BuildContext context) {
     return getRepo.Obx(() {
@@ -52,6 +58,7 @@ class SignupPage extends StatelessWidget {
           auth.sEmailController.text = '';
           auth.sNationalityController.text = '';
           auth.genderError.value = '';
+          auth.nationalityId.value = -1;
         },
         child: Scaffold(
           appBar: const IAppBar(
@@ -732,7 +739,10 @@ class SignupPage extends StatelessWidget {
                   child: WideButton(
                       title: Text('تم',
                           style: Theme.of(context).textTheme.titleLarge),
+                      disabled: loadingSignUpButton,
                       onTap: () async {
+                        loadingSignUpButton = true;
+                        setState(() {});
                         bool isValid = auth.validateSignup();
 
                         if (isValid) {
@@ -750,6 +760,8 @@ class SignupPage extends StatelessWidget {
                             'CustEngName': 'NULL',
                           });
                           if (resp.statusCode == 200) {
+                            loadingSignUpButton = false;
+                            setState(() {});
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text('نجاح')));
@@ -760,6 +772,15 @@ class SignupPage extends StatelessWidget {
                                 context.pop();
                               }
                             });
+                          } else if (resp.statusCode == 404 &&
+                              resp.data['data']['email'] != null) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      backgroundColor: Colors.red,
+                                      content:
+                                          Text('ان بريد إلكتروني مستعمل')));
+                            }
                           } else {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(

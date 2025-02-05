@@ -82,10 +82,15 @@ class _ClinicPageState extends State<ClinicPage> {
                           children: [
                             ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
-                                child: Image.network(
-                                  '$hostUrlBase/public/storage/${provider!.logo}',
-                                  width: 64,
+                                child: SizedBox(
                                   height: 64,
+                                  width: 64,
+                                  child: Image.network(
+                                    '$hostUrlBase/public/storage/${provider!.logo}',
+                                    width: 64,
+                                    height: 64,
+                                    fit: BoxFit.fill,
+                                  ),
                                 )),
                             const SizedBox(width: 8),
                             Text(provider!.name,
