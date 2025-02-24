@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -8,6 +10,7 @@ import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/util/filter_sort_sheet.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/UI/util/price_text.dart';
+import 'package:i_doctor/api/data_classes/basket_item.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
 import 'package:i_doctor/api/networking/rest_functions.dart';
@@ -17,6 +20,8 @@ import 'package:i_doctor/portable_api/ui/bottom_sheet.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/filter_controller.dart';
+import 'package:i_doctor/state/realm_controller.dart';
+import 'package:realm/realm.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class AdListPage extends StatefulWidget {
@@ -39,9 +44,10 @@ class _AdListPageState extends State<AdListPage> {
 
     FilterController filterController = Get.put(FilterController(
         categoryType: 0, categoriesTotal: commerceController.categories ?? []));
-
     filterController.onInit();
     products = commerceController.products ?? [];
+    filterController.addProviders(products);
+
     products = filterController.filterProducts(products);
   }
 
@@ -54,8 +60,19 @@ class _AdListPageState extends State<AdListPage> {
   @override
   Widget build(BuildContext context) {
     CommerceController commerceController = Get.find<CommerceController>();
+    FilterController filterController;
+    if (!Get.isRegistered<FilterController>()) {
+      filterController = Get.put(FilterController(
+          categoryType: 0,
+          categoriesTotal: commerceController.categories ?? []));
+      filterController.onInit();
+      products = commerceController.products ?? [];
+      filterController.addProviders(products);
 
-    FilterController filterController = Get.find<FilterController>();
+      products = filterController.filterProducts(products);
+    }
+    filterController = Get.find<FilterController>();
+
     //filterController.filterProducts(commerceController.products ?? []);
     return Scaffold(
         extendBodyBehindAppBar: true,
@@ -82,13 +99,13 @@ class _AdListPageState extends State<AdListPage> {
                     setState(() {});
                   }
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.filter_alt,
-                  color: secondaryColor.darken(0.5),
+                  color: primaryFgColor,
                 ),
               ),
         appBar: IAppBar(
-          title: 'اعلانات',
+          title: t(context).advertisements,
           hasBackButton: widget.hasBackButton,
           toolbarHeight: widget.hasBackButton ? null : kToolbarHeight,
         ),
@@ -111,6 +128,7 @@ class _AdListPageState extends State<AdListPage> {
                                       .where((test) =>
                                           test.name == products[i].spId)
                                       .firstOrNull,
+                                  pushRoute: true,
                                 ),
                               );
                             },
@@ -134,9 +152,13 @@ class _AdListPageState extends State<AdListPage> {
 
 class BigProductCard extends StatefulWidget {
   const BigProductCard(
-      {super.key, required this.product, required this.provider});
+      {super.key,
+      required this.product,
+      required this.provider,
+      this.pushRoute = false});
   final Product product;
   final Provider? provider;
+  final bool pushRoute;
 
   @override
   State<BigProductCard> createState() => _BigProductCardState();
@@ -144,17 +166,82 @@ class BigProductCard extends StatefulWidget {
 
 class _BigProductCardState extends State<BigProductCard> {
   bool favorited = false;
+  StreamSubscription<RealmResultsChanges<BasketItem>>? streamSub;
+
+  @override
+  void initState() {
+    super.initState();
+    if (Get.find<AuthController>().currentUser.value != null) {
+      RealmController realmController = Get.find<RealmController>();
+      BasketItem basketItem = BasketItem(
+          '${widget.product.id}_${Get.find<AuthController>().currentUser.value!.email}_true',
+          widget.product.id,
+          Get.find<AuthController>().currentUser.value!.email,
+          widget.product.catId,
+          widget.product.subcatId,
+          widget.product.spId,
+          widget.product.spbId,
+          widget.product.name,
+          widget.product.description,
+          widget.product.photo,
+          widget.product.active,
+          widget.product.spPrice,
+          widget.product.spTotal,
+          widget.product.idocPrice,
+          widget.product.idocDiscountAmt,
+          widget.product.idocNet,
+          widget.product.idocType,
+          widget.product.startDate,
+          widget.product.endDate,
+          widget.product.availablePurchases,
+          widget.product.createdAt,
+          widget.product.updatedAt,
+          1,
+          true);
+
+      favorited = realmController.containsFavoriteItem(
+          basketItem, Get.find<AuthController>().currentUser.value!.email);
+      realmController
+          .listenFavoriteStreamItem(
+              Get.find<AuthController>().currentUser.value!.email,
+              widget.product.id)
+          .listen((d) {
+        d.results.firstOrNull;
+        BasketItem? item = d.results.firstOrNull;
+        if (item != null) {
+          favorited = true;
+          setState(() {});
+        } else {
+          favorited = false;
+          setState(() {});
+        }
+      });
+    } else {
+      favorited = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    streamSub?.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        //TODO: THis might just fuck up soon, will watch out
         String branch = GoRouter.of(context)
             .routeInformationProvider
             .value
             .uri
             .pathSegments[0];
-
-        context.go('/$branch/advert/${widget.product.id}');
+        if (widget.pushRoute) {
+          context.push('/$branch/advert/${widget.product.id}');
+        } else {
+          context.go('/$branch/advert/${widget.product.id}');
+        }
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -190,8 +277,59 @@ class _BigProductCardState extends State<BigProductCard> {
                           color: Colors.white, shape: BoxShape.circle),
                       child: IconButton(
                           onPressed: () {
+                            if (Get.find<AuthController>().currentUser.value ==
+                                null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          t(context).mustLoginToFavorite)));
+                              return;
+                            }
                             setState(() {
                               favorited = !favorited;
+                              if (favorited) {
+                                BasketItem basketItem = BasketItem(
+                                    '${widget.product.id}_${Get.find<AuthController>().currentUser.value!.email}_true',
+                                    widget.product.id,
+                                    Get.find<AuthController>()
+                                        .currentUser
+                                        .value!
+                                        .email,
+                                    widget.product.catId,
+                                    widget.product.subcatId,
+                                    widget.product.spId,
+                                    widget.product.spbId,
+                                    widget.product.name,
+                                    widget.product.description,
+                                    widget.product.photo,
+                                    widget.product.active,
+                                    widget.product.spPrice,
+                                    widget.product.spTotal,
+                                    widget.product.idocPrice,
+                                    widget.product.idocDiscountAmt,
+                                    widget.product.idocNet,
+                                    widget.product.idocType,
+                                    widget.product.startDate,
+                                    widget.product.endDate,
+                                    widget.product.availablePurchases,
+                                    widget.product.createdAt,
+                                    widget.product.updatedAt,
+                                    1,
+                                    true);
+                                Get.find<RealmController>().addItem(basketItem);
+                              } else {
+                                BasketItem? basketItem =
+                                    Get.find<RealmController>().getFavoriteItem(
+                                        Get.find<AuthController>()
+                                            .currentUser
+                                            .value!
+                                            .email,
+                                        widget.product.id);
+                                if (basketItem != null) {
+                                  Get.find<RealmController>()
+                                      .deleteItem(basketItem);
+                                }
+                              }
                             });
                           },
                           icon: Icon(
@@ -200,7 +338,7 @@ class _BigProductCardState extends State<BigProductCard> {
                                 : CupertinoIcons.heart_fill,
                             fill: 1,
                             weight: 1,
-                            color: favorited ? Colors.red : Colors.black,
+                            color: favorited ? errorColor : Colors.black,
                           )),
                     ),
                   ),
@@ -238,18 +376,35 @@ class _BigProductCardState extends State<BigProductCard> {
                       children: [
                         Text(widget.product.name,
                             style: Theme.of(context).textTheme.titleLarge),
-                        RatingBarIndicator(
-                          itemSize: 16,
-                          itemBuilder: (ctx, i) => const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                          ),
-                          rating: 3.5,
-                        )
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(widget.product.spId),
+                    MediaQuery.removePadding(
+                        context: context,
+                        child: TextButton(
+                            style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                tapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap),
+                            onPressed: () {
+                              if (widget.provider != null) {
+                                String branch = GoRouter.of(context)
+                                    .routeInformationProvider
+                                    .value
+                                    .uri
+                                    .pathSegments[0];
+
+                                context.push(
+                                    '/$branch/clinic/${widget.provider!.id}');
+                              }
+                            },
+                            child: Text(
+                              widget.product.spId,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(color: primaryColor),
+                            ))),
                     const SizedBox(height: 4),
                     if (widget.provider != null)
                       Row(
@@ -259,7 +414,7 @@ class _BigProductCardState extends State<BigProductCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  '${Get.find<AuthController>().countries!.where((test) => test.id == widget.provider!.countryId).first.arbName}, ${widget.provider!.shortAddress}',
+                                  '${Get.find<AuthController>().countries!.where((test) => test.id == widget.provider!.countryId).first.name}, ${widget.provider!.shortAddress}',
                                   style:
                                       Theme.of(context).textTheme.titleMedium),
                               Text(
@@ -267,8 +422,7 @@ class _BigProductCardState extends State<BigProductCard> {
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleSmall!
-                                      .copyWith(
-                                          color: Colors.grey.darken(0.3))),
+                                      .copyWith(color: Colors.grey)),
                             ],
                           ),
                           IconButton(
@@ -280,20 +434,24 @@ class _BigProductCardState extends State<BigProductCard> {
 
                                 MapUtils.openMap(numbers[0], numbers[1]);
                               },
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.location_pin,
-                                color: secondaryColor.darken(0.5),
+                                color: secondaryColor,
                               ))
                         ],
                       ),
                     const SizedBox(height: 4),
-                    PriceText(
+                    PriceText2(
                       price: double.parse(widget.product.idocPrice),
-                      discount: double.parse(widget.product.idocDiscountAmt),
+                      spPrice: double.parse(widget.product.spTotal),
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge!
-                          .copyWith(color: primaryColor.darken(0.4)),
+                          .copyWith(color: primaryColor),
+                      smallStyle: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(color: Colors.grey),
                     ),
                     const SizedBox(
                       height: 4,

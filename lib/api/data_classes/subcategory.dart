@@ -1,3 +1,6 @@
+import 'package:get/get.dart';
+import 'package:i_doctor/state/language_controller.dart';
+
 class Subcategory {
   final int id;
   final String code;
@@ -26,4 +29,7 @@ class Subcategory {
         updatedAt: data['updated_at'],
         engName: data['EngName']);
   }
+  String get localName => Get.find<LanguageController>().locale.value == "en"
+      ? engName ?? name
+      : name;
 }

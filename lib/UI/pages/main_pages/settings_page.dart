@@ -15,8 +15,8 @@ class SettingsPage extends StatelessWidget {
     SettingsController settingsController = Get.find<SettingsController>();
     AuthController auth = Get.find<AuthController>();
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'الاعدادات',
+      appBar: IAppBar(
+        title: t(context).settings,
         hasBackButton: false,
         toolbarHeight: kToolbarHeight,
       ),
@@ -105,9 +105,7 @@ class SettingsPage extends StatelessWidget {
             const SizedBox(height: 16),
             Material(
               elevation: 2,
-              color: getBlackWhite(context) == black
-                  ? white.darken(0.07)
-                  : black.lighten(0.08),
+              color: getBlackWhite(context) == black ? white : black,
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16), topRight: Radius.circular(16)),
               child: InkWell(
@@ -118,23 +116,21 @@ class SettingsPage extends StatelessWidget {
                 onTap: () {
                   context.go('/settings/faq');
                 },
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ListTile(
                     splashColor: Colors.grey,
                     contentPadding: EdgeInsets.zero,
-                    title: Text('الأسئلة المتكررة'),
-                    leading: Icon(Icons.info_outline),
-                    trailing: Icon(Icons.arrow_forward_ios_rounded),
+                    title: Text(t(context).faq),
+                    leading: const Icon(Icons.info_outline),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded),
                   ),
                 ),
               ),
             ),
             Material(
               elevation: 2,
-              color: getBlackWhite(context) == black
-                  ? white.darken(0.07)
-                  : black.lighten(0.08),
+              color: getBlackWhite(context) == black ? white : black,
               borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(16),
                   bottomRight: Radius.circular(16)),
@@ -146,14 +142,14 @@ class SettingsPage extends StatelessWidget {
                 onTap: () {
                   context.go('/settings/privacy_policy');
                 },
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ListTile(
                     splashColor: Colors.grey,
                     contentPadding: EdgeInsets.zero,
-                    title: Text('سياسة الخصوصية'),
-                    leading: Icon(Icons.privacy_tip_rounded),
-                    trailing: Icon(Icons.arrow_forward_ios_rounded),
+                    title: Text(t(context).privacyPolicy),
+                    leading: const Icon(Icons.privacy_tip_rounded),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded),
                   ),
                 ),
               ),
@@ -167,9 +163,7 @@ class SettingsPage extends StatelessWidget {
                   splashColor: Colors.transparent),
               child: Material(
                 elevation: 2,
-                color: getBlackWhite(context) == black
-                    ? white.darken(0.07)
-                    : black.lighten(0.08),
+                color: getBlackWhite(context) == black ? white : black,
                 borderRadius: BorderRadius.circular(16),
                 child: InkWell(
                   splashColor: primaryColor.withAlpha(50),
@@ -177,7 +171,7 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                   child: Obx(
                     () => ExpansionTile(
-                      title: const Text('تواصل معنا'),
+                      title: Text(t(context).contactUs),
                       leading: const Icon(Icons.send_rounded),
                       trailing: Icon(settingsController.contactExpanded.value
                           ? Icons.keyboard_arrow_up_rounded
@@ -188,9 +182,8 @@ class SettingsPage extends StatelessWidget {
                       children: [
                         Material(
                           elevation: 2,
-                          color: getBlackWhite(context) == black
-                              ? white.darken(0.07)
-                              : black.lighten(0.08),
+                          color:
+                              getBlackWhite(context) == black ? white : black,
                           borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(16),
                               topRight: Radius.circular(16)),
@@ -200,22 +193,23 @@ class SettingsPage extends StatelessWidget {
                                 topLeft: Radius.circular(16),
                                 topRight: Radius.circular(16)),
                             onTap: () {},
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                               child: ListTile(
                                 contentPadding: EdgeInsets.zero,
-                                title: Text('بريد إلكتروني'),
-                                leading: Icon(Icons.mail),
-                                trailing: Icon(Icons.arrow_forward_ios_rounded),
+                                title: Text(t(context).email),
+                                leading: const Icon(Icons.mail),
+                                trailing:
+                                    const Icon(Icons.arrow_forward_ios_rounded),
                               ),
                             ),
                           ),
                         ),
                         Material(
                           elevation: 0,
-                          color: getBlackWhite(context) == black
-                              ? white.darken(0.07)
-                              : black.lighten(0.08),
+                          color:
+                              getBlackWhite(context) == black ? white : black,
                           borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(16),
                               bottomRight: Radius.circular(16)),
@@ -227,14 +221,16 @@ class SettingsPage extends StatelessWidget {
                             onTap: () {
                               context.push('/settings/chat');
                             },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                               child: ListTile(
                                 splashColor: Colors.grey,
                                 contentPadding: EdgeInsets.zero,
-                                title: Text('دردشة خدمة العملاء'),
-                                leading: Icon(Icons.chat_bubble_outline),
-                                trailing: Icon(Icons.arrow_forward_ios_rounded),
+                                title: Text(t(context).customerServiceChat),
+                                leading: const Icon(Icons.chat_bubble_outline),
+                                trailing:
+                                    const Icon(Icons.arrow_forward_ios_rounded),
                               ),
                             ),
                           ),

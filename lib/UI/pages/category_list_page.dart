@@ -30,6 +30,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
   @override
   void initState() {
     super.initState();
+    Get.delete<FilterController>();
     Category? category = (Get.find<CommerceController>().categories ?? [])
         .where((test) => test.id == int.parse(widget.id))
         .firstOrNull;
@@ -40,6 +41,9 @@ class _CategoryListPageState extends State<CategoryListPage> {
         subCategory.where((test) => category.id == test.catId).toList();
     filterController = Get.put(
         FilterController(categoryType: 1, subCategoriesTotal: subCategory));
+    filterController
+        .addProviders(Get.find<CommerceController>().products ?? []);
+
     products = filterController
         .filterProducts(Get.find<CommerceController>().products ?? []);
   }
@@ -63,8 +67,8 @@ class _CategoryListPageState extends State<CategoryListPage> {
         .where((test) => category.id == int.parse(test.code))
         .toList();
     return Scaffold(
-      appBar: const IAppBar(
-        title: "فئة",
+      appBar: IAppBar(
+        title: category.name,
         hasBackButton: true,
       ),
       floatingActionButton: loading
@@ -89,9 +93,9 @@ class _CategoryListPageState extends State<CategoryListPage> {
                   setState(() {});
                 }
               },
-              child: Icon(
+              child: const Icon(
                 Icons.filter_alt,
-                color: secondaryColor.darken(0.5),
+                color: primaryFgColor,
               ),
             ),
       body: loading
@@ -130,7 +134,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                                         color: pageIndex == 0
                                             ? primaryColor
                                             : Colors.grey),
-                                    const Text("الخدمات")
+                                    Text(t(context).services)
                                   ],
                                 ),
                               ),
@@ -158,7 +162,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                                         color: pageIndex == 1
                                             ? primaryColor
                                             : Colors.grey),
-                                    const Text("العيادات")
+                                    Text(t(context).clinics)
                                   ],
                                 ),
                               ),

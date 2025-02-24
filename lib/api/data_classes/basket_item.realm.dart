@@ -33,6 +33,7 @@ class BasketItem extends _BasketItem
     String createdAt,
     String updatedAt,
     int quantity,
+    bool isFavorite,
   ) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'productId', productId);
@@ -57,6 +58,7 @@ class BasketItem extends _BasketItem
     RealmObjectBase.set(this, 'createdAt', createdAt);
     RealmObjectBase.set(this, 'updatedAt', updatedAt);
     RealmObjectBase.set(this, 'quantity', quantity);
+    RealmObjectBase.set(this, 'isFavorite', isFavorite);
   }
 
   BasketItem._();
@@ -189,6 +191,11 @@ class BasketItem extends _BasketItem
   set quantity(int value) => RealmObjectBase.set(this, 'quantity', value);
 
   @override
+  bool get isFavorite => RealmObjectBase.get<bool>(this, 'isFavorite') as bool;
+  @override
+  set isFavorite(bool value) => RealmObjectBase.set(this, 'isFavorite', value);
+
+  @override
   Stream<RealmObjectChanges<BasketItem>> get changes =>
       RealmObjectBase.getChanges<BasketItem>(this);
 
@@ -224,6 +231,7 @@ class BasketItem extends _BasketItem
       'createdAt': createdAt.toEJson(),
       'updatedAt': updatedAt.toEJson(),
       'quantity': quantity.toEJson(),
+      'isFavorite': isFavorite.toEJson(),
     };
   }
 
@@ -255,6 +263,7 @@ class BasketItem extends _BasketItem
         'createdAt': EJsonValue createdAt,
         'updatedAt': EJsonValue updatedAt,
         'quantity': EJsonValue quantity,
+        'isFavorite': EJsonValue isFavorite,
       } =>
         BasketItem(
           fromEJson(id),
@@ -280,6 +289,7 @@ class BasketItem extends _BasketItem
           fromEJson(createdAt),
           fromEJson(updatedAt),
           fromEJson(quantity),
+          fromEJson(isFavorite),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -313,6 +323,7 @@ class BasketItem extends _BasketItem
       SchemaProperty('createdAt', RealmPropertyType.string),
       SchemaProperty('updatedAt', RealmPropertyType.string),
       SchemaProperty('quantity', RealmPropertyType.int),
+      SchemaProperty('isFavorite', RealmPropertyType.bool),
     ]);
   }();
 

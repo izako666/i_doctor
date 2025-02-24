@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
@@ -15,6 +16,7 @@ import 'package:i_doctor/state/realm_controller.dart';
 import 'package:i_doctor/state/settings_controller.dart';
 
 import 'package:intl/date_symbol_data_local.dart' as date_symbol;
+import 'package:logger/logger.dart';
 import 'package:restart_app/restart_app.dart';
 
 class BottomNavPage extends StatefulWidget {
@@ -25,10 +27,12 @@ class BottomNavPage extends StatefulWidget {
   final StatefulNavigationShell shell;
 
   @override
-  State<BottomNavPage> createState() => _BottomNavPageState();
+  State<BottomNavPage> createState() => BottomNavPageState();
 }
 
-class _BottomNavPageState extends State<BottomNavPage> {
+final GlobalKey<BottomNavPageState> bottomNavKey = GlobalKey();
+
+class BottomNavPageState extends State<BottomNavPage> {
   bool loaded = false;
   StreamSubscription<List<ConnectivityResult>>? _subscription;
   bool _isSnackbarVisible = false;
@@ -40,22 +44,29 @@ class _BottomNavPageState extends State<BottomNavPage> {
 
   Future<void> loadAsync() async {
     await date_symbol.initializeDateFormatting('ar', null);
-    try {
-      await LocalDataHandler.initDataHandler();
-    } catch (e) {}
 
     Get.put(SettingsController());
     if (!Get.isRegistered<AuthController>()) {
       Get.put(AuthController());
+      Logger().i("Initializing App: 50%");
     }
     Get.find<AuthController>().loaded.listen((val) async {
-      await Get.find<AuthController>().retrieveSignUpData();
-      CommerceController commerceController = Get.find<CommerceController>();
-      RealmController realmController = Get.put(RealmController());
-      await Get.find<CommerceController>().resyncBasket();
+      try {
+        await Get.find<AuthController>().retrieveSignUpData();
+        Logger().i("Initializing App: 75%");
 
-      loaded = true;
-      setState(() {});
+        CommerceController commerceController = Get.find<CommerceController>();
+        RealmController realmController = Get.put(RealmController());
+        await Get.find<CommerceController>().resyncBasket();
+        Logger().i("Initializing App: 100%");
+
+        loaded = true;
+        setState(() {});
+      } catch (e) {
+        print(e);
+      } finally {
+        FlutterNativeSplash.remove();
+      }
     });
     _monitorInternetConnection();
   }
@@ -75,11 +86,12 @@ class _BottomNavPageState extends State<BottomNavPage> {
       _isSnackbarVisible = true;
       scaffoldMessengerKey.currentState?.showSnackBar(
         SnackBar(
-          content: const Text('لا يوجد اتصال بالإنترنت'),
-          backgroundColor: Colors.red,
+          content: Text(
+              t(scaffoldMessengerKey.currentContext!).noInternetConnection),
+          backgroundColor: errorColor,
           duration: const Duration(days: 1), // Keep visible indefinitely
           action: SnackBarAction(
-            label: 'أعد المحاولة',
+            label: t(scaffoldMessengerKey.currentContext!).tryAgain,
             textColor: Colors.white,
             onPressed: () async {
               Restart.restartApp();
@@ -109,8 +121,8 @@ class _BottomNavPageState extends State<BottomNavPage> {
       body: loaded ? widget.shell : const LoadingIndicator(),
       bottomNavigationBar: BottomNavigationBar(
           elevation: 4,
-          unselectedItemColor: secondaryColor.darken(0.5),
-          selectedItemColor: primaryColor.darken(0.3),
+          unselectedItemColor: secondaryColor,
+          selectedItemColor: primaryColor,
           currentIndex: widget.shell.currentIndex,
           onTap: (int index) {
             if (index == 2) {
@@ -121,15 +133,16 @@ class _BottomNavPageState extends State<BottomNavPage> {
             }
             widget.shell.goBranch(index);
           },
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'الرئيسية'),
-            BottomNavigationBarItem(icon: Icon(Icons.event), label: 'مواعيد'),
+          items: [
             BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_basket), label: 'السلة'),
+                icon: const Icon(Icons.home), label: t(context).main),
             BottomNavigationBarItem(
-                icon: Icon(Icons.local_offer), label: 'تخفيضات'),
+                icon: const Icon(Icons.event), label: t(context).appointments),
             BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: 'الاعدادات'),
+                icon: const Icon(Icons.shopping_basket),
+                label: t(context).basket),
+            BottomNavigationBarItem(
+                icon: const Icon(Icons.settings), label: t(context).settings),
           ]),
     );
   }

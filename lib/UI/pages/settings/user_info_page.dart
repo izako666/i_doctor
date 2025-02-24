@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,8 @@ import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/router.dart';
 import 'package:i_doctor/state/auth_controller.dart';
+import 'package:i_doctor/state/language_controller.dart';
+import 'package:i_doctor/state/realm_controller.dart';
 
 class UserInformationPage extends StatelessWidget {
   const UserInformationPage({super.key});
@@ -17,8 +20,8 @@ class UserInformationPage extends StatelessWidget {
     AuthController auth = Get.find<AuthController>();
 
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'معلوماتي',
+      appBar: IAppBar(
+        title: t(context).myInfo,
         hasBackButton: true,
       ),
       body: Stack(
@@ -36,11 +39,37 @@ class UserInformationPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "الاسم",
+                        t(context).clientIdNumber,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium!
-                            .copyWith(color: Colors.grey.darken(0.3)),
+                            .copyWith(color: Colors.grey),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        auth.currentUser.value!.id.toString(),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      )
+                    ],
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        t(context).name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelMedium!
+                            .copyWith(color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 4,
@@ -54,9 +83,7 @@ class UserInformationPage extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(
-                    endIndent: 64,
-                  ),
+                  child: Divider(),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -64,11 +91,11 @@ class UserInformationPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "البريد الإلكتروني",
+                        t(context).email,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium!
-                            .copyWith(color: Colors.grey.darken(0.3)),
+                            .copyWith(color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 4,
@@ -82,9 +109,7 @@ class UserInformationPage extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(
-                    endIndent: 64,
-                  ),
+                  child: Divider(),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -92,11 +117,11 @@ class UserInformationPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "الجنسية",
+                        t(context).nationality,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium!
-                            .copyWith(color: Colors.grey.darken(0.3)),
+                            .copyWith(color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 4,
@@ -110,9 +135,7 @@ class UserInformationPage extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(
-                    endIndent: 64,
-                  ),
+                  child: Divider(),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -120,11 +143,11 @@ class UserInformationPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "رقم الهاتف",
+                        t(context).phoneNumber,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium!
-                            .copyWith(color: Colors.grey.darken(0.3)),
+                            .copyWith(color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 4,
@@ -138,9 +161,7 @@ class UserInformationPage extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(
-                    endIndent: 64,
-                  ),
+                  child: Divider(),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -148,11 +169,11 @@ class UserInformationPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "المدينة",
+                        t(context).city,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium!
-                            .copyWith(color: Colors.grey.darken(0.3)),
+                            .copyWith(color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 4,
@@ -164,6 +185,87 @@ class UserInformationPage extends StatelessWidget {
                     ],
                   ),
                 ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0, left: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        t(context).language,
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Obx(
+                        () => DropdownButton2<String>(
+                          value: Get.find<LanguageController>().locale.value,
+                          items: Get.find<LanguageController>()
+                              .localeLangMap
+                              .keys
+                              .map((k) => DropdownMenuItem(
+                                  value: k,
+                                  child: Text(Get.find<LanguageController>()
+                                      .localeLangMap[k]!)))
+                              .toList(),
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          onChanged: (v) {
+                            if (v != null) {
+                              Get.find<LanguageController>().setLocale(v);
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Divider(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 0),
+                        onTap: () {
+                          RealmController realmController =
+                              Get.find<RealmController>();
+                          bool isEmpty = realmController
+                              .getFavoriteItems(Get.find<AuthController>()
+                                  .currentUser
+                                  .value!
+                                  .email)
+                              .isEmpty;
+                          if (isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content:
+                                    Text(t(context).noProductsFavoriteList)));
+                            return;
+                          }
+                          context.go("/feed/user_info/favorites");
+                        },
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 12,
+                        ),
+                        title: Text(
+                          t(context).favoritedProductsList,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 100)
               ],
             ),
           ),
@@ -171,10 +273,10 @@ class UserInformationPage extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: WideButton(
                   title: Text(
-                    "تسجيل الخروخ",
+                    t(context).signOut,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  color: Colors.red.lighten(0.01),
+                  color: errorColor,
                   onTap: () {
                     showDialog(
                       context: context,
@@ -182,7 +284,7 @@ class UserInformationPage extends StatelessWidget {
                         contentPadding: EdgeInsets.zero,
                         content: Container(
                           decoration: BoxDecoration(
-                              color: secondaryColor.lighten(0.1),
+                              color: backgroundColor,
                               borderRadius: BorderRadius.circular(16)),
                           width: getScreenWidth(ctx) * 0.5,
                           height: getScreenWidth(ctx) * 0.5,
@@ -192,7 +294,7 @@ class UserInformationPage extends StatelessWidget {
                                 height: 32,
                               ),
                               Text(
-                                'هل انت متاكد؟',
+                                t(context).areYouSure,
                                 style:
                                     Theme.of(context).textTheme.headlineSmall,
                               ),
@@ -212,13 +314,11 @@ class UserInformationPage extends StatelessWidget {
                                                         Radius.circular(16))),
                                             child: Center(
                                                 child: Text(
-                                              'ابطال',
+                                              t(context).cancel,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyLarge!
-                                                  .copyWith(
-                                                      color: Colors.red
-                                                          .lighten(0.1)),
+                                                  .copyWith(color: errorColor),
                                             )),
                                           ))),
                                   Expanded(
@@ -245,13 +345,12 @@ class UserInformationPage extends StatelessWidget {
                                                         Radius.circular(16))),
                                             child: Center(
                                                 child: Text(
-                                              'التاكيد',
+                                              t(context).confirm,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyLarge!
                                                   .copyWith(
-                                                      color: Colors.green
-                                                          .lighten(0.1)),
+                                                      color: successColor),
                                             )),
                                           )))
                                 ],

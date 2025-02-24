@@ -25,6 +25,7 @@ class FeedController extends GetxController {
                 subCategoriesTotal:
                     Get.find<CommerceController>().subcategories),
             permanent: false);
+        controller!.addProviders(Get.find<CommerceController>().products);
         controller!.onInit();
         openFeedView.value = false;
       }

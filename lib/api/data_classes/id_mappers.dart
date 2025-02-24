@@ -1,4 +1,7 @@
 // Country Data Model
+import 'package:get/get.dart';
+import 'package:i_doctor/state/language_controller.dart';
+
 class Country {
   final int id;
   final String code;
@@ -43,6 +46,9 @@ class Country {
       'deleted_at': deletedAt?.toIso8601String(),
     };
   }
+
+  String get name =>
+      Get.find<LanguageController>().locale.value == "en" ? engName : arbName;
 }
 
 // City Data Model
@@ -94,6 +100,9 @@ class City {
       'deleted_at': deletedAt?.toIso8601String(),
     };
   }
+
+  String get name =>
+      Get.find<LanguageController>().locale.value == "en" ? engName : arbName;
 }
 
 // Nationality Data Model
@@ -141,6 +150,10 @@ class Nationality {
       'deleted_at': deletedAt?.toIso8601String(),
     };
   }
+
+  String get localName => Get.find<LanguageController>().locale.value == "en"
+      ? engName ?? name
+      : name;
 }
 
 // Gender Data Model
@@ -188,6 +201,10 @@ class Gender {
       'deleted_at': deletedAt?.toIso8601String(),
     };
   }
+
+  String get localName => Get.find<LanguageController>().locale.value == "en"
+      ? name
+      : arbName ?? name;
 }
 
 class Provider {

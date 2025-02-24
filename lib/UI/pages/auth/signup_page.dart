@@ -61,8 +61,8 @@ class _SignupPageState extends State<SignupPage> {
           auth.nationalityId.value = -1;
         },
         child: Scaffold(
-          appBar: const IAppBar(
-            title: "انشاء حساب جديد",
+          appBar: IAppBar(
+            title: t(context).createNewAccount,
             hasBackButton: true,
           ),
           body: Stack(
@@ -76,14 +76,6 @@ class _SignupPageState extends State<SignupPage> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         const SizedBox(
-                          height: 96,
-                        ),
-                        Image.asset(
-                          'assets/images/dummy-logo.png',
-                          width: 64,
-                          height: 64,
-                        ),
-                        const SizedBox(
                           height: 32,
                         ),
                         SizedBox(
@@ -96,8 +88,7 @@ class _SignupPageState extends State<SignupPage> {
                                   children: [
                                     Container(
                                         decoration: BoxDecoration(
-                                            color:
-                                                backgroundColor.lighten(0.05),
+                                            color: backgroundColor,
                                             border: Border.all(),
                                             borderRadius:
                                                 BorderRadius.circular(4)),
@@ -115,9 +106,8 @@ class _SignupPageState extends State<SignupPage> {
                                               child: TextFormField(
                                                 controller:
                                                     auth.firstNameController,
-                                                decoration:
-                                                    const InputDecoration(
-                                                  hintText: 'الاسم',
+                                                decoration: InputDecoration(
+                                                  hintText: t(context).name,
                                                   border: InputBorder.none,
                                                   isDense: true,
                                                 ),
@@ -135,7 +125,7 @@ class _SignupPageState extends State<SignupPage> {
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodySmall!
-                                              .copyWith(color: Colors.red),
+                                              .copyWith(color: errorColor),
                                         ),
                                       ),
                                   ],
@@ -147,8 +137,7 @@ class _SignupPageState extends State<SignupPage> {
                                   children: [
                                     Container(
                                         decoration: BoxDecoration(
-                                            color:
-                                                backgroundColor.lighten(0.05),
+                                            color: backgroundColor,
                                             border: Border.all(),
                                             borderRadius:
                                                 BorderRadius.circular(4)),
@@ -166,9 +155,9 @@ class _SignupPageState extends State<SignupPage> {
                                               child: TextFormField(
                                                 controller:
                                                     auth.lastNameController,
-                                                decoration:
-                                                    const InputDecoration(
-                                                  hintText: 'الكنية',
+                                                decoration: InputDecoration(
+                                                  hintText:
+                                                      t(context).familyName,
                                                   border: InputBorder.none,
                                                   isDense: true,
                                                 ),
@@ -186,7 +175,7 @@ class _SignupPageState extends State<SignupPage> {
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodySmall!
-                                              .copyWith(color: Colors.red),
+                                              .copyWith(color: errorColor),
                                         ),
                                       ),
                                   ],
@@ -201,7 +190,7 @@ class _SignupPageState extends State<SignupPage> {
                             children: [
                               Container(
                                   decoration: BoxDecoration(
-                                      color: backgroundColor.lighten(0.05),
+                                      color: backgroundColor,
                                       border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
                                   height: 40,
@@ -218,8 +207,8 @@ class _SignupPageState extends State<SignupPage> {
                                             bottom: 0),
                                         child: TextFormField(
                                           controller: auth.sEmailController,
-                                          decoration: const InputDecoration(
-                                            hintText: 'بريد إلكتروني',
+                                          decoration: InputDecoration(
+                                            hintText: t(context).email,
                                             border: InputBorder.none,
                                             isDense: true,
                                           ),
@@ -237,7 +226,7 @@ class _SignupPageState extends State<SignupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
-                                        .copyWith(color: Colors.red),
+                                        .copyWith(color: errorColor),
                                   ),
                                 ),
                             ],
@@ -261,8 +250,9 @@ class _SignupPageState extends State<SignupPage> {
                                                 getScreenHeight(context) * 0.6,
                                             child: SfDateRangePicker(
                                               view: DateRangePickerView.decade,
-                                              confirmText: 'تم',
-                                              cancelText: 'ابطال',
+                                              confirmText:
+                                                  t(context).confirmSmall,
+                                              cancelText: t(context).cancel,
                                               showActionButtons: true,
                                               // onSelectionChanged: (args) {
                                               //   auth.dateOfBirthDate =
@@ -288,7 +278,7 @@ class _SignupPageState extends State<SignupPage> {
                                 },
                                 child: Container(
                                     decoration: BoxDecoration(
-                                        color: backgroundColor.lighten(0.05),
+                                        color: backgroundColor,
                                         border: Border.all(),
                                         borderRadius: BorderRadius.circular(4)),
                                     height: 40,
@@ -310,8 +300,8 @@ class _SignupPageState extends State<SignupPage> {
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      const Text(
-                                                          'تاريخ الميلاد'),
+                                                      Text(
+                                                          t(context).birthdate),
                                                       Text(auth
                                                           .dateOfBirth.value)
                                                     ],
@@ -330,7 +320,7 @@ class _SignupPageState extends State<SignupPage> {
                             children: [
                               Container(
                                   decoration: BoxDecoration(
-                                      color: backgroundColor.lighten(0.05),
+                                      color: backgroundColor,
                                       border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
                                   height: 40,
@@ -352,8 +342,8 @@ class _SignupPageState extends State<SignupPage> {
                                         child: TextFormField(
                                           controller: auth.sPhoneController,
                                           keyboardType: TextInputType.number,
-                                          decoration: const InputDecoration(
-                                            hintText: "رقم التليفون",
+                                          decoration: InputDecoration(
+                                            hintText: t(context).phoneNumber,
                                             border: InputBorder.none,
                                           ),
                                           textDirection: TextDirection.ltr,
@@ -371,7 +361,7 @@ class _SignupPageState extends State<SignupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
-                                        .copyWith(color: Colors.red),
+                                        .copyWith(color: errorColor),
                                   ),
                                 ),
                             ],
@@ -385,14 +375,14 @@ class _SignupPageState extends State<SignupPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text("الجنسية"),
+                              Text(t(context).nationality),
                               getRepo.Obx(
                                 () => DropdownButton2<int>(
                                   value: auth.nationalityId.value == -1
                                       ? null
                                       : auth.nationalityId.value,
                                   underline: const SizedBox(),
-                                  hint: const Text('اختر الجنسية'),
+                                  hint: Text(t(context).selectNationality),
                                   dropdownStyleData: DropdownStyleData(
                                     maxHeight: getScreenHeight(context) * 0.3,
                                   ),
@@ -401,7 +391,7 @@ class _SignupPageState extends State<SignupPage> {
                                       width: getScreenWidth(context) * 0.8,
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                          color: backgroundColor.lighten(0.05),
+                                          color: backgroundColor,
                                           border: Border.all(),
                                           borderRadius:
                                               BorderRadius.circular(4))),
@@ -409,7 +399,7 @@ class _SignupPageState extends State<SignupPage> {
                                       .map((Nationality nationality) {
                                     return DropdownMenuItem<int>(
                                       value: nationality.id,
-                                      child: Text(nationality.name),
+                                      child: Text(nationality.localName),
                                     );
                                   }).toList(),
                                   onChanged: (int? nationalityId) {
@@ -427,7 +417,7 @@ class _SignupPageState extends State<SignupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
-                                        .copyWith(color: Colors.red),
+                                        .copyWith(color: errorColor),
                                   ),
                                 ),
                             ],
@@ -441,14 +431,14 @@ class _SignupPageState extends State<SignupPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text("البلد"),
+                              Text(t(context).country),
                               getRepo.Obx(
                                 () => DropdownButton2<int>(
                                   value: auth.countryId.value == -1
                                       ? null
                                       : auth.countryId.value,
                                   underline: const SizedBox(),
-                                  hint: const Text('اختر البلد'),
+                                  hint: Text(t(context).selectCountry),
                                   dropdownStyleData: DropdownStyleData(
                                     maxHeight: getScreenHeight(context) * 0.3,
                                   ),
@@ -457,14 +447,14 @@ class _SignupPageState extends State<SignupPage> {
                                       width: getScreenWidth(context) * 0.8,
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                          color: backgroundColor.lighten(0.05),
+                                          color: backgroundColor,
                                           border: Border.all(),
                                           borderRadius:
                                               BorderRadius.circular(4))),
                                   items: auth.countries!.map((Country country) {
                                     return DropdownMenuItem<int>(
                                       value: country.id,
-                                      child: Text(country.arbName),
+                                      child: Text(country.name),
                                     );
                                   }).toList(),
                                   onChanged: (int? selectedCountry) {
@@ -483,7 +473,7 @@ class _SignupPageState extends State<SignupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
-                                        .copyWith(color: Colors.red),
+                                        .copyWith(color: errorColor),
                                   ),
                                 ),
                             ],
@@ -498,13 +488,13 @@ class _SignupPageState extends State<SignupPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text("المدينة"),
+                                Text(t(context).city),
                                 getRepo.Obx(
                                   () => DropdownButton2<int>(
                                     value: auth.cityId.value == -1
                                         ? null
                                         : auth.cityId.value,
-                                    hint: const Text('اختر المدينة'),
+                                    hint: Text(t(context).selectCity),
                                     underline: const SizedBox(),
                                     dropdownStyleData: DropdownStyleData(
                                       maxHeight: getScreenHeight(context) * 0.3,
@@ -514,15 +504,14 @@ class _SignupPageState extends State<SignupPage> {
                                         width: getScreenWidth(context) * 0.8,
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                            color:
-                                                backgroundColor.lighten(0.05),
+                                            color: backgroundColor,
                                             border: Border.all(),
                                             borderRadius:
                                                 BorderRadius.circular(4))),
                                     items: filteredCities!.map((City city) {
                                       return DropdownMenuItem<int>(
                                         value: city.id,
-                                        child: Text(city.arbName),
+                                        child: Text(city.name),
                                       );
                                     }).toList(),
                                     onChanged: (int? selectedCity) {
@@ -539,7 +528,7 @@ class _SignupPageState extends State<SignupPage> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall!
-                                          .copyWith(color: Colors.red),
+                                          .copyWith(color: errorColor),
                                     ),
                                   ),
                               ],
@@ -554,13 +543,13 @@ class _SignupPageState extends State<SignupPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text("الجنس"),
+                              Text(t(context).gender),
                               getRepo.Obx(
                                 () => DropdownButton2<int>(
                                   value: auth.genderId.value == -1
                                       ? null
                                       : auth.genderId.value,
-                                  hint: const Text('اختر الجنس'),
+                                  hint: Text(t(context).selectGender),
                                   underline: const SizedBox(),
                                   dropdownStyleData: DropdownStyleData(
                                     maxHeight: getScreenHeight(context) * 0.3,
@@ -570,14 +559,14 @@ class _SignupPageState extends State<SignupPage> {
                                       width: getScreenWidth(context) * 0.8,
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                          color: backgroundColor.lighten(0.05),
+                                          color: backgroundColor,
                                           border: Border.all(),
                                           borderRadius:
                                               BorderRadius.circular(4))),
                                   items: auth.genders!.map((Gender gender) {
                                     return DropdownMenuItem<int>(
                                       value: gender.id,
-                                      child: Text(gender.name),
+                                      child: Text(gender.localName),
                                     );
                                   }).toList(),
                                   onChanged: (int? selectedGender) {
@@ -594,7 +583,7 @@ class _SignupPageState extends State<SignupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
-                                        .copyWith(color: Colors.red),
+                                        .copyWith(color: errorColor),
                                   ),
                                 ),
                             ],
@@ -607,7 +596,7 @@ class _SignupPageState extends State<SignupPage> {
                             children: [
                               Container(
                                   decoration: BoxDecoration(
-                                      color: backgroundColor.lighten(0.05),
+                                      color: backgroundColor,
                                       border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
                                   height: 40,
@@ -637,8 +626,8 @@ class _SignupPageState extends State<SignupPage> {
                                           controller: auth.sPasswordController,
                                           obscureText:
                                               !auth.showSPassword.value,
-                                          decoration: const InputDecoration(
-                                            hintText: 'كلمة المرور',
+                                          decoration: InputDecoration(
+                                            hintText: t(context).password,
                                             border: InputBorder.none,
                                             isDense: true,
                                           ),
@@ -657,7 +646,7 @@ class _SignupPageState extends State<SignupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
-                                        .copyWith(color: Colors.red),
+                                        .copyWith(color: errorColor),
                                   ),
                                 ),
                             ],
@@ -670,7 +659,7 @@ class _SignupPageState extends State<SignupPage> {
                             children: [
                               Container(
                                   decoration: BoxDecoration(
-                                      color: backgroundColor.lighten(0.05),
+                                      color: backgroundColor,
                                       border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
                                   height: 40,
@@ -700,8 +689,8 @@ class _SignupPageState extends State<SignupPage> {
                                           controller: auth.rePasswordController,
                                           obscureText:
                                               !auth.showRePassword.value,
-                                          decoration: const InputDecoration(
-                                            hintText: 'تكرار كلمة المرور',
+                                          decoration: InputDecoration(
+                                            hintText: t(context).repeatPassword,
                                             border: InputBorder.none,
                                             isDense: true,
                                           ),
@@ -720,7 +709,7 @@ class _SignupPageState extends State<SignupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall!
-                                        .copyWith(color: Colors.red),
+                                        .copyWith(color: errorColor),
                                   ),
                                 ),
                             ],
@@ -737,13 +726,13 @@ class _SignupPageState extends State<SignupPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: WideButton(
-                      title: Text('تم',
+                      title: Text(t(context).signup,
                           style: Theme.of(context).textTheme.titleLarge),
                       disabled: loadingSignUpButton,
                       onTap: () async {
                         loadingSignUpButton = true;
                         setState(() {});
-                        bool isValid = auth.validateSignup();
+                        bool isValid = auth.validateSignup(context);
 
                         if (isValid) {
                           Response resp = await register({
@@ -764,7 +753,7 @@ class _SignupPageState extends State<SignupPage> {
                             setState(() {});
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('نجاح')));
+                                  SnackBar(content: Text(t(context).success)));
                             }
 
                             Future.delayed(const Duration(seconds: 2), () {
@@ -776,17 +765,16 @@ class _SignupPageState extends State<SignupPage> {
                               resp.data['data']['email'] != null) {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      backgroundColor: Colors.red,
-                                      content:
-                                          Text('ان بريد إلكتروني مستعمل')));
+                                  SnackBar(
+                                      backgroundColor: errorColor,
+                                      content: Text(t(context).emailUsed)));
                             }
                           } else {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      backgroundColor: Colors.red,
-                                      content: Text('حدث خطأ ما')));
+                                  SnackBar(
+                                      backgroundColor: errorColor,
+                                      content: Text(t(context).errorOccured)));
                             }
                           }
                         }

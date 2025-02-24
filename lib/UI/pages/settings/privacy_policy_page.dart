@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
+import 'package:i_doctor/portable_api/helper.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       appBar: IAppBar(
-        title: 'سياسة الخصوصية',
+        title: t(context).privacyPolicy,
         hasBackButton: true,
       ),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         child: Column(
           children: [
             Padding(

@@ -72,7 +72,7 @@ class _LeaveReviewDialogState extends State<LeaveReviewDialog> {
             width: getScreenWidth(context) * 0.6,
             height: getScreenWidth(context) * 0.5,
             decoration: BoxDecoration(
-              color: backgroundColor.lighten(0.05),
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: TextField(
@@ -85,8 +85,9 @@ class _LeaveReviewDialogState extends State<LeaveReviewDialog> {
             radius: const BorderRadius.only(
                 bottomLeft: Radius.circular(16),
                 bottomRight: Radius.circular(16)),
-            color: secondaryColor.darken(0.2),
-            title: Text('ثبت', style: Theme.of(context).textTheme.titleLarge),
+            color: secondaryColor,
+            title: Text(t(context).confirmSmall,
+                style: Theme.of(context).textTheme.titleLarge),
             onTap: () {
               context.pop();
             })

@@ -45,8 +45,8 @@ class _BasketPageState extends State<BasketPage> {
       basketList = realmController.getItems(auth.currentUser.value!.email);
     }
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'السلة',
+      appBar: IAppBar(
+        title: t(context).basket,
         toolbarHeight: kToolbarHeight,
         hasBackButton: false,
       ),
@@ -55,7 +55,7 @@ class _BasketPageState extends State<BasketPage> {
           : Get.find<AuthController>().currentUser.value == null
               ? Center(
                   child: Text(
-                    'يرجى تسجيل الدخول أولا',
+                    t(context).pleaseLoginFirst,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                 )
@@ -101,7 +101,7 @@ class _BasketPageState extends State<BasketPage> {
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: WideButton(
-                            title: Text("الي الدفع",
+                            title: Text(t(context).toPayment,
                                 style: Theme.of(context).textTheme.titleLarge),
                             disabled: basketList.isEmpty,
                             onTap: () {

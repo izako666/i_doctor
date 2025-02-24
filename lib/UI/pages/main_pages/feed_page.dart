@@ -16,6 +16,8 @@ import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/feed_controller.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:i_doctor/state/filter_controller.dart';
+import 'package:i_doctor/state/language_controller.dart';
+import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
 import 'package:skeletonizer/skeletonizer.dart';
@@ -31,12 +33,14 @@ class _FeedPageState extends State<FeedPage> {
   bool loading = false;
 
   List<Product> products = [];
+  List<Product> adBarProducts = [];
 
   @override
   void initState() {
     super.initState();
     CommerceController commerceController = Get.find<CommerceController>();
     products = commerceController.products.toList();
+    adBarProducts = getRecentProducts(products);
   }
 
   @override
@@ -72,9 +76,9 @@ class _FeedPageState extends State<FeedPage> {
                     });
                   }
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.filter_alt,
-                  color: secondaryColor.darken(0.5),
+                  color: primaryFgColor,
                 ),
               )
             : null,
@@ -171,26 +175,30 @@ class _FeedPageState extends State<FeedPage> {
                                 width: 8,
                               ),
                               if (controller.openFeedView.value)
-                                Material(
-                                  borderRadius: BorderRadius.circular(24),
-                                  elevation: 0,
-                                  color: Colors.transparent,
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
                                   child: InkWell(
                                       borderRadius: BorderRadius.circular(24),
                                       onTap: () {
-                                        context.push('/feed/notifications');
+                                        LanguageController lang =
+                                            Get.find<LanguageController>();
+                                        lang.locale.value == "en"
+                                            ? lang.setLocale('ar')
+                                            : lang.setLocale('en');
                                       },
                                       splashFactory: InkRipple.splashFactory,
-                                      child: Container(
-                                          width: 36,
-                                          height: 36,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(24),
-                                          ),
-                                          child: const Icon(
-                                            Icons.notifications,
-                                          ))),
+                                      child: Obx(
+                                        () => Text(
+                                          languageFlags[
+                                              Get.find<LanguageController>()
+                                                  .locale
+                                                  .value]!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge,
+                                        ),
+                                      )),
                                 )
                             ],
                           ),
@@ -222,35 +230,20 @@ class _FeedPageState extends State<FeedPage> {
                                         left: 8, right: 8),
                                     child: Column(children: [
                                       const SizedBox(height: 16),
-                                      CarouselAdBanner(
-                                        onTap: () {
-                                          context.push('/feed/advert/1234');
-                                        },
-                                        skeleton: controller.skeleton.value,
-                                        blackWhite: blackWhite,
-                                        banners: [
-                                          AdBanner(
-                                              url:
-                                                  'assets/images/placeholder.png'),
-                                          AdBanner(
-                                              url:
-                                                  'assets/images/placeholder.png'),
-                                          AdBanner(
-                                              url:
-                                                  'assets/images/placeholder.png'),
-                                          AdBanner(
-                                              url:
-                                                  'assets/images/placeholder.png'),
-                                          AdBanner(
-                                              url:
-                                                  'assets/images/placeholder.png'),
-                                          AdBanner(
-                                              url:
-                                                  'assets/images/placeholder.png'),
-                                        ],
-                                        autoPlay: true,
-                                        showIndicator: true,
-                                      ),
+                                      if (adBarProducts.isNotEmpty)
+                                        CarouselAdBanner(
+                                          onTap: () {
+                                            //   context.push('/feed/advert/1234');
+                                          },
+                                          skeleton: controller.skeleton.value,
+                                          blackWhite: blackWhite,
+                                          banners: adBarProducts
+                                              .map((prod) => AdBanner(
+                                                  url: prod.photo, id: prod.id))
+                                              .toList(),
+                                          autoPlay: true,
+                                          showIndicator: true,
+                                        ),
                                       const SizedBox(height: 16),
                                       Material(
                                         borderRadius: BorderRadius.circular(16),
@@ -261,8 +254,8 @@ class _FeedPageState extends State<FeedPage> {
                                           height: 96,
                                           decoration: BoxDecoration(
                                             color: blackWhite == black
-                                                ? white.darken(0.07)
-                                                : black.lighten(0.08),
+                                                ? white
+                                                : black,
                                             borderRadius:
                                                 BorderRadius.circular(16),
                                           ),
@@ -319,7 +312,7 @@ class _FeedPageState extends State<FeedPage> {
                                                       .symmetric(
                                                       horizontal: 8.0),
                                                   child: Text(
-                                                    'عيادات',
+                                                    t(context).clinics,
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .titleLarge,
@@ -339,15 +332,14 @@ class _FeedPageState extends State<FeedPage> {
                                                     context
                                                         .push('/feed/clinics');
                                                   },
-                                                  child: Text('إظهار الكل',
+                                                  child: Text(
+                                                      t(context).showAll,
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .bodyMedium!
                                                           .copyWith(
                                                               color:
-                                                                  secondaryColor
-                                                                      .darken(
-                                                                          0.5))),
+                                                                  secondaryColor)),
                                                 )
                                               ],
                                             ),
@@ -391,7 +383,8 @@ class _FeedPageState extends State<FeedPage> {
                                               child: Align(
                                                 alignment:
                                                     Alignment.centerRight,
-                                                child: Text('كمان عروض',
+                                                child: Text(
+                                                    t(context).moreOffers,
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .titleLarge),
@@ -457,6 +450,32 @@ class _FeedPageState extends State<FeedPage> {
       );
     });
   }
+}
+
+List<Product> getRecentProducts(List<Product> products) {
+  // Get the current date
+  DateTime now = DateTime.now();
+
+  // Parse and filter products based on startDate
+  List<Product> recentProducts = products.where((product) {
+    DateTime startDate;
+    try {
+      startDate = DateTime.parse(product.startDate);
+    } catch (e) {
+      return false; // Skip invalid dates
+    }
+
+    return startDate.isAfter(now.subtract(const Duration(days: 7)));
+  }).toList();
+
+  // Sort products by startDate in descending order (most recent first)
+  recentProducts.sort((a, b) {
+    DateTime dateA = DateTime.parse(a.startDate);
+    DateTime dateB = DateTime.parse(b.startDate);
+    return dateB.compareTo(dateA); // Descending order
+  });
+
+  return recentProducts;
 }
 
 class ClinicButton extends StatelessWidget {
@@ -629,9 +648,7 @@ class ElevatedContainer extends StatelessWidget {
             width: width ?? getScreenWidth(context),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: blackWhite == black
-                  ? white.darken(0.07)
-                  : black.lighten(0.08),
+              color: blackWhite == black ? white : black,
             ),
             child: Column(
                 crossAxisAlignment: crossAxisAlignment,
@@ -660,7 +677,7 @@ class DealsBox extends StatelessWidget {
         width: getScreenWidth(context),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: blackWhite == black ? white.darken(0.07) : black.lighten(0.08),
+          color: blackWhite == black ? white : black,
         ),
         child: Column(
           children: [
@@ -670,7 +687,7 @@ class DealsBox extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                    'عروض',
+                    t(context).offers,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
@@ -689,11 +706,11 @@ class DealsBox extends StatelessWidget {
 
                     context.push('/$branch/advert_list/123');
                   },
-                  child: Text('إظهار الكل',
+                  child: Text(t(context).showAll,
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium!
-                          .copyWith(color: secondaryColor.darken(0.5))),
+                          .copyWith(color: secondaryColor)),
                 )
               ],
             ),
@@ -719,10 +736,10 @@ class DealsBox extends StatelessWidget {
                 height: 180,
                 infinityScroll: false,
                 banners: [
-                  AdBanner(url: 'assets/images/placeholder.png'),
-                  AdBanner(url: 'assets/images/placeholder.png'),
-                  AdBanner(url: 'assets/images/placeholder.png'),
-                  AdBanner(url: 'assets/images/placeholder.png'),
+                  AdBanner(url: 'assets/images/placeholder.png', id: 1),
+                  AdBanner(url: 'assets/images/placeholder.png', id: 1),
+                  AdBanner(url: 'assets/images/placeholder.png', id: 1),
+                  AdBanner(url: 'assets/images/placeholder.png', id: 1),
                 ],
                 autoPlay: false,
                 showIndicator: false,
@@ -767,8 +784,10 @@ class CarouselAdBanner extends StatefulWidget {
 
 class AdBanner {
   final String url;
+  final int id;
+  final bool bannerClickable;
 
-  AdBanner({required this.url});
+  AdBanner({this.bannerClickable = true, required this.url, required this.id});
 }
 
 class _CarouselAdBannerState extends State<CarouselAdBanner> {
@@ -800,7 +819,7 @@ class _CarouselAdBannerState extends State<CarouselAdBanner> {
             initialPage: 0,
             enableInfiniteScroll: widget.infinityScroll,
             autoPlay: widget.autoPlay,
-            autoPlayInterval: const Duration(seconds: 3),
+            autoPlayInterval: const Duration(seconds: 5),
             onPageChanged: (index, reason) {
               currentPage = index;
               setState(() {});
@@ -889,10 +908,15 @@ class _BannerImageState extends State<BannerImage> {
       child: Material(
           color: Colors.transparent,
           child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              splashColor: widget.widget.blackWhite.inverse.withAlpha(60),
-              splashFactory: InkRipple.splashFactory,
-              onTap: widget.widget.onTap)),
+            borderRadius: BorderRadius.circular(16),
+            splashColor: widget.widget.blackWhite.inverse.withAlpha(60),
+            splashFactory: InkRipple.splashFactory,
+            onTap: () {
+              if (widget.banner.bannerClickable) {
+                context.go("/feed/advert/${widget.banner.id}");
+              }
+            },
+          )),
     );
   }
 }
@@ -920,24 +944,21 @@ class AdvertFilterTab extends StatelessWidget {
         ]),
         child: Material(
             elevation: 0,
-            color:
-                blackWhite == black ? white.darken(0.07) : black.lighten(0.08),
+            color: blackWhite == black ? white : black,
             child: Ink(
-              decoration: BoxDecoration(
-                  color: blackWhite == black
-                      ? white.darken(0.07)
-                      : black.lighten(0.08)),
+              decoration:
+                  BoxDecoration(color: blackWhite == black ? white : black),
               child: InkWell(
                 splashFactory: InkRipple.splashFactory,
                 onTap: () {},
-                child: const SizedBox(
+                child: SizedBox(
                     width: 128,
                     height: 40,
                     child: Align(
                         alignment: Alignment.centerRight,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 4.0),
-                          child: Text('عرض جيدد'),
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: Text(t(context).goodDeal),
                         ))),
               ),
             )),
@@ -1026,13 +1047,16 @@ class SearchBox extends StatelessWidget {
             Flexible(
               flex: 5,
               child: SizedBox(
-                height: 48,
                 child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
                   controller: controller.searchController,
                   focusNode: controller.node,
                   onSubmitted: onSubmit,
                   decoration: InputDecoration(
-                    icon: const Icon(Icons.search),
+                    icon: const Icon(
+                      Icons.search,
+                      size: 24,
+                    ),
                     border: InputBorder.none,
                     errorBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -1053,223 +1077,6 @@ class SearchBox extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-const Duration _kUnconfirmedSplashDuration = Duration(seconds: 1);
-const Duration _kSplashFadeDuration = Duration(seconds: 1000);
-
-const double _kSplashInitialSize = 0.0; // logical pixels
-const double _kSplashConfirmedVelocity = 0.5; // logical pixels per millisecond
-
-RectCallback? _getClipCallback(
-    RenderBox referenceBox, bool containedInkWell, RectCallback? rectCallback) {
-  if (rectCallback != null) {
-    assert(containedInkWell);
-    return rectCallback;
-  }
-  if (containedInkWell) {
-    return () => Offset.zero & referenceBox.size;
-  }
-  return null;
-}
-
-double _getTargetRadius(RenderBox referenceBox, bool containedInkWell,
-    RectCallback? rectCallback, Offset position) {
-  if (containedInkWell) {
-    final Size size =
-        rectCallback != null ? rectCallback().size : referenceBox.size;
-    return _getSplashRadiusForPositionInSize(size, position);
-  }
-  return Material.defaultSplashRadius;
-}
-
-double _getSplashRadiusForPositionInSize(Size bounds, Offset position) {
-  final double d1 = (position - bounds.topLeft(Offset.zero)).distance;
-  final double d2 = (position - bounds.topRight(Offset.zero)).distance;
-  final double d3 = (position - bounds.bottomLeft(Offset.zero)).distance;
-  final double d4 = (position - bounds.bottomRight(Offset.zero)).distance;
-  return math.max(math.max(d1, d2), math.max(d3, d4)).ceilToDouble();
-}
-
-class _CustomInkSplashFactory extends InteractiveInkFeatureFactory {
-  const _CustomInkSplashFactory();
-
-  @override
-  InteractiveInkFeature create({
-    required MaterialInkController controller,
-    required RenderBox referenceBox,
-    required Offset position,
-    required Color color,
-    required TextDirection textDirection,
-    bool containedInkWell = false,
-    RectCallback? rectCallback,
-    BorderRadius? borderRadius,
-    ShapeBorder? customBorder,
-    double? radius,
-    VoidCallback? onRemoved,
-  }) {
-    return CustomInkSplash(
-      controller: controller,
-      referenceBox: referenceBox,
-      position: position,
-      color: color,
-      containedInkWell: containedInkWell,
-      rectCallback: rectCallback,
-      borderRadius: borderRadius,
-      customBorder: customBorder,
-      radius: radius,
-      onRemoved: onRemoved,
-      textDirection: textDirection,
-    );
-  }
-}
-
-/// A visual reaction on a piece of [Material] to user input.
-///
-/// A circular ink feature whose origin starts at the input touch point
-/// and whose radius expands from zero.
-///
-/// This object is rarely created directly. Instead of creating an ink splash
-/// directly, consider using an [InkResponse] or [InkWell] widget, which uses
-/// gestures (such as tap and long-press) to trigger ink splashes.
-///
-/// See also:
-///
-///  * [InkRipple], which is an ink splash feature that expands more
-///    aggressively than this class does.
-///  * [InkResponse], which uses gestures to trigger ink highlights and ink
-///    splashes in the parent [Material].
-///  * [InkWell], which is a rectangular [InkResponse] (the most common type of
-///    ink response).
-///  * [Material], which is the widget on which the ink splash is painted.
-///  * [InkHighlight], which is an ink feature that emphasizes a part of a
-///    [Material].
-///  * [Ink], a convenience widget for drawing images and other decorations on
-///    Material widgets.
-class CustomInkSplash extends InteractiveInkFeature {
-  /// Begin a splash, centered at position relative to [referenceBox].
-  ///
-  /// The [controller] argument is typically obtained via
-  /// `Material.of(context)`.
-  ///
-  /// If `containedInkWell` is true, then the splash will be sized to fit
-  /// the well rectangle, then clipped to it when drawn. The well
-  /// rectangle is the box returned by `rectCallback`, if provided, or
-  /// otherwise is the bounds of the [referenceBox].
-  ///
-  /// If `containedInkWell` is false, then `rectCallback` should be null.
-  /// The ink splash is clipped only to the edges of the [Material].
-  /// This is the default.
-  ///
-  /// When the splash is removed, `onRemoved` will be called.
-  CustomInkSplash({
-    required MaterialInkController controller,
-    required super.referenceBox,
-    required TextDirection textDirection,
-    Offset? position,
-    required Color color,
-    bool containedInkWell = false,
-    RectCallback? rectCallback,
-    BorderRadius? borderRadius,
-    super.customBorder,
-    double? radius,
-    super.onRemoved,
-  })  : _position = position,
-        _borderRadius = borderRadius ?? BorderRadius.zero,
-        _targetRadius = radius ??
-            _getTargetRadius(
-                referenceBox, containedInkWell, rectCallback, position!),
-        _clipCallback =
-            _getClipCallback(referenceBox, containedInkWell, rectCallback),
-        _repositionToReferenceBox = !containedInkWell,
-        _textDirection = textDirection,
-        super(controller: controller, color: color) {
-    _radiusController = AnimationController(
-        duration: _kUnconfirmedSplashDuration, vsync: controller.vsync)
-      ..addListener(controller.markNeedsPaint)
-      ..forward();
-    _radius = _radiusController.drive(Tween<double>(
-      begin: _kSplashInitialSize,
-      end: _targetRadius,
-    ));
-    _alphaController = AnimationController(
-        duration: _kSplashFadeDuration, vsync: controller.vsync)
-      ..addListener(controller.markNeedsPaint)
-      ..addStatusListener(_handleAlphaStatusChanged);
-    _alpha = _alphaController!.drive(IntTween(
-      begin: color.alpha,
-      end: 0,
-    ));
-
-    controller.addInkFeature(this);
-  }
-
-  final Offset? _position;
-  final BorderRadius _borderRadius;
-  final double _targetRadius;
-  final RectCallback? _clipCallback;
-  final bool _repositionToReferenceBox;
-  final TextDirection _textDirection;
-
-  late Animation<double> _radius;
-  late AnimationController _radiusController;
-
-  late Animation<int> _alpha;
-  AnimationController? _alphaController;
-
-  /// Used to specify this type of ink splash for an [InkWell], [InkResponse],
-  /// material [Theme], or [ButtonStyle].
-  static const InteractiveInkFeatureFactory splashFactory =
-      _CustomInkSplashFactory();
-
-  @override
-  void confirm() {
-    final int duration = (_targetRadius / _kSplashConfirmedVelocity).floor();
-    _radiusController
-      ..duration = Duration(milliseconds: duration)
-      ..forward();
-    _alphaController!.forward();
-  }
-
-  @override
-  void cancel() {
-    _alphaController?.forward();
-  }
-
-  void _handleAlphaStatusChanged(AnimationStatus status) {
-    if (status.isCompleted) {
-      dispose();
-    }
-  }
-
-  @override
-  void dispose() {
-    _radiusController.dispose();
-    _alphaController!.dispose();
-    _alphaController = null;
-    super.dispose();
-  }
-
-  @override
-  void paintFeature(Canvas canvas, Matrix4 transform) {
-    final Paint paint = Paint()..color = color.withAlpha(_alpha.value);
-    Offset? center = _position;
-    if (_repositionToReferenceBox) {
-      center = Offset.lerp(center, referenceBox.size.center(Offset.zero),
-          _radiusController.value);
-    }
-    paintInkCircle(
-      canvas: canvas,
-      transform: transform,
-      paint: paint,
-      center: center!,
-      textDirection: _textDirection,
-      radius: _radius.value,
-      customBorder: customBorder,
-      borderRadius: _borderRadius,
-      clipCallback: _clipCallback,
     );
   }
 }

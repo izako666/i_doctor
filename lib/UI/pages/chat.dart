@@ -18,8 +18,8 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'دردشة خدمة العملاء',
+      appBar: IAppBar(
+        title: t(context).chatWithCustomerService,
         hasBackButton: true,
       ),
       body: Stack(
@@ -52,11 +52,11 @@ class _ChatPageState extends State<ChatPage> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
                               color: message.isCustomerService
-                                  ? Colors.blue.lighten(0.2)
+                                  ? secondaryColor
                                   : primaryColor,
                               border: Border.all(
                                   color: (message.isCustomerService
-                                          ? Colors.blue
+                                          ? secondaryColor
                                           : primaryColor)
                                       .darken(0.2)),
                             ),
@@ -127,8 +127,9 @@ class _ChatPageState extends State<ChatPage> {
                           } else {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('مطلوب إذن الصورة')));
+                                  SnackBar(
+                                      content: Text(
+                                          t(context).imagePermissionRequired)));
                             }
                           }
                         },

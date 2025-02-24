@@ -28,4 +28,5 @@ class _BasketItem {
   late String createdAt;
   late String updatedAt;
   late int quantity;
+  late bool isFavorite;
 }

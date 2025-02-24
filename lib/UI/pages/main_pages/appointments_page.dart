@@ -38,15 +38,15 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'مواعيد',
+      appBar: IAppBar(
+        title: t(context).appointments,
         toolbarHeight: kToolbarHeight,
         hasBackButton: false,
       ),
       body: Get.find<AuthController>().currentUser.value == null
           ? Center(
               child: Text(
-                'يرجى تسجيل الدخول أولا',
+                t(context).pleaseLoginFirst,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             )
@@ -84,7 +84,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                         color: pageIndex == 0
                                             ? primaryColor
                                             : Colors.grey),
-                                    const Text("المواعيد الحالية")
+                                    Text(t(context).currentAppointments)
                                   ],
                                 ),
                               ),
@@ -112,7 +112,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                         color: pageIndex == 1
                                             ? primaryColor
                                             : Colors.grey),
-                                    const Text("المواعيد السابقة")
+                                    Text(t(context).oldAppointments)
                                   ],
                                 ),
                               ),
@@ -168,7 +168,7 @@ class AppointmentCard extends StatelessWidget {
                 left: const BorderSide(),
                 bottom: type == 2 ? const BorderSide() : BorderSide.none),
             borderRadius: BorderRadius.circular(16),
-            color: backgroundColor.lighten(0.05)),
+            color: backgroundColor),
         child: Column(
           children: [
             Padding(
@@ -182,10 +182,10 @@ class AppointmentCard extends StatelessWidget {
               ),
             ),
             if (type < 2)
-              Divider(
+              const Divider(
                 indent: 8,
                 endIndent: 8,
-                color: secondaryColor.darken(0.5),
+                color: secondaryColor,
               ),
             Padding(
               padding: EdgeInsets.symmetric(
@@ -205,10 +205,10 @@ class AppointmentCard extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               indent: 8,
               endIndent: 8,
-              color: secondaryColor.darken(0.5),
+              color: secondaryColor,
             ),
             Padding(
               padding:
@@ -223,10 +223,10 @@ class AppointmentCard extends StatelessWidget {
               ),
             ),
             if (type < 2)
-              Divider(
+              const Divider(
                 indent: 8,
                 endIndent: 8,
-                color: secondaryColor.darken(0.5),
+                color: secondaryColor,
               ),
             Padding(
               padding:
@@ -234,7 +234,7 @@ class AppointmentCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('السعر'),
+                  Text(t(context).priceWord),
                   PriceText(
                       price: appointment.price, discount: appointment.discount)
                 ],
@@ -252,19 +252,18 @@ class AppointmentCard extends StatelessWidget {
                       bottomLeft: Radius.circular(16),
                       bottomRight: Radius.circular(16)),
                   title: type == 1
-                      ? const Text('حذف')
+                      ? Text(t(context).delete)
                       : appointment.completed
-                          ? const Text('ترك التعليق')
-                          : const Text('ابطال'),
-                  color: type == 1 || (!appointment.completed)
-                      ? Colors.red.lighten(0.2)
-                      : null,
+                          ? Text(t(context).leaveReview)
+                          : Text(t(context).cancel),
+                  color:
+                      type == 1 || (!appointment.completed) ? errorColor : null,
                   onTap: () {
                     if (appointment.completed) {
                       showDialog(
                         context: context,
                         builder: (ctx) => AlertDialog(
-                          backgroundColor: primaryColor.lighten(),
+                          backgroundColor: backgroundColor,
                           contentPadding: EdgeInsets.zero,
                           content: LeaveReviewDialog(
                             appointment: appointment,
@@ -275,10 +274,10 @@ class AppointmentCard extends StatelessWidget {
                     } else {
                       showDialog(
                         context: context,
-                        builder: (ctx) => AlertDialog(
-                          backgroundColor: primaryColor.lighten(),
+                        builder: (ctx) => const AlertDialog(
+                          backgroundColor: backgroundColor,
                           contentPadding: EdgeInsets.zero,
-                          content: const CancelAppointmentDialog(),
+                          content: CancelAppointmentDialog(),
                         ),
                         barrierDismissible: true,
                       );
@@ -316,7 +315,7 @@ class BasketCard extends StatelessWidget {
                 left: const BorderSide(),
                 bottom: isDisplay ? const BorderSide() : BorderSide.none),
             borderRadius: BorderRadius.circular(16),
-            color: backgroundColor.lighten(0.05)),
+            color: backgroundColor),
         child: Column(
           children: [
             Padding(
@@ -329,24 +328,24 @@ class BasketCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text("العرض"),
+                      Text(t(context).offer),
                       Text(basketItem.name),
                     ],
                   ),
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               indent: 8,
               endIndent: 8,
-              color: secondaryColor.darken(0.5),
+              color: secondaryColor,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("مزود الخدمة"),
+                  Text(t(context).serviceProvider),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -383,10 +382,10 @@ class BasketCard extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               indent: 8,
               endIndent: 8,
-              color: secondaryColor.darken(0.5),
+              color: secondaryColor,
             ),
             Padding(
               padding:
@@ -394,16 +393,16 @@ class BasketCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('التاريخ'),
+                  Text(t(context).date),
                   Text(
                       ' ${formatDate(DateTime.parse(basketItem.startDate))} - ${formatDate(DateTime.parse(basketItem.endDate))}')
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               indent: 8,
               endIndent: 8,
-              color: secondaryColor.darken(0.5),
+              color: secondaryColor,
             ),
             Padding(
               padding:
@@ -411,17 +410,17 @@ class BasketCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('السعر'),
+                  Text(t(context).priceWord),
                   PriceText(
                       price: double.parse(basketItem.idocPrice),
                       discount: double.parse(basketItem.idocDiscountAmt))
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               indent: 8,
               endIndent: 8,
-              color: secondaryColor.darken(0.5),
+              color: secondaryColor,
             ),
             Padding(
               padding:
@@ -429,7 +428,7 @@ class BasketCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('العدد'),
+                  Text(t(context).count),
                   Row(
                     children: [
                       if (!isDisplay)
@@ -463,9 +462,9 @@ class BasketCard extends StatelessWidget {
                                 if (basketItem.availablePurchases <=
                                     (basketItem.quantity + 1)) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'لا يمكنك طلب المزيد من هذا المنتج.')));
+                                      SnackBar(
+                                          content: Text(t(context)
+                                              .cantRequestMoreProduct)));
 
                                   return;
                                 }
@@ -493,8 +492,8 @@ class BasketCard extends StatelessWidget {
                   radius: const BorderRadius.only(
                       bottomLeft: Radius.circular(16),
                       bottomRight: Radius.circular(16)),
-                  title: const Text('حذف'),
-                  color: Colors.red.lighten(0.2),
+                  title: Text(t(context).delete),
+                  color: errorColor,
                   onTap: () {
                     _showCancelDialog(context, realmController);
                   })
@@ -513,8 +512,7 @@ class BasketCard extends StatelessWidget {
         contentPadding: EdgeInsets.zero,
         content: Container(
           decoration: BoxDecoration(
-              color: secondaryColor.lighten(0.1),
-              borderRadius: BorderRadius.circular(16)),
+              color: secondaryColor, borderRadius: BorderRadius.circular(16)),
           width: getScreenWidth(ctx) * 0.5,
           height: getScreenWidth(ctx) * 0.5,
           child: Column(
@@ -523,7 +521,7 @@ class BasketCard extends StatelessWidget {
                 height: 32,
               ),
               Text(
-                'هل انت متاكد؟',
+                t(context).areYouSure,
                 style: Theme.of(ctx).textTheme.headlineSmall,
               ),
               const Spacer(),
@@ -541,11 +539,11 @@ class BasketCard extends StatelessWidget {
                                     bottomRight: Radius.circular(16))),
                             child: Center(
                                 child: Text(
-                              'ابطال',
+                              t(context).cancel,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge!
-                                  .copyWith(color: Colors.red.lighten(0.1)),
+                                  .copyWith(color: errorColor),
                             )),
                           ))),
                   Expanded(
@@ -562,11 +560,11 @@ class BasketCard extends StatelessWidget {
                                     bottomLeft: Radius.circular(16))),
                             child: Center(
                                 child: Text(
-                              'التاكيد',
+                              t(context).confirm,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge!
-                                  .copyWith(color: Colors.green.lighten(0.1)),
+                                  .copyWith(color: successColor),
                             )),
                           )))
                 ],

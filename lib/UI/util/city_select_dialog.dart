@@ -59,7 +59,7 @@
 //                     child: Container(
 //                       height: 32,
 //                       decoration: BoxDecoration(
-//                           color: Colors.red.lighten(0.1),
+//                           color: errorColor.lighten(0.1),
 //                           borderRadius: const BorderRadius.only(
 //                               bottomRight: Radius.circular(16))),
 //                       child: const Center(child: Text('ابطال')),
@@ -73,7 +73,7 @@
 //                     child: Container(
 //                       height: 32,
 //                       decoration: BoxDecoration(
-//                           color: Colors.green.lighten(0.1),
+//                           color: successColor.lighten(0.1),
 //                           borderRadius: const BorderRadius.only(
 //                               bottomLeft: Radius.circular(16))),
 //                       child: const Center(child: Text('التاكيد')),

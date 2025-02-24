@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/user.dart';
 import 'package:i_doctor/api/encryption.dart';
 import 'package:i_doctor/api/networking/rest_functions.dart';
+import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 
@@ -50,6 +52,7 @@ class AuthController extends GetxController {
   DateTime dateOfBirthDate = DateTime(2020);
   RxBool showSPassword = false.obs;
   RxBool showRePassword = false.obs;
+  RxString locale = "ar".obs;
 
   late TextEditingController sPasswordController;
   late TextEditingController rePasswordController;
@@ -87,6 +90,7 @@ class AuthController extends GetxController {
 
     String email = LocalDataHandler.readData('email', '');
     String encryptedPassword = LocalDataHandler.readData('password', '');
+    locale.value = LocalDataHandler.readData('locale', 'ar');
     if (encryptedPassword.isEmpty || email.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         loaded.value = true;
@@ -138,78 +142,86 @@ class AuthController extends GetxController {
     sNationalityController.dispose();
   }
 
-  String validatePassword(String value) {
+  String validatePassword(String value, BuildContext ctx) {
     if (value.isEmpty) {
-      return "كلمة المرور مطلوبة";
+      return t(ctx).passwordRequired;
     } else if (value.length < 6) {
-      return "يجب أن تكون كلمة المرور مكونة من 6 أحرف على الأقل";
+      return t(ctx).passwordMustOver6;
     }
     return "";
   }
 
-  String validatePhone(String value) {
+  String validatePhone(String value, BuildContext context) {
     final phoneRegExp = RegExp(r'^\d{10,15}$');
     if (value.isEmpty) {
-      return "رقم الهاتف مطلوب";
+      return t(context).phoneRequired;
     } else if (!phoneRegExp.hasMatch(value)) {
-      return "رقم الهاتف غير صالح";
+      return t(context).incorrectPhoneNumber;
     }
     return "";
   }
 
-  String validateEmail(String value) {
+  String validateEmail(String value, BuildContext context) {
     if (value.isEmpty) {
-      return "البريد الإلكتروني مطلوب";
+      return t(context).emailRequired;
     } else if (!value.contains('@')) {
-      return "البريد الإلكتروني غير صالح";
+      return t(context).invalidEmail;
     }
     return "";
   }
 
-  String validateName(String value, String fieldName) {
+  String validateFirstName(String value, BuildContext context) {
     if (value.isEmpty) {
-      return "$fieldName مطلوب";
+      return t(context).nameRequired;
     } else if (value.length < 2) {
-      return "يجب أن يحتوي $fieldName على حرفين على الأقل";
+      return t(context).nameRequires2Letters;
     }
     return "";
   }
 
-  String validateNationality(String value, String fieldName) {
+  String validateLastName(String value, BuildContext context) {
     if (value.isEmpty) {
-      return "$fieldName مطلوب";
+      return t(context).familyNameRequired;
+    } else if (value.length < 2) {
+      return t(context).familyNameRequires2Letters;
     }
     return "";
   }
 
-  String validateRePassword(String password, String rePassword) {
+  String validateNationality(String value, BuildContext context) {
+    if (value.isEmpty) {
+      return t(context).nationalityRequired;
+    }
+    return "";
+  }
+
+  String validateRePassword(
+      String password, String rePassword, BuildContext context) {
     if (rePassword.isEmpty) {
-      return "تأكيد كلمة المرور مطلوب";
+      return t(context).confirmPassword;
     } else if (password != rePassword) {
-      return "كلمتا المرور غير متطابقتين";
+      return t(context).passwordNotSame;
     }
     return "";
   }
 
-  bool validateSignup() {
-    sPasswordError.value = validatePassword(sPasswordController.text);
+  bool validateSignup(BuildContext context) {
+    sPasswordError.value = validatePassword(sPasswordController.text, context);
     rePasswordError.value = validateRePassword(
-      sPasswordController.text,
-      rePasswordController.text,
-    );
-    sEmailError.value = validateEmail(sEmailController.text);
-    sPhoneError.value = validatePhone(sPhoneController.text);
-    firstNameError.value =
-        validateName(firstNameController.text, "الاسم الأول");
-    lastNameError.value = validateName(lastNameController.text, "الاسم الأخير");
-    cityError.value = cityId.value == (-1) ? 'المدينة مطلوبة' : '';
-    countryError.value = countryId.value == (-1) ? 'البلد مطلوب' : '';
-    genderError.value = genderId.value == (-1) ? 'الجنس مطلوب' : '';
+        sPasswordController.text, rePasswordController.text, context);
+    sEmailError.value = validateEmail(sEmailController.text, context);
+    sPhoneError.value = validatePhone(sPhoneController.text, context);
+    firstNameError.value = validateFirstName(firstNameController.text, context);
+    lastNameError.value = validateLastName(lastNameController.text, context);
+    cityError.value = cityId.value == (-1) ? t(context).cityRequired : '';
+    countryError.value =
+        countryId.value == (-1) ? t(context).countryRequired : '';
+    genderError.value = genderId.value == (-1) ? t(context).genderRequired : '';
     dateOfBirthError.value =
-        dateOfBirth.value.isEmpty ? 'تاريخ الميلاد مطلوبة' : '';
+        dateOfBirth.value.isEmpty ? t(context).birthdateRequired : '';
 
     sNationalityError.value =
-        nationalityId.value == (-1) ? "'الجنسية مطلوبة'" : "";
+        nationalityId.value == (-1) ? t(context).nationalityRequired : "";
 
     if (sPasswordError.isEmpty &&
         rePasswordError.isEmpty &&

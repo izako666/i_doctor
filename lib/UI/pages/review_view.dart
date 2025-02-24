@@ -38,7 +38,7 @@ class _ReviewViewState extends State<ReviewView> {
           if (widget.tabExists && i == 0) {
             return Material(
               elevation: 1,
-              color: backgroundColor.lighten(0.05),
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(16),
               child: InkWell(
                 borderRadius: BorderRadius.circular(16),
@@ -61,7 +61,7 @@ class _ReviewViewState extends State<ReviewView> {
                             : Icons.arrow_drop_down_rounded,
                         color: Colors.transparent,
                       ),
-                      Text('${widget.reviews.length} المراجعات'),
+                      Text(t(context).reviews2(widget.reviews.length)),
                       Icon(
                         opened
                             ? Icons.arrow_drop_up_rounded
@@ -80,11 +80,11 @@ class _ReviewViewState extends State<ReviewView> {
                 width: getScreenWidth(ctx),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [secondaryColor, backgroundColor.lighten(0.05)],
-                        stops: const [0.0, 0.7]),
+                        colors: [secondaryColor, backgroundColor],
+                        stops: [0.0, 0.7]),
                     border: const Border(bottom: BorderSide())),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -117,7 +117,7 @@ class _ReviewViewState extends State<ReviewView> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium!
-                                  .copyWith(color: secondaryColor.darken(0.4)),
+                                  .copyWith(color: secondaryColor),
                             )
                         ],
                       ),
@@ -131,9 +131,9 @@ class _ReviewViewState extends State<ReviewView> {
                         widget.reviews[i - 1].review,
                         trimMode: TrimMode.Length,
                         trimLength: 100,
-                        trimCollapsedText: 'اقرا المزيد',
-                        trimExpandedText: 'تقليل العرض',
-                        colorClickableText: accentColor,
+                        trimCollapsedText: t(context).readMore,
+                        trimExpandedText: t(context).displayLess,
+                        colorClickableText: secondaryFgColor,
                       )
                     ],
                   ),
@@ -188,8 +188,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'المراجعات (12)',
+      appBar: IAppBar(
+        title: t(context).reviews2(12),
         hasBackButton: true,
       ),
       body: ListView.builder(
@@ -200,12 +200,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
               width: getScreenWidth(ctx),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: backgroundColor.lighten(0.05),
-                  gradient: LinearGradient(
+                  color: backgroundColor,
+                  gradient: const LinearGradient(
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
-                      colors: [secondaryColor, backgroundColor.lighten(0.05)],
-                      stops: const [0.0, 0.7]),
+                      colors: [secondaryColor, backgroundColor],
+                      stops: [0.0, 0.7]),
                   border: const Border(bottom: BorderSide())),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -238,7 +238,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
-                                .copyWith(color: secondaryColor.darken(0.4)),
+                                .copyWith(color: secondaryColor),
                           )
                       ],
                     ),
@@ -248,13 +248,13 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     ),
                     const SizedBox(height: 4),
                     ReadMoreText(
-                      colorClickableText: accentColor,
+                      colorClickableText: secondaryFgColor,
                       textAlign: TextAlign.start,
                       reviews[i].review,
                       trimMode: TrimMode.Length,
                       trimLength: 100,
-                      trimCollapsedText: 'اقرا المزيد',
-                      trimExpandedText: 'تقليل العرض',
+                      trimCollapsedText: t(context).readMore,
+                      trimExpandedText: t(context).displayLess,
                     )
                   ],
                 ),

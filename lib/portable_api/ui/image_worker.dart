@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:i_doctor/UI/app_theme.dart';
+import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/ui/bottom_sheet.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<T?> imagePickerBottomSheet<T>(BuildContext context,
     {required Function(AssetPathEntity album, AssetEntity image)? onImageTap}) {
@@ -114,12 +116,12 @@ class _ImagePickerState extends State<ImagePicker> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Select Image'),
+        title: Text(t(context).selectImage),
         elevation: 0,
         scrolledUnderElevation: 0,
       ),
       body: noImages
-          ? const Center(child: Text('No Images Found'))
+          ? Center(child: Text(t(context).noImagesFound))
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -199,7 +201,7 @@ class _ImagePickerState extends State<ImagePicker> {
                                                     stacktrace) {
                                                   return const Center(
                                                       child: Icon(Icons.error,
-                                                          color: Colors.red));
+                                                          color: errorColor));
                                                 },
                                               ),
                                             ),
@@ -374,7 +376,7 @@ class _ImageLcPickerState extends State<ImageLcPicker> {
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
-        title: const Text('حدد الصور'),
+        title: Text(t(context).determineImages),
         elevation: 0,
         scrolledUnderElevation: 0,
         actions: [
@@ -399,7 +401,7 @@ class _ImageLcPickerState extends State<ImageLcPicker> {
         ],
       ),
       body: noImages
-          ? const Center(child: Text('No images found'))
+          ? Center(child: Text(t(context).noImagesFound))
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -497,7 +499,7 @@ class _ImageLcPickerState extends State<ImageLcPicker> {
                                                     stacktrace) {
                                                   return const Center(
                                                       child: Icon(Icons.error,
-                                                          color: Colors.red));
+                                                          color: errorColor));
                                                 },
                                               ),
                                             ),

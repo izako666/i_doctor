@@ -21,8 +21,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'إشعارات (12)',
+      appBar: IAppBar(
+        title: t(context).notifications(12),
         hasBackButton: true,
       ),
       body: ListView.builder(
@@ -37,8 +37,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
                       colors: notifications[i].seen
-                          ? [Colors.grey, Colors.grey.lighten(0.2)]
-                          : [primaryColor, primaryColor.lighten(0.2)],
+                          ? [Colors.grey[200]!, Colors.grey[200]!]
+                          : [secondaryColor, secondaryColor],
                       stops: const [0.0, 0.7]),
                   border: Border(
                       bottom: notifications[i].seen

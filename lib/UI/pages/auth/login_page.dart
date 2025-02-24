@@ -26,8 +26,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     AuthController auth = Get.find<AuthController>();
     return Scaffold(
-      appBar: const IAppBar(
-        title: "تسجيل الدخول",
+      appBar: IAppBar(
+        title: t(context).loginFull,
         hasBackButton: true,
       ),
       body: Stack(
@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Container(
                               decoration: BoxDecoration(
-                                  color: backgroundColor.lighten(0.05),
+                                  color: backgroundColor,
                                   border: Border.all(),
                                   borderRadius: BorderRadius.circular(4)),
                               height: 40,
@@ -71,8 +71,8 @@ class _LoginPageState extends State<LoginPage> {
                                         left: 4, right: 4, top: 4, bottom: 0),
                                     child: TextFormField(
                                       controller: auth.emailController,
-                                      decoration: const InputDecoration(
-                                        hintText: 'بريد إلكتروني',
+                                      decoration: InputDecoration(
+                                        hintText: t(context).email,
                                         border: InputBorder.none,
                                         isDense: true,
                                       ),
@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall!
-                                    .copyWith(color: Colors.red),
+                                    .copyWith(color: errorColor),
                               ),
                             ),
                         ],
@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Container(
                               decoration: BoxDecoration(
-                                  color: backgroundColor.lighten(0.05),
+                                  color: backgroundColor,
                                   border: Border.all(),
                                   borderRadius: BorderRadius.circular(4)),
                               height: 40,
@@ -131,14 +131,14 @@ class _LoginPageState extends State<LoginPage> {
                                     child: TextFormField(
                                       controller: auth.passwordController,
                                       obscureText: !auth.showPassword.value,
-                                      decoration: const InputDecoration(
-                                        hintText: 'كلمة المرور',
+                                      decoration: InputDecoration(
+                                        hintText: t(context).password,
                                         border: InputBorder.none,
                                         isDense: true,
                                       ),
                                       textDirection: TextDirection.ltr,
                                       validator: (value) =>
-                                          'كلمة المرور غير صحيحة',
+                                          t(context).passwordIncorrect,
                                     ),
                                   )),
                                 ],
@@ -152,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall!
-                                    .copyWith(color: Colors.red),
+                                    .copyWith(color: errorColor),
                               ),
                             ),
                         ],
@@ -163,11 +163,11 @@ class _LoginPageState extends State<LoginPage> {
                           context.push('/feed/login/signup');
                         },
                         child: Text(
-                          'ليس لديك حساب؟ اشترك.',
+                          t(context).noAccountSignUp,
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium!
-                              .copyWith(color: secondaryColor.darken(0.5)),
+                              .copyWith(color: secondaryColor),
                         ))
                   ],
                 ),
@@ -179,16 +179,16 @@ class _LoginPageState extends State<LoginPage> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: WideButton(
-                  title:
-                      Text('تم', style: Theme.of(context).textTheme.titleLarge),
+                  title: Text(t(context).login,
+                      style: Theme.of(context).textTheme.titleLarge),
                   disabled: loggingIn,
                   onTap: () async {
                     loggingIn = true;
                     setState(() {});
                     auth.emailError.value =
-                        auth.validateEmail(auth.emailController.text);
-                    auth.passwordError.value =
-                        auth.validatePassword(auth.passwordController.text);
+                        auth.validateEmail(auth.emailController.text, context);
+                    auth.passwordError.value = auth.validatePassword(
+                        auth.passwordController.text, context);
 
                     if (auth.emailError.value.isEmpty &&
                         auth.passwordError.value.isEmpty) {
@@ -216,17 +216,16 @@ class _LoginPageState extends State<LoginPage> {
                         auth.passwordController.clear();
                       } else if (resp.statusCode == 404) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              backgroundColor: Colors.red,
-                              content: Text(
-                                  'البريد الإلكتروني أو كلمة المرور كانت غير صحيحة.')));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: errorColor,
+                              content:
+                                  Text(t(context).emailOrPasswordIncorrect)));
                         }
                       } else {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  backgroundColor: Colors.red,
-                                  content: Text('حدث خطأ ما')));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: errorColor,
+                              content: Text(t(context).errorOccured)));
                         }
                       }
                       loggingIn = false;

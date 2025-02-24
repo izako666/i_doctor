@@ -7,6 +7,7 @@ import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/api/data_classes/category.dart';
+import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/subcategory.dart';
 import 'package:i_doctor/fake_data.dart';
 import 'package:i_doctor/portable_api/helper.dart';
@@ -32,6 +33,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
 
   List<Category> selectedCategories = List.empty(growable: true);
   List<Subcategory> selectedSubcategories = List.empty(growable: true);
+  List<Provider> selectedProviders = List.empty(growable: true);
 
   @override
   void initState() {
@@ -45,6 +47,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
     selectedCategories = List.from(widget.filterController.categoriesSelected);
     selectedSubcategories =
         List.from(widget.filterController.subcategoriesSelected);
+    selectedProviders = List.from(widget.filterController.selectedProviders);
     requiredRating = widget.filterController.requiredRating.value;
     selectedCategory = widget.filterController.selectedSortCategory.value;
   }
@@ -60,7 +63,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: IAppBar(
-        title: 'فلتر و ترتيب',
+        title: t(context).filterAndSort,
         hasBackButton: false,
         toolbarHeight: kToolbarHeight * 2,
         actions: [
@@ -113,7 +116,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                               0
                                           ? primaryColor
                                           : Colors.grey),
-                                  const Text("فلتر")
+                                  Text(t(context).filter)
                                 ],
                               ),
                             ),
@@ -146,7 +149,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                               1
                                           ? primaryColor
                                           : Colors.grey),
-                                  const Text("ترتيب")
+                                  Text(t(context).sort)
                                 ],
                               ),
                             ),
@@ -176,16 +179,19 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                   data: Theme.of(context).copyWith(
                                       dividerColor: Colors.transparent),
                                   child: ExpansionTile(
-                                    title: const Text('التاريخ'),
-                                    subtitle: Text('اختر التاريخ الذي تريدو',
+                                    title: Text(t(context).date),
+                                    subtitle: Text(t(context).selectDesiredDate,
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium!
-                                            .copyWith(
-                                                color: secondaryColor
-                                                    .darken(0.5))),
+                                            .copyWith(color: secondaryColor)),
                                     children: <Widget>[
                                       SfDateRangePicker(
+                                        headerStyle:
+                                            const DateRangePickerHeaderStyle(
+                                                backgroundColor:
+                                                    backgroundColor),
+                                        backgroundColor: backgroundColor,
                                         initialSelectedRange:
                                             startTime.isBefore(DateTime(1951))
                                                 ? null
@@ -210,6 +216,43 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                 )
                               ]),
                           const SizedBox(height: 4),
+                          // ElevatedContainer(
+                          //     blackWhite: getBlackWhite(context),
+                          //     children: [
+                          //       Theme(
+                          //         data: Theme.of(context).copyWith(
+                          //             dividerColor: Colors.transparent),
+                          //         child: ExpansionTile(
+                          //           title: Text(t(context).review),
+                          //           subtitle: Text(
+                          //               t(context).selectDesiredRating,
+                          //               style: Theme.of(context)
+                          //                   .textTheme
+                          //                   .bodyMedium!
+                          //                   .copyWith(color: secondaryColor)),
+                          //           children: <Widget>[
+                          //             RatingBar.builder(
+                          //               itemSize: 26,
+                          //               initialRating: requiredRating,
+                          //               minRating: 1,
+                          //               direction: Axis.horizontal,
+                          //               allowHalfRating: true,
+                          //               itemCount: 5,
+                          //               itemPadding: EdgeInsets.zero,
+                          //               itemBuilder: (context, _) => const Icon(
+                          //                 Icons.star,
+                          //                 color: Colors.amber,
+                          //               ),
+                          //               onRatingUpdate: (rating) {
+                          //                 requiredRating = rating;
+                          //                 setState(() {});
+                          //               },
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       )
+                          //     ]),
+                          // const SizedBox(height: 4),
                           ElevatedContainer(
                               blackWhite: getBlackWhite(context),
                               children: [
@@ -217,52 +260,13 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                   data: Theme.of(context).copyWith(
                                       dividerColor: Colors.transparent),
                                   child: ExpansionTile(
-                                    title: const Text('التقييم'),
-                                    subtitle: Text('اختر التقييم الذي تريدو',
+                                    title: Text(t(context).priceWord),
+                                    subtitle: Text(
+                                        t(context).selectDesiredPrice,
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium!
-                                            .copyWith(
-                                                color: secondaryColor
-                                                    .darken(0.5))),
-                                    children: <Widget>[
-                                      RatingBar.builder(
-                                        itemSize: 26,
-                                        initialRating: requiredRating,
-                                        minRating: 1,
-                                        direction: Axis.horizontal,
-                                        allowHalfRating: true,
-                                        itemCount: 5,
-                                        itemPadding: EdgeInsets.zero,
-                                        itemBuilder: (context, _) => const Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                        ),
-                                        onRatingUpdate: (rating) {
-                                          requiredRating = rating;
-                                          setState(() {});
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ]),
-                          const SizedBox(height: 4),
-                          ElevatedContainer(
-                              blackWhite: getBlackWhite(context),
-                              children: [
-                                Theme(
-                                  data: Theme.of(context).copyWith(
-                                      dividerColor: Colors.transparent),
-                                  child: ExpansionTile(
-                                    title: const Text('السعر'),
-                                    subtitle: Text('اختر السعر الذي تريدو',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                color: secondaryColor
-                                                    .darken(0.5))),
+                                            .copyWith(color: secondaryColor)),
                                     children: <Widget>[
                                       const SizedBox(height: 4),
                                       RangeSlider(
@@ -270,8 +274,8 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                           max: 2000.0,
                                           divisions: 20,
                                           labels: RangeLabels(
-                                              '${startPrice.toStringAsFixed(2)} ر.س',
-                                              '${endPrice.toStringAsFixed(2)} ر.س'),
+                                              formatPrice(startPrice),
+                                              formatPrice(endPrice)),
                                           values:
                                               RangeValues(startPrice, endPrice),
                                           onChanged: (val) {
@@ -280,12 +284,12 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                             setState(() {});
                                           }),
                                       const SizedBox(height: 4),
-                                      const Row(
+                                      Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text('0.0 ر.س'),
-                                          Text('2000.0 ر.س'),
+                                          Text(formatPrice(0.0)),
+                                          Text(formatPrice(2000.0)),
                                         ],
                                       )
                                     ],
@@ -300,15 +304,66 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                   data: Theme.of(context).copyWith(
                                       dividerColor: Colors.transparent),
                                   child: ExpansionTile(
-                                    title: const Text('الفئات الفرعية'),
+                                    title: Text(t(context).serviceProviders),
                                     subtitle: Text(
-                                        'اختر الفئات الفرعية الذي تريدها',
+                                        t(context).selectedDesiredProviders,
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium!
-                                            .copyWith(
-                                                color: secondaryColor
-                                                    .darken(0.5))),
+                                            .copyWith(color: secondaryColor)),
+                                    children: <Widget>[
+                                      Wrap(
+                                        runSpacing: 10,
+                                        runAlignment:
+                                            WrapAlignment.spaceBetween,
+                                        spacing: 15,
+                                        children: widget
+                                            .filterController.totalProviders
+                                            .map(
+                                          (e) {
+                                            return SelectableTextButton(
+                                                selected: selectedProviders
+                                                    .where((test) =>
+                                                        test.id == e.id)
+                                                    .isNotEmpty,
+                                                text: e.name,
+                                                id: e.id,
+                                                onTap: () {
+                                                  if (selectedProviders
+                                                      .where((test) =>
+                                                          test.id == e.id)
+                                                      .isEmpty) {
+                                                    selectedProviders.add(e);
+                                                  } else {
+                                                    selectedProviders
+                                                        .removeWhere((test) =>
+                                                            test.id == e.id);
+                                                  }
+                                                  setState(() {});
+                                                });
+                                          },
+                                        ).toList(),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ]),
+
+                          const SizedBox(height: 4),
+                          ElevatedContainer(
+                              blackWhite: getBlackWhite(context),
+                              children: [
+                                Theme(
+                                  data: Theme.of(context).copyWith(
+                                      dividerColor: Colors.transparent),
+                                  child: ExpansionTile(
+                                    title: Text(t(context).subCategories),
+                                    subtitle: Text(
+                                        t(context).selectDesiredSubcategories,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(color: secondaryColor)),
                                     children: <Widget>[
                                       if (widget
                                               .filterController.categoryType ==
@@ -349,7 +404,8 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                                                         test.id ==
                                                                         e.id)
                                                                     .isNotEmpty,
-                                                                text: e.name,
+                                                                text:
+                                                                    e.localName,
                                                                 id: e.id,
                                                                 onTap: () {
                                                                   if (selectedSubcategories
@@ -429,7 +485,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                                                   test.id ==
                                                                   e.id)
                                                               .isNotEmpty,
-                                                      text: e.name,
+                                                      text: e.localName,
                                                       id: e.id,
                                                       onTap: () {
                                                         if (selectedSubcategories
@@ -484,7 +540,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
           Align(
               alignment: Alignment.bottomCenter,
               child: WideButton(
-                title: const Text('ثبت'),
+                title: Text(t(context).confirmSmall),
                 onTap: () async {
                   widget.filterController.startTime.value = startTime;
                   widget.filterController.endTime.value = endTime;
@@ -505,6 +561,9 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                   }
                   widget.filterController.selectedSortCategory.value =
                       selectedCategory;
+                  widget.filterController.selectedProviders.clear();
+                  widget.filterController.selectedProviders
+                      .addAll(selectedProviders);
                   if (context.mounted) {
                     context.pop();
                   }
@@ -524,8 +583,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
         contentPadding: EdgeInsets.zero,
         content: Container(
           decoration: BoxDecoration(
-              color: secondaryColor.lighten(0.1),
-              borderRadius: BorderRadius.circular(16)),
+              color: backgroundColor, borderRadius: BorderRadius.circular(16)),
           width: getScreenWidth(ctx) * 0.5,
           height: getScreenWidth(ctx) * 0.5,
           child: Column(
@@ -534,7 +592,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                 height: 32,
               ),
               Text(
-                'هل تريد إعادة ضبط قيم التصفية؟',
+                t(context).resetFiltering,
                 style: Theme.of(ctx).textTheme.titleMedium,
               ),
               const Spacer(),
@@ -552,11 +610,11 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                     bottomRight: Radius.circular(16))),
                             child: Center(
                                 child: Text(
-                              'ابطال',
+                              t(context).cancel,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge!
-                                  .copyWith(color: Colors.red.lighten(0.1)),
+                                  .copyWith(color: errorColor),
                             )),
                           ))),
                   Expanded(
@@ -571,11 +629,11 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                     bottomLeft: Radius.circular(16))),
                             child: Center(
                                 child: Text(
-                              'التاكيد',
+                              t(context).confirm,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge!
-                                  .copyWith(color: Colors.green.lighten(0.1)),
+                                  .copyWith(color: successColor),
                             )),
                           )))
                 ],
@@ -636,13 +694,12 @@ class SortCategory {
 Future<Position?> getCurrentLocation(BuildContext context) async {
   bool serviceEnabled;
   LocationPermission permission;
-
+  if (!context.mounted) return null;
   // Check if location services are enabled
   serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text("خدمات الموقع معطلة، يرجى تفعيلها من الإعدادات.")),
+      SnackBar(content: Text(t(context).locationServiceBlockedPleaseActivate)),
     );
     return null;
   }
@@ -653,8 +710,7 @@ Future<Position?> getCurrentLocation(BuildContext context) async {
     permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("يرجى السماح للتطبيق بالوصول إلى الموقع.")),
+        SnackBar(content: Text(t(context).allowLocationServices)),
       );
       return null;
     }
@@ -662,9 +718,8 @@ Future<Position?> getCurrentLocation(BuildContext context) async {
 
   if (permission == LocationPermission.deniedForever) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text(
-              "لقد منعت التطبيق من الوصول إلى الموقع بشكل دائم، يرجى تغييره من الإعدادات.")),
+      SnackBar(
+          content: Text(t(context).locationServicesDisallowedPleaseActivate)),
     );
     return null;
   }

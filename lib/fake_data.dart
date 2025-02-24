@@ -263,12 +263,11 @@ Clinic clinic = Clinic(
     imageUrl: 'assets/images/placeholder.png');
 
 List<SortCategory> sortCategories = [
-  SortCategory("", "بدون ترتيب"),
+  SortCategory('appointment_time', 'من اقرب موعد'),
   SortCategory("distance", 'من القريب للبعيد'),
-  SortCategory('rating', 'التقييم الاعلى'),
+  // SortCategory('rating', 'التقييم الاعلى'),
   SortCategory('price_high_first', 'من اعلى سعر'),
   SortCategory('price_low_first', 'من اقل سعر'),
-  SortCategory('appointment_time', 'من اقرب موعد')
 ];
 
 // List<String> cities = [

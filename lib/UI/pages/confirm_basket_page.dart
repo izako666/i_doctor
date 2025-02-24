@@ -11,6 +11,7 @@ import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/realm_controller.dart';
+import 'package:intl/intl.dart';
 
 class ConfirmBasketPage extends StatefulWidget {
   const ConfirmBasketPage({super.key});
@@ -39,23 +40,20 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
   Widget build(BuildContext context) {
     if (showErrorDialogue) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-                'تم تحديث بعض المنتجات في السلة، يرجى التحقق قبل المتابعة.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(t(context).basketItemsUpdated)));
         showErrorDialogue = false;
       });
     }
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'اكد الطلب',
+      appBar: IAppBar(
+        title: t(context).confirmOrder,
         toolbarHeight: kToolbarHeight,
         hasBackButton: false,
       ),
       body: loaded
           ? failed
-              ? const Center(
-                  child:
-                      Text('حدث خطأ ما، يرجى المحاولة مرة أخرى في وقت لاحق.'))
+              ? Center(child: Text(t(context).errorOccuredTryLater))
               : CustomScrollView(
                   slivers: [
                     const SliverToBoxAdapter(
@@ -89,17 +87,8 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text("السعر الاصلي"),
-                                        Text('$totalPrice ر.س')
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text("الضريبة (ضريبة القيمة المضافة)"),
-                                        Text('0 ر.س'),
+                                        Text(t(context).originalPrice),
+                                        Text(formatPrice(totalPrice))
                                       ],
                                     ),
                                     const SizedBox(height: 4),
@@ -107,8 +96,17 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text("الخصم"),
-                                        Text('$totalDiscount ر.س'),
+                                        Text(t(context).tax),
+                                        Text(formatPrice(0.0)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(t(context).discount),
+                                        Text(formatPrice(totalDiscount)),
                                       ],
                                     ),
                                     const SizedBox(height: 4),
@@ -118,11 +116,12 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text("السعر الإجمالي",
-                                            style: TextStyle(
+                                        Text(t(context).totalPrice,
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                         Text(
-                                            '${totalPrice - totalDiscount} ر.س',
+                                            formatPrice(
+                                                (totalPrice - totalDiscount)),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                       ],
@@ -140,7 +139,7 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: WideButton(
-                            title: Text("تاكيد",
+                            title: Text(t(context).confirm,
                                 style: Theme.of(context).textTheme.titleLarge),
                             onTap: () {
                               context.go('/cart/confirm/purchase_details');

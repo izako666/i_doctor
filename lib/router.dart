@@ -7,6 +7,7 @@ import 'package:i_doctor/UI/pages/auth/signup_page.dart';
 import 'package:i_doctor/UI/pages/chat.dart';
 import 'package:i_doctor/UI/pages/confirm_basket_page.dart';
 import 'package:i_doctor/UI/pages/confirm_purchase_details.dart';
+import 'package:i_doctor/UI/pages/favorites_page.dart';
 import 'package:i_doctor/UI/pages/main_pages/appointments_page.dart';
 import 'package:i_doctor/UI/pages/main_pages/basket_page.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
@@ -40,7 +41,12 @@ final router = GoRouter(
                   routes: [
                     GoRoute(
                         path: 'user_info',
-                        builder: (ctx, state) => const UserInformationPage()),
+                        builder: (ctx, state) => const UserInformationPage(),
+                        routes: [
+                          GoRoute(
+                              path: 'favorites',
+                              builder: (ctx, state) => const FavoritesPage())
+                        ]),
                     GoRoute(
                         path: '/login',
                         builder: (ctx, state) => const LoginPage(),
@@ -173,7 +179,8 @@ final router = GoRouter(
             ])
           ],
           builder: (ctx, state, shell) {
-            return BottomNavPage(ctx: ctx, state: state, shell: shell);
+            return BottomNavPage(
+                key: bottomNavKey, ctx: ctx, state: state, shell: shell);
           }),
     ]);
 

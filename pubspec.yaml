@@ -67,6 +67,8 @@ dependencies:
   realm: ^20.0.1
   connectivity_plus: ^6.1.2
   restart_app: ^1.3.2
+  flutter_native_splash: ^2.4.4
+  logger: ^2.5.0
 
 dev_dependencies:
   flutter_test:
@@ -122,3 +124,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_native_splash:
+  color: "#fbfbfe"
+  image: assets/images/dummy-logo-500.png
+  android_12:
+    image: assets/images/dummy-logo-500.png
+    color: "#fbfbfe"

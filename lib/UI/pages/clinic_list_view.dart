@@ -43,12 +43,13 @@ class _ClinicListPageState extends State<ClinicListPage> {
     FilterController filterController =
         Get.put(FilterController(categoryType: 0, categoriesTotal: []));
     filterController.onInit();
-    return const Scaffold(
+
+    return Scaffold(
       appBar: IAppBar(
-        title: 'العيادات',
+        title: t(context).clinics,
         hasBackButton: true,
       ),
-      body: CustomScrollView(slivers: [ClinicListView()]),
+      body: const CustomScrollView(slivers: [ClinicListView()]),
     );
   }
 }

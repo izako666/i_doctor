@@ -63,12 +63,12 @@ class _ClinicPageState extends State<ClinicPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'صفحة العيادة',
+      appBar: IAppBar(
+        title: t(context).clinicPage,
         hasBackButton: true,
       ),
       body: provider == null
-          ? const Center(child: Text("لم يتم العثور على هذه العيادة "))
+          ? Center(child: Text(t(context).clinicNotFound))
           : CustomScrollView(slivers: [
               SliverList(
                 delegate: SliverChildListDelegate([
@@ -104,7 +104,10 @@ class _ClinicPageState extends State<ClinicPage> {
                       CarouselAdBanner(
                         onTap: () {},
                         banners: [
-                          AdBanner(url: provider!.photo),
+                          AdBanner(
+                              url: provider!.photo,
+                              id: 0,
+                              bannerClickable: false),
                         ],
                         skeleton: false,
                         autoPlay: false,
@@ -126,7 +129,7 @@ class _ClinicPageState extends State<ClinicPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.arbName}, ${provider!.shortAddress}',
+                                      '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.name}, ${provider!.shortAddress}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium),
@@ -135,8 +138,7 @@ class _ClinicPageState extends State<ClinicPage> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleSmall!
-                                          .copyWith(
-                                              color: Colors.grey.darken(0.3))),
+                                          .copyWith(color: Colors.grey)),
                                 ],
                               ),
                               const Spacer(),
@@ -149,9 +151,9 @@ class _ClinicPageState extends State<ClinicPage> {
 
                                     MapUtils.openMap(numbers[0], numbers[1]);
                                   },
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.location_pin,
-                                    color: secondaryColor.darken(0.5),
+                                    color: secondaryColor,
                                   )),
                             ],
                           ),
@@ -162,7 +164,7 @@ class _ClinicPageState extends State<ClinicPage> {
                           child: Row(
                             children: [
                               Text(
-                                'معدل المراجعة',
+                                t(context).rating,
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                               const Spacer(),
@@ -185,7 +187,7 @@ class _ClinicPageState extends State<ClinicPage> {
                               child: Row(
                                 children: [
                                   Text(
-                                    "الفئة الرئيسية",
+                                    t(context).mainCategory,
                                     style:
                                         Theme.of(context).textTheme.titleMedium,
                                   ),
@@ -207,9 +209,7 @@ class _ClinicPageState extends State<ClinicPage> {
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall!
-                                            .copyWith(
-                                                color:
-                                                    primaryColor.darken(0.4)),
+                                            .copyWith(color: primaryColor),
                                       ))
                                 ],
                               )),
@@ -244,7 +244,7 @@ class _ClinicPageState extends State<ClinicPage> {
                                         color: pageIndex == 0
                                             ? primaryColor
                                             : Colors.grey),
-                                    const Text("الخدمات")
+                                    Text(t(context).services)
                                   ],
                                 ),
                               ),
@@ -272,7 +272,7 @@ class _ClinicPageState extends State<ClinicPage> {
                                         color: pageIndex == 1
                                             ? primaryColor
                                             : Colors.grey),
-                                    const Text("المراجعات")
+                                    Text(t(context).reviews)
                                   ],
                                 ),
                               ),

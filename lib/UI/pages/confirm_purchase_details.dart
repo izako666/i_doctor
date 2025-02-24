@@ -25,8 +25,8 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'الشراء',
+      appBar: IAppBar(
+        title: t(context).toBuy,
         hasBackButton: true,
       ),
       body: SingleChildScrollView(
@@ -45,10 +45,10 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("رقم التليفون"),
+                      Text(t(context).phoneNumber),
                       Container(
                           decoration: BoxDecoration(
-                              color: backgroundColor.lighten(0.05),
+                              color: backgroundColor,
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(4)),
                           height: 40,
@@ -90,10 +90,10 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("البلد"),
+                      Text(t(context).country),
                       Container(
                           decoration: BoxDecoration(
-                              color: backgroundColor.lighten(0.05),
+                              color: backgroundColor,
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(4)),
                           height: 40,
@@ -124,10 +124,10 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("المدينة"),
+                      Text(t(context).city),
                       Container(
                           decoration: BoxDecoration(
-                              color: backgroundColor.lighten(0.05),
+                              color: backgroundColor,
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(4)),
                           height: 40,
@@ -159,7 +159,7 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                     children: [
                       Container(
                           decoration: BoxDecoration(
-                              color: backgroundColor.lighten(0.05),
+                              color: backgroundColor,
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(4)),
                           height: 40,
@@ -171,8 +171,8 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                                 padding: const EdgeInsets.only(
                                     left: 4, right: 4, top: 4, bottom: 0),
                                 child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    hintText: 'العنوان',
+                                  decoration: InputDecoration(
+                                    hintText: t(context).address,
                                     border: InputBorder.none,
                                     isDense: true,
                                   ),
@@ -190,7 +190,7 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                       vertical: 16.0, horizontal: 48),
                   child: Row(
                     children: [
-                      Text('الكرت',
+                      Text(t(context).card,
                           style: Theme.of(context).textTheme.titleLarge),
                     ],
                   ),
@@ -201,7 +201,7 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                     children: [
                       Container(
                           decoration: BoxDecoration(
-                              color: backgroundColor.lighten(0.05),
+                              color: backgroundColor,
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(4)),
                           height: 40,
@@ -213,8 +213,8 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                                 padding: const EdgeInsets.only(
                                     left: 4, right: 4, top: 4, bottom: 0),
                                 child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    hintText: 'الاسم على الكرت',
+                                  decoration: InputDecoration(
+                                    hintText: t(context).cardName,
                                     border: InputBorder.none,
                                     isDense: true,
                                   ),
@@ -234,7 +234,7 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                     children: [
                       Container(
                           decoration: BoxDecoration(
-                              color: backgroundColor.lighten(0.05),
+                              color: backgroundColor,
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(4)),
                           height: 40,
@@ -264,7 +264,7 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                                         width: 30,
                                       ),
                                     ),
-                                    hintText: 'رقم الكرت',
+                                    hintText: t(context).cardNumber,
                                   ),
                                   onChanged: (value) {},
                                 ),
@@ -284,7 +284,7 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                           children: [
                             Container(
                                 decoration: BoxDecoration(
-                                    color: backgroundColor.lighten(0.05),
+                                    color: backgroundColor,
                                     border: Border.all(),
                                     borderRadius: BorderRadius.circular(4)),
                                 height: 40,
@@ -300,8 +300,8 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                                         inputFormatters: [
                                           CreditCardExpirationDateFormatter()
                                         ],
-                                        decoration: const InputDecoration(
-                                          hintText: 'تاريخ الانتهاء',
+                                        decoration: InputDecoration(
+                                          hintText: t(context).expirationDate,
                                           border: InputBorder.none,
                                           isDense: true,
                                         ),
@@ -319,7 +319,7 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                           children: [
                             Container(
                                 decoration: BoxDecoration(
-                                    color: backgroundColor.lighten(0.05),
+                                    color: backgroundColor,
                                     border: Border.all(),
                                     borderRadius: BorderRadius.circular(4)),
                                 height: 40,
@@ -355,7 +355,7 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: WideButton(
-                      title: Text("الدفع",
+                      title: Text(t(context).payment,
                           style: Theme.of(context).textTheme.titleLarge),
                       onTap: () {}),
                 )

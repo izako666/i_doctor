@@ -7,8 +7,10 @@ class RealmController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    var config = Configuration.local([BasketItem.schema], schemaVersion: 2);
-
+    var config = Configuration.local(
+      [BasketItem.schema],
+      schemaVersion: 3,
+    );
     realm = Realm(config);
   }
 
@@ -19,7 +21,9 @@ class RealmController extends GetxController {
   }
 
   List<BasketItem> getItems(String userId) {
-    return realm.all<BasketItem>().query(r'userId == $0', [userId]).toList();
+    return realm
+        .all<BasketItem>()
+        .query(r'userId == $0 AND isFavorite == $1', [userId, false]).toList();
   }
 
   void addItem(BasketItem basketItem) {
@@ -54,11 +58,45 @@ class RealmController extends GetxController {
   }
 
   bool containsBasketItem(BasketItem basketItem, String userId) {
-    return !realm.all<BasketItem>().query(r'userId == $0 AND productId == $1',
-        [userId, basketItem.productId]).isEmpty;
+    return !realm.all<BasketItem>().query(
+        r'userId == $0 AND productId == $1 AND isFavorite == $2',
+        [userId, basketItem.productId, false]).isEmpty;
   }
 
   Stream<RealmResultsChanges<BasketItem>> listenStream(String userId) {
-    return realm.all<BasketItem>().query(r'userId == $0', [userId]).changes;
+    return realm
+        .all<BasketItem>()
+        .query(r'userId == $0 AND isFavorite == $1', [userId, false]).changes;
+  }
+
+  List<BasketItem> getFavoriteItems(String userId) {
+    return realm
+        .all<BasketItem>()
+        .query(r'userId == $0 AND isFavorite == $1', [userId, true]).toList();
+  }
+
+  BasketItem? getFavoriteItem(String userId, int productId) {
+    return realm.all<BasketItem>().query(
+        r'userId == $0 AND isFavorite == $1 AND productId == $2',
+        [userId, true, productId]).firstOrNull;
+  }
+
+  bool containsFavoriteItem(BasketItem basketItem, String userId) {
+    return !realm.all<BasketItem>().query(
+        r'userId == $0 AND productId == $1 AND isFavorite == $2',
+        [userId, basketItem.productId, true]).isEmpty;
+  }
+
+  Stream<RealmResultsChanges<BasketItem>> listenFavoriteStream(String userId) {
+    return realm
+        .all<BasketItem>()
+        .query(r'userId == $0 AND isFavorite == $1', [userId, true]).changes;
+  }
+
+  Stream<RealmResultsChanges<BasketItem>> listenFavoriteStreamItem(
+      String userId, int productId) {
+    return realm.all<BasketItem>().query(
+        r'userId == $0 AND isFavorite == $1 AND productId == $2',
+        [userId, true, productId]).changes;
   }
 }

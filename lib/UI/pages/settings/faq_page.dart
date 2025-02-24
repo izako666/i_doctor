@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
+import 'package:i_doctor/portable_api/helper.dart';
 
 class FaqPage extends StatelessWidget {
   const FaqPage({super.key});
@@ -9,8 +10,8 @@ class FaqPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const IAppBar(
-        title: 'الأسئلة المتكررة',
+      appBar: IAppBar(
+        title: t(context).faq,
         hasBackButton: true,
       ),
       body: SingleChildScrollView(

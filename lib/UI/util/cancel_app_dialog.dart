@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 
 class CancelAppointmentDialog extends StatelessWidget {
@@ -11,7 +12,7 @@ class CancelAppointmentDialog extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 32),
-        Text("هل انت واثق بقرارك؟",
+        Text(t(context).areYouSureWithDecision,
             style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 32),
         Row(
@@ -23,11 +24,11 @@ class CancelAppointmentDialog extends StatelessWidget {
                     },
                     child: Container(
                       height: 64,
-                      decoration: BoxDecoration(
-                          color: Colors.red.lighten(0.1),
-                          borderRadius: const BorderRadius.only(
+                      decoration: const BoxDecoration(
+                          color: errorColor,
+                          borderRadius: BorderRadius.only(
                               bottomRight: Radius.circular(16))),
-                      child: const Center(child: Text('ابطال')),
+                      child: Center(child: Text(t(context).cancel)),
                     ))),
             Expanded(
                 child: InkWell(
@@ -36,11 +37,11 @@ class CancelAppointmentDialog extends StatelessWidget {
                     },
                     child: Container(
                       height: 64,
-                      decoration: BoxDecoration(
-                          color: Colors.green.lighten(0.1),
-                          borderRadius: const BorderRadius.only(
+                      decoration: const BoxDecoration(
+                          color: successColor,
+                          borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(16))),
-                      child: const Center(child: Text('التاكيد')),
+                      child: Center(child: Text(t(context).confirm)),
                     )))
           ],
         )

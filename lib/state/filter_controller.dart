@@ -21,13 +21,16 @@ class FilterController extends GetxController {
   //0 to filter by category, 1 to filter by subcategory, 2 to filter by both
   final int categoryType;
   final List<Subcategory>? subCategoriesTotal;
+  List<Provider> totalProviders = List.empty(growable: true);
+  RxList<Provider> selectedProviders = RxList.empty(growable: true);
 
-  RxString selectedSortCategory = ''.obs;
-
+  RxString selectedSortCategory = 'appointment_time'.obs;
+  final bool filterServiceProviders;
   FilterController(
       {required this.categoryType,
       this.subCategoriesTotal,
-      this.categoriesTotal});
+      this.categoriesTotal,
+      this.filterServiceProviders = true});
 
   @override
   void onInit() {
@@ -41,6 +44,26 @@ class FilterController extends GetxController {
 
       categoriesSelected.value = List.from(categoriesTotal!);
     }
+  }
+
+  void addProviders(List<Product> prods) {
+    totalProviders.clear();
+    selectedProviders.clear();
+
+    Set<Provider> uniqueProviders = {};
+
+    for (Product prod in prods) {
+      Provider? prov = Get.find<CommerceController>()
+          .providers
+          .firstWhereOrNull((test) => test.name == prod.spId);
+
+      if (prov != null) {
+        uniqueProviders.add(prov);
+      }
+    }
+
+    totalProviders.addAll(uniqueProviders);
+    selectedProviders.addAll(totalProviders);
   }
 
   void init() {
@@ -64,7 +87,11 @@ class FilterController extends GetxController {
       if (double.parse(prod.idocNet) <= endPrice.value &&
           double.parse(prod.idocNet) >= startPrice.value &&
           DateTime.parse(prod.endDate).compareTo(endTime.value) < 0 &&
-          DateTime.parse(prod.startDate).compareTo(startTime.value) > 0) {
+          DateTime.parse(prod.startDate).compareTo(startTime.value) > 0 &&
+          selectedProviders
+                  .where((test) => test.name == prod.spId)
+                  .firstOrNull !=
+              null) {
         if (categoryType == 0 &&
             categoriesSelected
                 .where((test) => test.name == prod.catId)
@@ -174,7 +201,9 @@ class FilterController extends GetxController {
     startPrice.value = 0.0;
     endPrice.value = 2000.0;
 
-    selectedSortCategory.value = '';
+    selectedSortCategory.value = 'appointment_time';
+    selectedProviders.clear();
+    selectedProviders.addAll(totalProviders);
     init();
   }
 }
