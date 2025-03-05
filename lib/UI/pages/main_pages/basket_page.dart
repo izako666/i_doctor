@@ -77,7 +77,7 @@ class _BasketPageState extends State<BasketPage> {
                                 itemBuilder: (ctx, i) => Padding(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 8.0, horizontal: 4),
-                                  child: BasketCard(
+                                  child: CartCard(
                                     isDisplay: false,
                                     basketItem: basketList[i],
                                     onDelete: () {

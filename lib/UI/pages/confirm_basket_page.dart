@@ -63,7 +63,7 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
                       itemBuilder: (ctx, i) => Padding(
                         padding: const EdgeInsets.symmetric(
                             vertical: 4.0, horizontal: 4),
-                        child: BasketCard(
+                        child: CartCard(
                           isDisplay: true,
                           basketItem: basketItems[i],
                           onDelete: () {},

@@ -20,6 +20,7 @@ import 'package:i_doctor/UI/pages/notifications_page.dart';
 import 'package:i_doctor/UI/pages/review_view.dart';
 import 'package:i_doctor/UI/pages/settings/faq_page.dart';
 import 'package:i_doctor/UI/pages/settings/privacy_policy_page.dart';
+import 'package:i_doctor/UI/pages/settings/terms_conditions_page.dart';
 import 'package:i_doctor/UI/pages/settings/user_info_page.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -108,17 +109,7 @@ final router = GoRouter(
                               path: 'purchase_details',
                               builder: (ctx, state) =>
                                   const ConfirmPurchaseDetailsPage())
-                        ])
-                  ]),
-            ]),
-            StatefulShellBranch(routes: [
-              GoRoute(
-                  path: '/advertisements',
-                  builder: (ctx, state) => const AdListPage(
-                        id: '000',
-                        hasBackButton: false,
-                      ),
-                  routes: [
+                        ]),
                     GoRoute(
                       path: '/advert/:id',
                       builder: (context, state) =>
@@ -151,6 +142,46 @@ final router = GoRouter(
                             CategoryListPage(id: state.pathParameters['id']!)),
                   ]),
             ]),
+            // StatefulShellBranch(routes: [
+            //   GoRoute(
+            //       path: '/advertisements',
+            //       builder: (ctx, state) => const AdListPage(
+            //             id: '000',
+            //             hasBackButton: false,
+            //           ),
+            //       routes: [
+            //         GoRoute(
+            //           path: '/advert/:id',
+            //           builder: (context, state) =>
+            //               AdPage(id: state.pathParameters['id'] ?? ''),
+            //         ),
+            //         GoRoute(
+            //             path: '/advert_list/:collid',
+            //             builder: (ctx, state) =>
+            //                 AdListPage(id: state.pathParameters['collid']!)),
+            //         GoRoute(
+            //             path: '/reviews_product/:productid',
+            //             builder: (ctx, state) => ReviewScreen(
+            //                 type: 'product',
+            //                 id: state.pathParameters['productid']!)),
+            //         GoRoute(
+            //             path: '/reviews_clinic/:clinicid',
+            //             builder: (ctx, state) => ReviewScreen(
+            //                 type: 'clinic',
+            //                 id: state.pathParameters['clinicid']!)),
+            //         GoRoute(
+            //             path: '/clinic/:clinicid',
+            //             builder: (ctx, state) =>
+            //                 ClinicPage(id: state.pathParameters['clinicid']!)),
+            //         GoRoute(
+            //             path: '/clinics',
+            //             builder: (ctx, state) => const ClinicListPage()),
+            //         GoRoute(
+            //             path: '/category/:id',
+            //             builder: (ctx, state) =>
+            //                 CategoryListPage(id: state.pathParameters['id']!)),
+            //       ]),
+            // ]),
             StatefulShellBranch(routes: [
               GoRoute(
                   path: '/settings',
@@ -161,6 +192,9 @@ final router = GoRouter(
                     GoRoute(
                         path: 'privacy_policy',
                         builder: (ctx, state) => const PrivacyPolicyPage()),
+                    GoRoute(
+                        path: 'terms_and_conditions',
+                        builder: (ctx, state) => const TermsConditionsPage()),
                     // GoRoute(
                     //     path: 'user_info',
                     //     builder: (ctx, state) => const UserInformationPage()),

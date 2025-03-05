@@ -10,6 +10,7 @@ import 'package:i_doctor/UI/util/price_text.dart';
 import 'package:i_doctor/api/data_classes/appointment.dart';
 import 'package:i_doctor/api/data_classes/basket_item.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
+import 'package:i_doctor/api/networking/rest_functions.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/maps/map_utils.dart';
 import 'package:i_doctor/state/auth_controller.dart';
@@ -551,6 +552,362 @@ class BasketCard extends StatelessWidget {
                           onTap: () {
                             realmController.deleteItem(basketItem);
                             onDelete();
+                            ctx.pop();
+                          },
+                          child: Container(
+                            height: 32,
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(16))),
+                            child: Center(
+                                child: Text(
+                              t(context).confirm,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(color: successColor),
+                            )),
+                          )))
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
+  }
+}
+
+class CartCard extends StatefulWidget {
+  const CartCard({
+    super.key,
+    required this.basketItem,
+    required this.onDelete,
+    required this.isDisplay,
+  });
+  final BasketItem basketItem;
+  final VoidCallback onDelete;
+  final bool isDisplay;
+
+  @override
+  State<CartCard> createState() => _CartCardState();
+}
+
+class _CartCardState extends State<CartCard> {
+  Provider? provider;
+
+  @override
+  void initState() {
+    super.initState();
+    provider = Get.find<CommerceController>()
+        .providers
+        .where((test) => test.name == widget.basketItem.spId)
+        .firstOrNull;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedContainer(
+          blackWhite: getBlackWhite(context),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          padding: EdgeInsets.zero,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 200,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.network(
+                            width: getScreenWidth(context) * 0.3,
+                            height: getScreenWidth(context) * 0.3,
+                            fit: BoxFit.fill,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: getScreenWidth(context) * 0.3,
+                                  height: getScreenWidth(context) * 0.3,
+                                  color: Colors.black,
+                                ),
+                            '$hostUrlBase/public/storage/${widget.basketItem.photo}'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    MediaQuery.removePadding(
+                        context: context,
+                        child: TextButton(
+                            style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                tapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap),
+                            onPressed: () {
+                              String branch = GoRouter.of(context)
+                                  .routeInformationProvider
+                                  .value
+                                  .uri
+                                  .pathSegments[0];
+
+                              context.push(
+                                  '/$branch/advert/${widget.basketItem.productId}');
+                            },
+                            child: Text(
+                              widget.basketItem.name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(color: primaryColor),
+                            ))),
+                    const SizedBox(height: 4),
+                    Text(widget.basketItem.spId,
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 2),
+                    if (provider != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.name}, ${provider!.shortAddress}',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
+                            ],
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                List<double> numbers = provider!.location
+                                    .split(',')
+                                    .map((e) => double.parse(e))
+                                    .toList();
+
+                                MapUtils.openMap(numbers[0], numbers[1]);
+                              },
+                              icon: const Icon(
+                                Icons.location_pin,
+                                color: secondaryColor,
+                              ))
+                        ],
+                      ),
+                    const SizedBox(height: 2),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(t(context).date),
+                        Text(
+                            ' ${formatDate(DateTime.parse(widget.basketItem.startDate))} - ${formatDate(DateTime.parse(widget.basketItem.endDate))}')
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      formatPrice(double.parse(widget.basketItem.idocPrice)),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(color: primaryColor),
+                    ),
+                    const SizedBox(
+                      height: 0,
+                    )
+                  ],
+                ),
+              ],
+            ),
+            if (!widget.isDisplay)
+              Row(
+                children: [
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(t(context).count)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 36,
+                                  height: 36,
+                                  child: IconButton(
+                                      iconSize: 16,
+                                      onPressed: () {
+                                        int newQuantity =
+                                            widget.basketItem.quantity - 1;
+                                        if (newQuantity == 0) {
+                                        } else {
+                                          RealmController realmController =
+                                              Get.find<RealmController>();
+                                          realmController.updateQuantity(
+                                              widget.basketItem, newQuantity);
+                                          widget.onDelete();
+                                        }
+                                      },
+                                      icon: const Icon(
+                                        Icons.remove,
+                                        fill: 1,
+                                      )),
+                                ),
+                                Text(widget.basketItem.quantity.toString()),
+                                SizedBox(
+                                  width: 36,
+                                  height: 36,
+                                  child: IconButton(
+                                      iconSize: 16,
+                                      onPressed: () {
+                                        RealmController realmController =
+                                            Get.find<RealmController>();
+                                        if (widget.basketItem
+                                                .availablePurchases <=
+                                            (widget.basketItem.quantity + 1)) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(t(context)
+                                                      .cantRequestMoreProduct)));
+
+                                          return;
+                                        }
+                                        realmController.updateQuantity(
+                                            widget.basketItem,
+                                            widget.basketItem.quantity + 1);
+                                        widget.onDelete();
+                                      },
+                                      icon: const Icon(
+                                        Icons.add,
+                                        fill: 1.0,
+                                      )),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Flexible(
+                    flex: 3,
+                    child: WideButton(
+                        radius: BorderRadius.only(
+                            bottomLeft: !(Directionality.of(context) ==
+                                    TextDirection.rtl)
+                                ? const Radius.circular(0)
+                                : const Radius.circular(16),
+                            topLeft: !(Directionality.of(context) ==
+                                    TextDirection.rtl)
+                                ? const Radius.circular(0)
+                                : const Radius.circular(16),
+                            bottomRight:
+                                Directionality.of(context) == TextDirection.rtl
+                                    ? const Radius.circular(0)
+                                    : const Radius.circular(16),
+                            topRight:
+                                Directionality.of(context) == TextDirection.rtl
+                                    ? const Radius.circular(0)
+                                    : const Radius.circular(16)),
+                        title: Text(t(context).delete),
+                        color: errorColor,
+                        onTap: () {
+                          _showCancelDialog(
+                              context, Get.find<RealmController>());
+                        }),
+                  ),
+                ],
+              ),
+            if (widget.isDisplay)
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        t(context).count,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        widget.basketItem.quantity.toString(),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ]),
+              )
+          ]),
+    );
+  }
+
+  void _showCancelDialog(
+      BuildContext context, RealmController realmController) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: Container(
+          decoration: BoxDecoration(
+              color: backgroundColor, borderRadius: BorderRadius.circular(16)),
+          width: getScreenWidth(ctx) * 0.5,
+          height: getScreenWidth(ctx) * 0.5,
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 32,
+              ),
+              Text(
+                t(context).areYouSure,
+                style: Theme.of(ctx).textTheme.headlineSmall,
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                      child: InkWell(
+                          onTap: () {
+                            ctx.pop();
+                          },
+                          child: Container(
+                            height: 32,
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(16))),
+                            child: Center(
+                                child: Text(
+                              t(context).cancel,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(color: errorColor),
+                            )),
+                          ))),
+                  Expanded(
+                      child: InkWell(
+                          onTap: () {
+                            realmController.deleteItem(widget.basketItem);
+                            widget.onDelete();
                             ctx.pop();
                           },
                           child: Container(

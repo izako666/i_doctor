@@ -50,6 +50,10 @@ class _FeedPageState extends State<FeedPage> {
 
       FeedController controller = Get.find<FeedController>();
       CommerceController commerceController = Get.find<CommerceController>();
+      List<Category> categories = List.empty(growable: true);
+      categories.addAll(commerceController.categories);
+
+      categories.sort((cat1, cat2) => cat1.id.compareTo(cat2.id));
       controller.searchVal.value;
 
       return Scaffold(
@@ -281,21 +285,17 @@ class _FeedPageState extends State<FeedPage> {
                                                                   .symmetric(
                                                                   horizontal:
                                                                       24),
-                                                          child: CategoryCircleButton(
-                                                              category:
-                                                                  commerceController
-                                                                          .categories[
-                                                                      i]));
+                                                          child:
+                                                              CategoryCircleButton(
+                                                                  category:
+                                                                      categories[
+                                                                          i]));
                                                     }),
                                               ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(height: 16),
-                                      DealsBox(
-                                          blackWhite: blackWhite,
-                                          controller: controller),
                                       const SizedBox(height: 16),
                                       SizedBox(
                                         width: getScreenWidth(context),
@@ -373,73 +373,6 @@ class _FeedPageState extends State<FeedPage> {
                                         ),
                                       ),
                                       const SizedBox(height: 16),
-                                      ElevatedContainer(
-                                          blackWhite: blackWhite,
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: Align(
-                                                alignment:
-                                                    Alignment.centerRight,
-                                                child: Text(
-                                                    t(context).moreOffers,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleLarge),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 16,
-                                            ),
-                                            ...[1, 2, 3, 4].map(
-                                              (c) => Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 8),
-                                                child: Material(
-                                                  child: Ink(
-                                                    width:
-                                                        getScreenWidth(context),
-                                                    height: 196,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(16),
-                                                        image:
-                                                            const DecorationImage(
-                                                                image:
-                                                                    AssetImage(
-                                                                  'assets/images/placeholder.png',
-                                                                ),
-                                                                fit: BoxFit
-                                                                    .fill)),
-                                                    child: Material(
-                                                        color: Colors
-                                                            .transparent,
-                                                        child: InkWell(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        16),
-                                                            splashColor:
-                                                                blackWhite
-                                                                    .inverse
-                                                                    .withAlpha(
-                                                                        60),
-                                                            splashFactory:
-                                                                InkRipple
-                                                                    .splashFactory,
-                                                            onTap: () {
-                                                              context.push(
-                                                                  '/feed/advert/1234');
-                                                            })),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ])
                                     ]),
                                   ),
                                 ),
@@ -628,6 +561,7 @@ class ElevatedContainer extends StatelessWidget {
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.padding,
     this.mainAxisAlignment = MainAxisAlignment.start,
+    this.height,
   });
 
   final Color blackWhite;
@@ -636,6 +570,7 @@ class ElevatedContainer extends StatelessWidget {
   final CrossAxisAlignment crossAxisAlignment;
   final EdgeInsets? padding;
   final MainAxisAlignment mainAxisAlignment;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -646,6 +581,7 @@ class ElevatedContainer extends StatelessWidget {
             padding: padding ??
                 const EdgeInsets.only(left: 8, right: 8, bottom: 16, top: 4),
             width: width ?? getScreenWidth(context),
+            height: height,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               color: blackWhite == black ? white : black,
@@ -1000,8 +936,9 @@ class CategoryCircleButton extends StatelessWidget {
                     width: 48,
                     height: 48,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.circular(32),
-                        child: Image.asset('assets/images/placeholder.png'))),
+                        borderRadius: BorderRadius.circular(0),
+                        child: Image.asset('assets/images/${category.id}.png',
+                            fit: BoxFit.scaleDown))),
                 Text(
                   formatCatName(category.name),
                   overflow: TextOverflow.ellipsis,

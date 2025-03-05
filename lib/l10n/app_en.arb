@@ -192,5 +192,9 @@
   "noProductsFavoriteList": "لم تقم بإضافة أي منتج إلى قائمة المفضلة لديك.",
   "serviceProviders": "مزودين الخدمة",
   "selectedDesiredProviders": "اختر مزودين الخدمة التي تريد",
-  "toBasket": "إلى السلة"
+  "toBasket": "إلى السلة",
+  "termsAndConditions": "السياسات والأحكام",
+  "whatsapp": "واتساب",
+  "instagram": "انستاقرام",
+  "selectLanguage": "اختر اللغة"
 }
