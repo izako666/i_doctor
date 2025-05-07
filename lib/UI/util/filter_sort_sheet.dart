@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
+import 'package:i_doctor/UI/util/data_from_id.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/api/data_classes/category.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/subcategory.dart';
 import 'package:i_doctor/fake_data.dart';
 import 'package:i_doctor/portable_api/helper.dart';
+import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/filter_controller.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -274,8 +275,26 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                           max: 2000.0,
                                           divisions: 20,
                                           labels: RangeLabels(
-                                              formatPrice(startPrice),
-                                              formatPrice(endPrice)),
+                                              formatPrice(
+                                                  startPrice,
+                                                  getCurrencyFromId(Get.find<
+                                                              CommerceController>()
+                                                          .products[0]
+                                                          .currency) ??
+                                                      Currency(
+                                                          id: 0,
+                                                          name1: "SAR",
+                                                          name2: "س.ر.")),
+                                              formatPrice(
+                                                  endPrice,
+                                                  getCurrencyFromId(Get.find<
+                                                              CommerceController>()
+                                                          .products[0]
+                                                          .currency) ??
+                                                      Currency(
+                                                          id: 0,
+                                                          name1: "SAR",
+                                                          name2: "س.ر."))),
                                           values:
                                               RangeValues(startPrice, endPrice),
                                           onChanged: (val) {
@@ -288,8 +307,26 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(formatPrice(0.0)),
-                                          Text(formatPrice(2000.0)),
+                                          Text(formatPrice(
+                                              0.0,
+                                              getCurrencyFromId(Get.find<
+                                                          CommerceController>()
+                                                      .products[0]
+                                                      .currency) ??
+                                                  Currency(
+                                                      id: 0,
+                                                      name1: "SAR",
+                                                      name2: "س.ر."))),
+                                          Text(formatPrice(
+                                              2000.0,
+                                              getCurrencyFromId(Get.find<
+                                                          CommerceController>()
+                                                      .products[0]
+                                                      .currency) ??
+                                                  Currency(
+                                                      id: 0,
+                                                      name1: "SAR",
+                                                      name2: "س.ر."))),
                                         ],
                                       )
                                     ],
@@ -326,7 +363,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                                     .where((test) =>
                                                         test.id == e.id)
                                                     .isNotEmpty,
-                                                text: e.name,
+                                                text: e.localName,
                                                 id: e.id,
                                                 onTap: () {
                                                   if (selectedProviders
@@ -371,66 +408,72 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                         ...widget
                                             .filterController.categoriesTotal!
                                             .map((cat) {
-                                          return ElevatedContainer(
-                                              blackWhite:
-                                                  getBlackWhite(context),
-                                              children: [
-                                                Theme(
-                                                  data: Theme.of(context)
-                                                      .copyWith(
-                                                          dividerColor: Colors
-                                                              .transparent),
-                                                  child: ExpansionTile(
-                                                    title: Text(cat.name),
-                                                    children: [
-                                                      Wrap(
-                                                        runSpacing: 10,
-                                                        runAlignment:
-                                                            WrapAlignment
-                                                                .spaceBetween,
-                                                        spacing: 15,
-                                                        children: [
-                                                          ...widget
-                                                              .filterController
-                                                              .subCategoriesTotal!
-                                                              .where((subcat) =>
-                                                                  subcat
-                                                                      .catId ==
-                                                                  cat.id)
-                                                              .map((e) {
-                                                            return SelectableTextButton(
-                                                                selected: selectedSubcategories
-                                                                    .where((test) =>
-                                                                        test.id ==
-                                                                        e.id)
-                                                                    .isNotEmpty,
-                                                                text:
-                                                                    e.localName,
-                                                                id: e.id,
-                                                                onTap: () {
-                                                                  if (selectedSubcategories
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10.0),
+                                            child: ElevatedContainer(
+                                                blackWhite:
+                                                    getBlackWhite(context),
+                                                children: [
+                                                  Theme(
+                                                    data: Theme.of(context)
+                                                        .copyWith(
+                                                            dividerColor: Colors
+                                                                .transparent),
+                                                    child: ExpansionTile(
+                                                      title: Text(
+                                                          cat.getCategoryName(
+                                                              context)),
+                                                      children: [
+                                                        Wrap(
+                                                          runSpacing: 10,
+                                                          runAlignment:
+                                                              WrapAlignment
+                                                                  .spaceBetween,
+                                                          spacing: 15,
+                                                          children: [
+                                                            ...widget
+                                                                .filterController
+                                                                .subCategoriesTotal!
+                                                                .where((subcat) =>
+                                                                    subcat
+                                                                        .catId ==
+                                                                    cat.id)
+                                                                .map((e) {
+                                                              return SelectableTextButton(
+                                                                  selected: selectedSubcategories
                                                                       .where((test) =>
                                                                           test.id ==
                                                                           e.id)
-                                                                      .isEmpty) {
-                                                                    selectedSubcategories
-                                                                        .add(e);
-                                                                  } else {
-                                                                    selectedSubcategories.removeWhere(
-                                                                        (test) =>
+                                                                      .isNotEmpty,
+                                                                  text: e.getSubCategoryName(
+                                                                      context),
+                                                                  id: e.id,
+                                                                  onTap: () {
+                                                                    if (selectedSubcategories
+                                                                        .where((test) =>
                                                                             test.id ==
-                                                                            e.id);
-                                                                  }
-                                                                  setState(
-                                                                      () {});
-                                                                });
-                                                          })
-                                                        ],
-                                                      )
-                                                    ],
-                                                  ),
-                                                )
-                                              ]);
+                                                                            e.id)
+                                                                        .isEmpty) {
+                                                                      selectedSubcategories
+                                                                          .add(
+                                                                              e);
+                                                                    } else {
+                                                                      selectedSubcategories.removeWhere((test) =>
+                                                                          test.id ==
+                                                                          e.id);
+                                                                    }
+                                                                    setState(
+                                                                        () {});
+                                                                  });
+                                                            })
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                ]),
+                                          );
                                         })
                                       ] else
                                         Wrap(
@@ -453,7 +496,8 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                                                   test.id ==
                                                                   e.id)
                                                               .isNotEmpty,
-                                                      text: e.name,
+                                                      text: e.getCategoryName(
+                                                          context),
                                                       id: e.id,
                                                       onTap: () {
                                                         if (selectedCategories
@@ -485,7 +529,9 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                                                                   test.id ==
                                                                   e.id)
                                                               .isNotEmpty,
-                                                      text: e.localName,
+                                                      text:
+                                                          e.getSubCategoryName(
+                                                              context),
                                                       id: e.id,
                                                       onTap: () {
                                                         if (selectedSubcategories
@@ -518,7 +564,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                     ),
                     Column(
                       children: [
-                        ...sortCategories.map((category) {
+                        ...getSortCategories(context).map((category) {
                           return RadioListTile<String>(
                             title: Text(category.name),
                             value: category.id, // Unique ID for this category
@@ -577,6 +623,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
   Future<bool> _showCancelDialog(
     BuildContext context,
   ) async {
+    double zoomScale = getZoomScale(context);
     return await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -584,7 +631,7 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
         content: Container(
           decoration: BoxDecoration(
               color: backgroundColor, borderRadius: BorderRadius.circular(16)),
-          width: getScreenWidth(ctx) * 0.5,
+          width: getScreenWidth(ctx) * (zoomScale > 2.8 ? 0.9 : 0.5),
           height: getScreenWidth(ctx) * 0.5,
           child: Column(
             children: [
@@ -593,7 +640,10 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
               ),
               Text(
                 t(context).resetFiltering,
-                style: Theme.of(ctx).textTheme.titleMedium,
+                style: zoomScale > 2.8
+                    ? Theme.of(context).textTheme.bodyLarge
+                    : Theme.of(ctx).textTheme.titleMedium,
+                textAlign: TextAlign.center,
               ),
               const Spacer(),
               Row(
@@ -661,6 +711,7 @@ class SelectableTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double zoomScale = getZoomScale(context);
     return Material(
       elevation: 1,
       borderRadius: BorderRadius.circular(24),
@@ -671,12 +722,18 @@ class SelectableTextButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         onTap: onTap,
         child: Container(
-          width: (getScreenWidth(context) - 32) / 2,
+          width: 128,
           height: 32,
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Center(child: Text(text)),
+            child: Center(
+                child: Text(
+              text,
+              style: zoomScale > 2.8
+                  ? Theme.of(context).textTheme.bodySmall
+                  : Theme.of(context).textTheme.bodyMedium,
+            )),
           ),
         ),
       ),
@@ -697,7 +754,7 @@ Future<Position?> getCurrentLocation(BuildContext context) async {
   if (!context.mounted) return null;
   // Check if location services are enabled
   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
+  if (!serviceEnabled && context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(t(context).locationServiceBlockedPleaseActivate)),
     );
@@ -708,7 +765,7 @@ Future<Position?> getCurrentLocation(BuildContext context) async {
   permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
+    if (permission == LocationPermission.denied && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(t(context).allowLocationServices)),
       );
@@ -716,7 +773,7 @@ Future<Position?> getCurrentLocation(BuildContext context) async {
     }
   }
 
-  if (permission == LocationPermission.deniedForever) {
+  if (permission == LocationPermission.deniedForever && context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
           content: Text(t(context).locationServicesDisallowedPleaseActivate)),

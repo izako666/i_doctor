@@ -1,4 +1,4 @@
-import 'package:dio/src/response.dart' as response;
+import 'package:dio/dio.dart' as response;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -206,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                         Map<String, dynamic> nestData = data['data'];
                         auth.currentUser.value = User.fromJson(nestData);
                         auth.authToken.value = nestData['token'];
-
+                        await auth.reInitData();
                         Future.delayed(const Duration(milliseconds: 200), () {
                           if (context.mounted) {
                             GoRouter.of(context).clearStackAndNavigate('/feed');

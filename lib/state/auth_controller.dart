@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/user.dart';
@@ -12,11 +11,12 @@ import 'package:i_doctor/api/networking/rest_functions.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
+import 'package:i_doctor/state/language_controller.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'feed_controller.dart';
 
 class AuthController extends GetxController {
-  // TODO: this should be deleted when a real authentication system is set up
   Rx<User?> currentUser = Rx<User?>(null);
   Rx<String?> authToken = Rx<String?>(null);
   Rx<String?> currentEmail = Rx<String?>(null);
@@ -62,12 +62,16 @@ class AuthController extends GetxController {
   late TextEditingController lastNameController;
   late TextEditingController sEmailController;
   late TextEditingController sNationalityController;
+  late TextEditingController representativeNumController;
 
   List<Country>? countries;
   List<City>? cities;
   List<Nationality>? nationalities;
   List<Gender>? genders;
   RxBool loadedSignUpData = false.obs;
+  Rx<Country?> currentCountry = Rx(null);
+
+  final Set<String> _initializedLocales = {};
 
   @override
   void onInit() {
@@ -83,6 +87,7 @@ class AuthController extends GetxController {
     lastNameController = TextEditingController();
     sEmailController = TextEditingController();
     sNationalityController = TextEditingController();
+    representativeNumController = TextEditingController();
     rootBundle.loadString('assets/keys/auth_token.json').then((val) {
       var json = jsonDecode(val);
       masterAuthToken = json['auth_token'];
@@ -117,14 +122,132 @@ class AuthController extends GetxController {
     await retrieveCountries();
     loadedSignUpData.value = true;
     Get.put(CommerceController());
+    await Get.find<CommerceController>().retrieveCurrencies();
+
     await Get.find<CommerceController>().retrieveCategories();
     await Get.find<CommerceController>().retrieveSubcategories();
-    await Get.find<CommerceController>().retrieveProducts();
-    await Get.find<CommerceController>().retrieveProviders();
+    if (currentUser.value == null) {
+      String? country = await getUserCountry();
+      if (countries != null) {
+        if (LocalDataHandler.readData<int>("selected_search_country", -1) !=
+            -1) {
+          int selectedCountryId =
+              LocalDataHandler.readData<int>("selected_search_country", -1);
+          currentCountry.value =
+              countries!.where((test) => test.id == selectedCountryId).first;
+        } else if (country != null &&
+            countries!.where((item) => item.code == country).firstOrNull !=
+                null) {
+          currentCountry.value =
+              countries!.where((Country item) => item.code == country).first;
+        } else {
+          currentCountry.value = countries!.first;
+        }
+        await Get.find<CommerceController>()
+            .retrieveProviders(currentCountry.value!.id);
+        await Get.find<CommerceController>()
+            .retrieveProducts(currentCountry.value!.id);
+      }
+    } else {
+      currentCountry.value = countries!
+          .where((Country item) => item.id == currentUser.value!.countryId)
+          .first;
+      await Get.find<CommerceController>()
+          .retrieveProviders(currentCountry.value!.id);
+      await Get.find<CommerceController>()
+          .retrieveProducts(currentCountry.value!.id);
+    }
+
+    for (Provider prov in Get.find<CommerceController>().providers) {
+      await Get.find<CommerceController>().retrieveBranches(prov.id);
+    }
 
     Get.find<FeedController>().skeleton.value = false;
 
     loaded.value = true;
+  }
+
+  Future<Country?> getCurrentCountry() async {
+    if (currentUser.value == null) {
+      if (currentCountry.value != null) return currentCountry.value!;
+      String? country = await getUserCountry();
+      if (country != null &&
+          countries != null &&
+          countries!.where((item) => item.code == country).firstOrNull !=
+              null) {
+        currentCountry.value =
+            countries!.where((item) => item.code == country).first;
+        return currentCountry.value!;
+      }
+      return null;
+    } else {
+      return countries
+          ?.where((test) => test.id == currentUser.value!.countryId)
+          .first;
+    }
+  }
+
+  bool atFirstLocale() {
+    return Get.find<LanguageController>().locale.value ==
+        currentCountry.value!.lang1;
+  }
+
+  void switchLocale() {
+    if (Get.find<LanguageController>().locale.value ==
+        currentCountry.value!.lang1) {
+      Get.find<LanguageController>().setLocale(currentCountry.value!.lang2);
+    } else {
+      Get.find<LanguageController>().setLocale(currentCountry.value!.lang1);
+    }
+  }
+
+  Future<void> reInitData() async {
+    Get.find<FeedController>().skeleton.value = true;
+    CommerceController controller = Get.find<CommerceController>();
+    controller.products.clear();
+    controller.providers.clear();
+    controller.branches.clear();
+
+    loaded.value = false;
+
+    if (currentUser.value == null) {
+      String? country = await getUserCountry();
+      if (countries != null) {
+        if (LocalDataHandler.readData<int>("selected_search_country", -1) !=
+            -1) {
+          int selectedCountryId =
+              LocalDataHandler.readData<int>("selected_search_country", -1);
+          currentCountry.value =
+              countries!.where((test) => test.id == selectedCountryId).first;
+        } else if (country != null &&
+            countries!.where((item) => item.code == country).firstOrNull !=
+                null) {
+          currentCountry.value =
+              countries!.where((Country item) => item.code == country).first;
+        }
+        await controller.retrieveProviders(currentCountry.value!.id);
+        await controller.retrieveProducts(currentCountry.value!.id);
+      }
+    } else {
+      currentCountry.value = countries!
+          .where((Country item) => item.id == currentUser.value!.countryId)
+          .first;
+      await controller.retrieveProviders(currentCountry.value!.id);
+      await controller.retrieveProducts(currentCountry.value!.id);
+    }
+    for (Provider prov in controller.providers) {
+      await controller.retrieveBranches(prov.id);
+    }
+    Get.find<FeedController>().skeleton.value = false;
+
+    loaded.value = true;
+  }
+
+  Future<void> ensureDateFormattingInitialized(String locale) async {
+    if (!_initializedLocales.contains(locale)) {
+      await initializeDateFormatting(locale);
+      _initializedLocales.add(locale);
+    }
   }
 
   @override
@@ -140,6 +263,7 @@ class AuthController extends GetxController {
     lastNameController.dispose();
     sEmailController.dispose();
     sNationalityController.dispose();
+    representativeNumController.dispose();
   }
 
   String validatePassword(String value, BuildContext ctx) {
@@ -213,7 +337,7 @@ class AuthController extends GetxController {
     sPhoneError.value = validatePhone(sPhoneController.text, context);
     firstNameError.value = validateFirstName(firstNameController.text, context);
     lastNameError.value = validateLastName(lastNameController.text, context);
-    cityError.value = cityId.value == (-1) ? t(context).cityRequired : '';
+    // cityError.value = cityId.value == (-1) ? t(context).cityRequired : '';
     countryError.value =
         countryId.value == (-1) ? t(context).countryRequired : '';
     genderError.value = genderId.value == (-1) ? t(context).genderRequired : '';

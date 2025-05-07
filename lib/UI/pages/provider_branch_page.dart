@@ -17,18 +17,20 @@ import 'package:i_doctor/portable_api/maps/map_utils.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 
-class ClinicPage extends StatefulWidget {
-  const ClinicPage({super.key, required this.id});
+class ProviderBranchPage extends StatefulWidget {
+  const ProviderBranchPage({super.key, required this.id, required this.spId});
   final String id;
+  final String spId;
 
   @override
-  State<ClinicPage> createState() => _ClinicPageState();
+  State<ProviderBranchPage> createState() => _ProviderBranchPageState();
 }
 
-class _ClinicPageState extends State<ClinicPage> {
+class _ProviderBranchPageState extends State<ProviderBranchPage> {
   late PageController pageController;
   int pageIndex = 0;
   int carouselPage = 0;
+  ProviderBranch? branch;
   Provider? provider;
   Category? category;
   List<Product> products = List.empty(growable: true);
@@ -36,21 +38,26 @@ class _ClinicPageState extends State<ClinicPage> {
   @override
   void initState() {
     super.initState();
-    CommerceController commerceController = Get.find<CommerceController>();
-    List<Category> categories = commerceController.categories;
     pageController = PageController();
+    branch = Get.find<CommerceController>()
+        .branches
+        .where((test) =>
+            test.id.toString() == widget.id &&
+            test.spId.toString() == widget.spId)
+        .firstOrNull;
     provider = Get.find<CommerceController>()
         .providers
-        .where((test) => test.id.toString() == widget.id)
+        .where((test) => test.id.toString() == widget.spId)
         .firstOrNull;
-    if (provider != null) {
+    if (branch != null) {
       category = Get.find<CommerceController>()
           .categories
-          .where((cat) => cat.id == int.parse(provider!.code))
+          .where((cat) => cat.id == int.parse(branch!.code))
           .firstOrNull;
+
       products.addAll(Get.find<CommerceController>()
           .products
-          .where((test) => test.spId == provider!.name));
+          .where((test) => test.spbId == branch!.id));
     }
   }
 
@@ -64,10 +71,10 @@ class _ClinicPageState extends State<ClinicPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: IAppBar(
-        title: t(context).clinicPage,
+        title: t(context).clinicBranchPage,
         hasBackButton: true,
       ),
-      body: provider == null
+      body: branch == null
           ? Center(child: Text(t(context).clinicNotFound))
           : CustomScrollView(slivers: [
               SliverList(
@@ -85,15 +92,16 @@ class _ClinicPageState extends State<ClinicPage> {
                                 child: SizedBox(
                                   height: 64,
                                   width: 64,
-                                  child: Image.network(
-                                    '$hostUrlBase/public/storage/${provider!.logo}',
+                                  child: RetryImage(
+                                    imageUrl:
+                                        '$hostUrlBase/public/storage/${provider!.logo}',
                                     width: 64,
                                     height: 64,
                                     fit: BoxFit.fill,
                                   ),
                                 )),
                             const SizedBox(width: 8),
-                            Text(provider!.name,
+                            Text(branch!.localName,
                                 style: Theme.of(context).textTheme.titleLarge)
                           ],
                         ),
@@ -121,6 +129,39 @@ class _ClinicPageState extends State<ClinicPage> {
                   ElevatedContainer(
                       blackWhite: getBlackWhite(context),
                       children: [
+                        Align(
+                          alignment: getTextDirectionLocal(context),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: MediaQuery.removePadding(
+                              context: context,
+                              child: TextButton(
+                                  style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap),
+                                  onPressed: () {
+                                    if (provider != null) {
+                                      String branch = GoRouter.of(context)
+                                          .routeInformationProvider
+                                          .value
+                                          .uri
+                                          .pathSegments[0];
+
+                                      context.push(
+                                          '/$branch/clinic/${provider!.id}');
+                                    }
+                                  },
+                                  child: Text(
+                                    provider!.localName,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(color: primaryColor),
+                                  )),
+                            ),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Row(
@@ -129,12 +170,12 @@ class _ClinicPageState extends State<ClinicPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.name}, ${provider!.shortAddress}',
+                                      '${Get.find<AuthController>().countries!.where((test) => test.id == branch!.countryId).first.name}, ${branch!.localShortAddress}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium),
                                   Text(
-                                      '${provider!.district}, ${provider!.street}',
+                                      '${branch!.localDistrict}, ${branch!.localStreet}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleSmall!
@@ -144,7 +185,7 @@ class _ClinicPageState extends State<ClinicPage> {
                               const Spacer(),
                               IconButton(
                                   onPressed: () async {
-                                    List<double> numbers = provider!.location
+                                    List<double> numbers = branch!.location
                                         .split(',')
                                         .map((e) => double.parse(e))
                                         .toList();
@@ -205,7 +246,8 @@ class _ClinicPageState extends State<ClinicPage> {
                                             '/$branch/category/${category!.id}');
                                       },
                                       child: Text(
-                                        formatCatName(category!.name),
+                                        formatCatName(
+                                            category!.getCategoryName(context)),
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall!
@@ -291,11 +333,6 @@ class _ClinicPageState extends State<ClinicPage> {
                           products.length,
                           (i) => BigProductCard(
                                 product: products[i],
-                                provider: Get.find<CommerceController>()
-                                    .providers
-                                    .where(
-                                        (test) => test.name == products[i].spId)
-                                    .firstOrNull,
                               ))
                       // padding: EdgeInsets.all(8), child: BigProductCard())),
                       ),

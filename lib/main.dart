@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/router.dart';
-import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/dio_controller.dart';
 import 'package:i_doctor/state/feed_controller.dart';
 import 'package:i_doctor/state/language_controller.dart';
@@ -38,12 +38,13 @@ class MyApp extends StatelessWidget {
         title: '',
         scaffoldMessengerKey: scaffoldMessengerKey,
         localizationsDelegates: const [
+          LocaleNamesLocalizationsDelegate(),
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [Locale('en'), Locale('ar')],
+        supportedLocales: const [Locale('en'), Locale('ar'), Locale('tr')],
         locale: Locale(Get.find<LanguageController>().locale.value),
         theme: ThemeData(
           colorScheme: colorScheme,

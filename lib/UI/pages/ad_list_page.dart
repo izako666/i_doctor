@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
+import 'package:i_doctor/UI/util/data_from_id.dart';
 import 'package:i_doctor/UI/util/filter_sort_sheet.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/UI/util/price_text.dart';
@@ -14,6 +14,7 @@ import 'package:i_doctor/api/data_classes/basket_item.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
 import 'package:i_doctor/api/networking/rest_functions.dart';
+import 'package:i_doctor/helper.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/maps/map_utils.dart';
 import 'package:i_doctor/portable_api/ui/bottom_sheet.dart';
@@ -43,9 +44,9 @@ class _AdListPageState extends State<AdListPage> {
     CommerceController commerceController = Get.find<CommerceController>();
 
     FilterController filterController = Get.put(FilterController(
-        categoryType: 0, categoriesTotal: commerceController.categories ?? []));
+        categoryType: 0, categoriesTotal: commerceController.categories));
     filterController.onInit();
-    products = commerceController.products ?? [];
+    products = commerceController.products;
     filterController.addProviders(products);
 
     products = filterController.filterProducts(products);
@@ -63,10 +64,9 @@ class _AdListPageState extends State<AdListPage> {
     FilterController filterController;
     if (!Get.isRegistered<FilterController>()) {
       filterController = Get.put(FilterController(
-          categoryType: 0,
-          categoriesTotal: commerceController.categories ?? []));
+          categoryType: 0, categoriesTotal: commerceController.categories));
       filterController.onInit();
-      products = commerceController.products ?? [];
+      products = commerceController.products;
       filterController.addProviders(products);
 
       products = filterController.filterProducts(products);
@@ -123,11 +123,6 @@ class _AdListPageState extends State<AdListPage> {
                                     const EdgeInsets.symmetric(vertical: 8.0),
                                 child: BigProductCard(
                                   product: products[i],
-                                  provider: Get.find<CommerceController>()
-                                      .providers
-                                      .where((test) =>
-                                          test.name == products[i].spId)
-                                      .firstOrNull,
                                   pushRoute: true,
                                 ),
                               );
@@ -152,12 +147,8 @@ class _AdListPageState extends State<AdListPage> {
 
 class BigProductCard extends StatefulWidget {
   const BigProductCard(
-      {super.key,
-      required this.product,
-      required this.provider,
-      this.pushRoute = false});
+      {super.key, required this.product, this.pushRoute = false});
   final Product product;
-  final Provider? provider;
   final bool pushRoute;
 
   @override
@@ -167,7 +158,8 @@ class BigProductCard extends StatefulWidget {
 class _BigProductCardState extends State<BigProductCard> {
   bool favorited = false;
   StreamSubscription<RealmResultsChanges<BasketItem>>? streamSub;
-
+  ProviderBranch? provBranch;
+  Provider? provider;
   @override
   void initState() {
     super.initState();
@@ -178,8 +170,6 @@ class _BigProductCardState extends State<BigProductCard> {
           widget.product.id,
           Get.find<AuthController>().currentUser.value!.email,
           widget.product.catId,
-          widget.product.subcatId,
-          widget.product.spId,
           widget.product.spbId,
           widget.product.name,
           widget.product.description,
@@ -197,7 +187,12 @@ class _BigProductCardState extends State<BigProductCard> {
           widget.product.createdAt,
           widget.product.updatedAt,
           1,
-          true);
+          true,
+          widget.product.currency,
+          subcatId: widget.product.subcatId,
+          spId: widget.product.spId,
+          name2: widget.product.name2,
+          description2: widget.product.description2);
 
       favorited = realmController.containsFavoriteItem(
           basketItem, Get.find<AuthController>().currentUser.value!.email);
@@ -219,6 +214,9 @@ class _BigProductCardState extends State<BigProductCard> {
     } else {
       favorited = false;
     }
+
+    provBranch = getProviderBranchFromId(widget.product.spbId);
+    provider = getProviderFromId(widget.product.spId!);
   }
 
   @override
@@ -255,16 +253,12 @@ class _BigProductCardState extends State<BigProductCard> {
                   borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16)),
-                  child: Image.network(
+                  child: RetryImage(
                       width: getScreenWidth(context),
                       height: 256,
                       fit: BoxFit.fitWidth,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                            width: getScreenWidth(context),
-                            height: 256,
-                            color: Colors.black,
-                          ),
-                      '$hostUrlBase/public/storage/${widget.product.photo}'),
+                      imageUrl:
+                          '$hostUrlBase/public/storage/${widget.product.photo}'),
                 ),
                 Align(
                   alignment: Alignment.topLeft,
@@ -276,13 +270,20 @@ class _BigProductCardState extends State<BigProductCard> {
                       decoration: const BoxDecoration(
                           color: Colors.white, shape: BoxShape.circle),
                       child: IconButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (Get.find<AuthController>().currentUser.value ==
                                 null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          t(context).mustLoginToFavorite)));
+                              bool login =
+                                  await showCartFavoriteDialog(context, false);
+                              if (login) {
+                                if (context.mounted) {
+                                  context.push("/feed/login");
+                                }
+                              }
+                              // ScaffoldMessenger.of(context).showSnackBar(
+                              //     SnackBar(
+                              //         content: Text(
+                              //             t(context).mustLoginToFavorite)));
                               return;
                             }
                             setState(() {
@@ -296,8 +297,6 @@ class _BigProductCardState extends State<BigProductCard> {
                                         .value!
                                         .email,
                                     widget.product.catId,
-                                    widget.product.subcatId,
-                                    widget.product.spId,
                                     widget.product.spbId,
                                     widget.product.name,
                                     widget.product.description,
@@ -315,7 +314,12 @@ class _BigProductCardState extends State<BigProductCard> {
                                     widget.product.createdAt,
                                     widget.product.updatedAt,
                                     1,
-                                    true);
+                                    true,
+                                    widget.product.currency,
+                                    subcatId: widget.product.subcatId,
+                                    spId: widget.product.spId,
+                                    name2: widget.product.name2,
+                                    description2: widget.product.description2);
                                 Get.find<RealmController>().addItem(basketItem);
                               } else {
                                 BasketItem? basketItem =
@@ -354,7 +358,9 @@ class _BigProductCardState extends State<BigProductCard> {
                       decoration: const BoxDecoration(
                           color: Colors.white, shape: BoxShape.circle),
                       child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            shareProduct(widget.product, hostUrlBase);
+                          },
                           icon: const Icon(
                             Icons.share,
                             size: 20,
@@ -374,12 +380,20 @@ class _BigProductCardState extends State<BigProductCard> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(widget.product.name,
-                            style: Theme.of(context).textTheme.titleLarge),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: Text(
+                            widget.product.localName,
+                            style: Theme.of(context).textTheme.titleLarge!,
+                            softWrap: true,
+                            maxLines: 3,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    MediaQuery.removePadding(
+                    if (widget.product.spId != null && provBranch != null)
+                      MediaQuery.removePadding(
                         context: context,
                         child: TextButton(
                             style: TextButton.styleFrom(
@@ -387,26 +401,31 @@ class _BigProductCardState extends State<BigProductCard> {
                                 tapTargetSize:
                                     MaterialTapTargetSize.shrinkWrap),
                             onPressed: () {
-                              if (widget.provider != null) {
+                              if (provider != null) {
                                 String branch = GoRouter.of(context)
                                     .routeInformationProvider
                                     .value
                                     .uri
                                     .pathSegments[0];
-
-                                context.push(
-                                    '/$branch/clinic/${widget.provider!.id}');
+                                if (provBranch != null) {
+                                  context.push(
+                                      '/$branch/clinic_branch/${provider!.id}/${provBranch!.id}');
+                                } else {
+                                  context
+                                      .push('/$branch/clinic/${provider!.id}');
+                                }
                               }
                             },
                             child: Text(
-                              widget.product.spId,
+                              provBranch!.localName,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium!
                                   .copyWith(color: primaryColor),
-                            ))),
+                            )),
+                      ),
                     const SizedBox(height: 4),
-                    if (widget.provider != null)
+                    if (provider != null)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -414,11 +433,11 @@ class _BigProductCardState extends State<BigProductCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  '${Get.find<AuthController>().countries!.where((test) => test.id == widget.provider!.countryId).first.name}, ${widget.provider!.shortAddress}',
+                                  '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.name}, ${provider!.localShortAddress}',
                                   style:
                                       Theme.of(context).textTheme.titleMedium),
                               Text(
-                                  '${widget.provider!.district}, ${widget.provider!.street}',
+                                  '${provider!.localDistrict}, ${provider!.localStreet}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleSmall!
@@ -427,7 +446,7 @@ class _BigProductCardState extends State<BigProductCard> {
                           ),
                           IconButton(
                               onPressed: () {
-                                List<double> numbers = widget.provider!.location
+                                List<double> numbers = provider!.location
                                     .split(',')
                                     .map((e) => double.parse(e))
                                     .toList();
@@ -452,6 +471,8 @@ class _BigProductCardState extends State<BigProductCard> {
                           .textTheme
                           .bodySmall!
                           .copyWith(color: Colors.grey),
+                      currency: getCurrencyFromId(widget.product.currency) ??
+                          Currency(id: 0, name1: "SAR", name2: "س.ر."),
                     ),
                     const SizedBox(
                       height: 4,

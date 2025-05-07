@@ -31,21 +31,24 @@ class _CategoryListPageState extends State<CategoryListPage> {
   void initState() {
     super.initState();
     Get.delete<FilterController>();
-    Category? category = (Get.find<CommerceController>().categories ?? [])
+    CommerceController commerceController = Get.find<CommerceController>();
+    Category? category = (Get.find<CommerceController>().categories)
         .where((test) => test.id == int.parse(widget.id))
         .firstOrNull;
     if (category == null) return;
     List<Subcategory> subCategory =
-        List.from(Get.find<CommerceController>().subcategories ?? []);
+        List.from(Get.find<CommerceController>().subcategories);
     subCategory =
         subCategory.where((test) => category.id == test.catId).toList();
-    filterController = Get.put(
-        FilterController(categoryType: 1, subCategoriesTotal: subCategory));
-    filterController
-        .addProviders(Get.find<CommerceController>().products ?? []);
+
+    filterController = Get.put(FilterController(
+        categoryType: 1,
+        subCategoriesTotal: subCategory,
+        mainCategory: category));
+    filterController.addProviders(Get.find<CommerceController>().products);
 
     products = filterController
-        .filterProducts(Get.find<CommerceController>().products ?? []);
+        .filterProducts(Get.find<CommerceController>().products);
   }
 
   @override
@@ -56,7 +59,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
 
   @override
   Widget build(BuildContext context) {
-    Category? category = (Get.find<CommerceController>().categories ?? [])
+    Category? category = (Get.find<CommerceController>().categories)
         .where((test) => test.id == int.parse(widget.id))
         .firstOrNull;
     if (category == null) {
@@ -68,7 +71,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
         .toList();
     return Scaffold(
       appBar: IAppBar(
-        title: category.name,
+        title: category.getCategoryName(context),
         hasBackButton: true,
       ),
       floatingActionButton: loading
@@ -178,11 +181,9 @@ class _CategoryListPageState extends State<CategoryListPage> {
                     itemBuilder: (ctx, i) => Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: BigProductCard(
-                          product: products[i],
-                          provider: Get.find<CommerceController>()
-                              .providers
-                              .where((test) => test.name == products[i].spId)
-                              .firstOrNull),
+                        product: products[i],
+                        pushRoute: true,
+                      ),
                     ),
                     itemCount: products.length,
                   ),

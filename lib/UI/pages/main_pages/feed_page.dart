@@ -1,5 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
@@ -9,16 +13,16 @@ import 'package:i_doctor/api/data_classes/category.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
 import 'package:i_doctor/api/networking/rest_functions.dart';
+import 'package:i_doctor/fake_data.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/ui/bottom_sheet.dart';
+import 'package:i_doctor/portable_api/ui/image_worker.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/feed_controller.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:i_doctor/state/filter_controller.dart';
 import 'package:i_doctor/state/language_controller.dart';
-import 'package:intl/intl.dart';
-import 'dart:math' as math;
 
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -34,13 +38,23 @@ class _FeedPageState extends State<FeedPage> {
 
   List<Product> products = [];
   List<Product> adBarProducts = [];
-
+  late ScrollController catScrollController;
+  late CarouselSliderController clinicCarController;
+  bool hideLang = false;
   @override
   void initState() {
     super.initState();
     CommerceController commerceController = Get.find<CommerceController>();
     products = commerceController.products.toList();
+    catScrollController = ScrollController();
+    clinicCarController = CarouselSliderController();
     adBarProducts = getRecentProducts(products);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    catScrollController.dispose();
   }
 
   @override
@@ -170,9 +184,23 @@ class _FeedPageState extends State<FeedPage> {
 
                                   await Get.delete<FilterController>(
                                       force: true);
-
+                                  controller.searchController.clear();
                                   controller.node.unfocus();
                                   controller.openFeedView.value = true;
+                                },
+                                onSubmit: (val) {
+                                  loading = true;
+                                  controller
+                                      .filterSearch(
+                                          commerceController.products, context)
+                                      .then((val) {
+                                    products = val;
+                                    loading = false;
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((_) {
+                                      setState(() {});
+                                    });
+                                  });
                                 },
                               ))),
                               const SizedBox(
@@ -183,200 +211,357 @@ class _FeedPageState extends State<FeedPage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0),
                                   child: InkWell(
-                                      borderRadius: BorderRadius.circular(24),
-                                      onTap: () {
-                                        LanguageController lang =
-                                            Get.find<LanguageController>();
-                                        lang.locale.value == "en"
-                                            ? lang.setLocale('ar')
-                                            : lang.setLocale('en');
-                                      },
-                                      splashFactory: InkRipple.splashFactory,
-                                      child: Obx(
-                                        () => Text(
-                                          languageFlags[
-                                              Get.find<LanguageController>()
-                                                  .locale
-                                                  .value]!,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge,
-                                        ),
-                                      )),
+                                    borderRadius: BorderRadius.circular(24),
+                                    onTap: () {
+                                      hideLang = true;
+                                      LanguageController lang =
+                                          Get.find<LanguageController>();
+                                      lang.locale.value ==
+                                              Get.find<AuthController>()
+                                                  .currentCountry
+                                                  .value!
+                                                  .lang1
+                                          ? lang.setLocale(
+                                              Get.find<AuthController>()
+                                                  .currentCountry
+                                                  .value!
+                                                  .lang2)
+                                          : lang.setLocale(
+                                              Get.find<AuthController>()
+                                                  .currentCountry
+                                                  .value!
+                                                  .lang1);
+
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                        hideLang = false;
+                                        setState(() {});
+                                        if (catScrollController.hasClients) {
+                                          catScrollController.jumpTo(0);
+                                        }
+                                      });
+                                    },
+                                    splashFactory: InkRipple.splashFactory,
+                                    child: Text(
+                                      hideLang
+                                          ? "     "
+                                          : Get.find<LanguageController>()
+                                              .locale
+                                              .value
+                                              .toUpperCase(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    ),
+                                  ),
                                 )
                             ],
                           ),
                         ),
-                        (!controller.openFeedView.value)
-                            ? Expanded(
-                                child: ListView.builder(
-                                  itemBuilder: (ctx, i) {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: BigProductCard(
-                                        product: products[i],
-                                        provider: Get.find<CommerceController>()
-                                            .providers
-                                            .where((test) =>
-                                                test.name == products[i].spId)
-                                            .firstOrNull,
-                                      ),
-                                    );
-                                  },
-                                  itemCount: products.length,
-                                ),
-                              )
-                            : Expanded(
-                                child: SingleChildScrollView(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8, right: 8),
-                                    child: Column(children: [
-                                      const SizedBox(height: 16),
-                                      if (adBarProducts.isNotEmpty)
-                                        CarouselAdBanner(
-                                          onTap: () {
-                                            //   context.push('/feed/advert/1234');
-                                          },
-                                          skeleton: controller.skeleton.value,
-                                          blackWhite: blackWhite,
-                                          banners: adBarProducts
-                                              .map((prod) => AdBanner(
-                                                  url: prod.photo, id: prod.id))
-                                              .toList(),
-                                          autoPlay: true,
-                                          showIndicator: true,
+                        Obx(() {
+                          return (!controller.openFeedView.value &&
+                                  commerceController.products.isNotEmpty)
+                              ? Expanded(
+                                  child: ListView.builder(
+                                    itemBuilder: (ctx, i) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: BigProductCard(
+                                          product: products[i],
                                         ),
-                                      const SizedBox(height: 16),
-                                      Material(
-                                        borderRadius: BorderRadius.circular(16),
-                                        elevation: 2,
-                                        child: Container(
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          height: 96,
-                                          decoration: BoxDecoration(
-                                            color: blackWhite == black
-                                                ? white
-                                                : black,
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                          ),
-                                          child: Skeleton.leaf(
-                                            child: ClipRRect(
+                                      );
+                                    },
+                                    itemCount: products.length,
+                                  ),
+                                )
+                              : (commerceController.products.isNotEmpty)
+                                  ? Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8, right: 8),
+                                          child: Column(children: [
+                                            const SizedBox(height: 16),
+                                            if (adBarProducts.isNotEmpty)
+                                              CarouselAdBanner(
+                                                onTap: () {
+                                                  //   context.push('/feed/advert/1234');
+                                                },
+                                                skeleton:
+                                                    controller.skeleton.value,
+                                                blackWhite: blackWhite,
+                                                decompress: true,
+                                                fit: BoxFit.cover,
+                                                banners: adBarProducts
+                                                    .map((prod) => AdBanner(
+                                                        url: prod.photo,
+                                                        id: prod.id))
+                                                    .toList(),
+                                                autoPlay: true,
+                                                showIndicator: true,
+                                              ),
+                                            const SizedBox(height: 16),
+                                            Material(
                                               borderRadius:
                                                   BorderRadius.circular(16),
-                                              child: Scrollbar(
-                                                child: ListView.builder(
-                                                    scrollDirection:
-                                                        Axis.horizontal,
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 8),
-                                                    itemCount: (commerceController
-                                                                .categories ??
-                                                            [])
-                                                        .length,
-                                                    itemBuilder: (ctx, i) {
-                                                      return Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal:
-                                                                      24),
-                                                          child:
-                                                              CategoryCircleButton(
-                                                                  category:
-                                                                      categories[
-                                                                          i]));
-                                                    }),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      SizedBox(
-                                        width: getScreenWidth(context),
-                                        child: ElevatedContainer(
-                                          blackWhite: blackWhite,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8.0),
-                                                  child: Text(
-                                                    t(context).clinics,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleLarge,
+                                              elevation: 2,
+                                              child: Container(
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                height: 96,
+                                                decoration: BoxDecoration(
+                                                  color: blackWhite == black
+                                                      ? white
+                                                      : black,
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                ),
+                                                child: Skeleton.leaf(
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                    child: Row(
+                                                      children: [
+                                                        IconButton(
+                                                            iconSize: 12,
+                                                            visualDensity:
+                                                                VisualDensity
+                                                                    .compact,
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            onPressed: () {
+                                                              catScrollController.animateTo(
+                                                                  catScrollController
+                                                                          .offset -
+                                                                      300,
+                                                                  duration: const Duration(
+                                                                      milliseconds:
+                                                                          200),
+                                                                  curve: Curves
+                                                                      .easeIn);
+                                                            },
+                                                            icon: const Icon(Icons
+                                                                .arrow_back_ios_new)),
+                                                        SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.7,
+                                                          child: Scrollbar(
+                                                            trackVisibility:
+                                                                false,
+                                                            thumbVisibility:
+                                                                false,
+                                                            thickness: 0,
+                                                            child: ListView
+                                                                .builder(
+                                                                    controller:
+                                                                        catScrollController,
+                                                                    scrollDirection: Axis
+                                                                        .horizontal,
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        top:
+                                                                            20),
+                                                                    itemCount: (commerceController
+                                                                            .categories)
+                                                                        .length,
+                                                                    itemBuilder:
+                                                                        (ctx,
+                                                                            i) {
+                                                                      return Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .symmetric(
+                                                                              horizontal:
+                                                                                  12),
+                                                                          child:
+                                                                              CategoryCircleButton(category: categories[i]));
+                                                                    }),
+                                                          ),
+                                                        ),
+                                                        IconButton(
+                                                            iconSize: 12,
+                                                            visualDensity:
+                                                                VisualDensity
+                                                                    .compact,
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            onPressed: () {
+                                                              catScrollController.animateTo(
+                                                                  catScrollController
+                                                                          .offset +
+                                                                      300,
+                                                                  duration: const Duration(
+                                                                      milliseconds:
+                                                                          200),
+                                                                  curve: Curves
+                                                                      .easeIn);
+                                                            },
+                                                            icon: const Icon(Icons
+                                                                .arrow_forward_ios)),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                                TextButton(
-                                                  style: ButtonStyle(
-                                                      overlayColor: WidgetStateColor
-                                                          .resolveWith((states) =>
-                                                              states.contains(
-                                                                      WidgetState
-                                                                          .pressed)
-                                                                  ? secondaryColor
-                                                                  : Colors
-                                                                      .transparent)),
-                                                  onPressed: () {
-                                                    context
-                                                        .push('/feed/clinics');
-                                                  },
-                                                  child: Text(
-                                                      t(context).showAll,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium!
-                                                          .copyWith(
-                                                              color:
-                                                                  secondaryColor)),
-                                                )
-                                              ],
+                                              ),
                                             ),
-                                            MediaQuery.removePadding(
-                                              context: context,
-                                              child: GridView.builder(
-                                                  padding: EdgeInsets.zero,
-                                                  shrinkWrap: true,
-                                                  itemCount: commerceController
-                                                              .providers
-                                                              .length >
-                                                          4
-                                                      ? 4
-                                                      : commerceController
-                                                          .providers.length,
-                                                  physics:
-                                                      const NeverScrollableScrollPhysics(),
-                                                  gridDelegate:
-                                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                                          crossAxisCount: 2,
-                                                          childAspectRatio:
-                                                              0.7),
-                                                  itemBuilder: (ctx, i) {
-                                                    return ClinicButton(
-                                                        provider:
-                                                            commerceController
-                                                                .providers[i]);
-                                                  }),
+                                            const SizedBox(height: 16),
+                                            SizedBox(
+                                              width: getScreenWidth(context),
+                                              child: ElevatedContainer(
+                                                blackWhite: blackWhite,
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal:
+                                                                    8.0),
+                                                        child: Text(
+                                                          t(context).clinics,
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .titleLarge,
+                                                        ),
+                                                      ),
+                                                      TextButton(
+                                                        style: ButtonStyle(
+                                                            overlayColor: WidgetStateColor.resolveWith((states) => states
+                                                                    .contains(
+                                                                        WidgetState
+                                                                            .pressed)
+                                                                ? secondaryColor
+                                                                : Colors
+                                                                    .transparent)),
+                                                        onPressed: () {
+                                                          context.push(
+                                                              '/feed/clinics');
+                                                        },
+                                                        child: Text(
+                                                            t(context).showAll,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyMedium!
+                                                                .copyWith(
+                                                                    color:
+                                                                        secondaryColor)),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      IconButton(
+                                                          iconSize: 12,
+                                                          visualDensity:
+                                                              VisualDensity
+                                                                  .compact,
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          onPressed: () {
+                                                            clinicCarController
+                                                                .previousPage(
+                                                                    duration: const Duration(
+                                                                        milliseconds:
+                                                                            200),
+                                                                    curve: Curves
+                                                                        .easeIn);
+                                                          },
+                                                          icon: const Icon(Icons
+                                                              .arrow_back_ios_new)),
+                                                      Expanded(
+                                                        child: CarouselSlider
+                                                            .builder(
+                                                                carouselController:
+                                                                    clinicCarController,
+                                                                itemCount: commerceController
+                                                                            .providers.length >
+                                                                        4
+                                                                    ? 4
+                                                                    : commerceController
+                                                                        .providers
+                                                                        .length,
+                                                                itemBuilder:
+                                                                    (ctx, i,
+                                                                        b) {
+                                                                  return ClinicButton(
+                                                                      provider:
+                                                                          commerceController
+                                                                              .providers[i]);
+                                                                },
+                                                                options: CarouselOptions(
+                                                                    height: 200,
+                                                                    viewportFraction:
+                                                                        0.5,
+                                                                    autoPlay:
+                                                                        true)),
+                                                      ),
+                                                      IconButton(
+                                                          iconSize: 12,
+                                                          visualDensity:
+                                                              VisualDensity
+                                                                  .compact,
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          onPressed: () {
+                                                            clinicCarController.nextPage(
+                                                                duration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            200),
+                                                                curve: Curves
+                                                                    .easeIn);
+                                                          },
+                                                          icon: const Icon(Icons
+                                                              .arrow_forward_ios)),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 32),
+                                            Center(
+                                                child: Text(
+                                              "This is some random footer with information to be determined later....",
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .copyWith(color: Colors.grey),
+                                            )),
+                                            const SizedBox(
+                                              height: 32,
                                             )
-                                          ],
+                                          ]),
                                         ),
                                       ),
-                                      const SizedBox(height: 16),
-                                    ]),
-                                  ),
-                                ),
-                              ),
+                                    )
+                                  : Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 200,
+                                        ),
+                                        Center(
+                                            child: Text(
+                                          t(context).noProductsFoundInRegion,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium!
+                                              .copyWith(fontSize: 18),
+                                        )),
+                                      ],
+                                    );
+                        })
                       ],
                     )),
               ),
@@ -400,14 +585,22 @@ List<Product> getRecentProducts(List<Product> products) {
 
     return startDate.isAfter(now.subtract(const Duration(days: 7)));
   }).toList();
-
-  // Sort products by startDate in descending order (most recent first)
-  recentProducts.sort((a, b) {
-    DateTime dateA = DateTime.parse(a.startDate);
-    DateTime dateB = DateTime.parse(b.startDate);
-    return dateB.compareTo(dateA); // Descending order
-  });
-
+  if (recentProducts.isEmpty) {
+    recentProducts.clear();
+    recentProducts.addAll(products);
+    recentProducts.sort((a, b) {
+      DateTime dateA = DateTime.parse(a.startDate);
+      DateTime dateB = DateTime.parse(b.startDate);
+      return dateB.compareTo(dateA); // Descending order
+    });
+  } else {
+    // Sort products by startDate in descending order (most recent first)
+    recentProducts.sort((a, b) {
+      DateTime dateA = DateTime.parse(a.startDate);
+      DateTime dateB = DateTime.parse(b.startDate);
+      return dateB.compareTo(dateA); // Descending order
+    });
+  }
   return recentProducts;
 }
 
@@ -417,6 +610,11 @@ class ClinicButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final logicalSize = MediaQuery.of(context).size;
+    final physicalSize = View.of(context).physicalSize;
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+
+    final calculatedZoom = physicalSize.width / logicalSize.width;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Material(
@@ -439,13 +637,14 @@ class ClinicButton extends StatelessWidget {
                 children: [
                   SizedBox(
                       width: 1000,
-                      height: 128,
+                      height: calculatedZoom > 2.8 ? 80 : 128,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(16),
                             topRight: Radius.circular(16)),
-                        child: Image.network(
-                          '$hostUrlBase/public/storage/${provider.photo}',
+                        child: RetryImage(
+                          imageUrl:
+                              '$hostUrlBase/public/storage/${provider.photo}',
                           fit: BoxFit.fill,
                         ),
                       )),
@@ -455,8 +654,9 @@ class ClinicButton extends StatelessWidget {
                     child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          provider.name,
+                          provider.localName,
                           style: Theme.of(context).textTheme.titleMedium,
+                          overflow: TextOverflow.ellipsis,
                         )),
                   ),
                   const SizedBox(height: 8),
@@ -464,7 +664,98 @@ class ClinicButton extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Align(
                         alignment: Alignment.centerRight,
-                        child: Text(provider.shortAddress)),
+                        child: Text(
+                          provider.localShortAddress,
+                          overflow: TextOverflow.ellipsis,
+                        )),
+                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 8),
+                  //   child: Align(
+                  //     alignment: Alignment.centerRight,
+                  //     child: Text("بعيد ءءء ك.م",
+                  //         style: Theme.of(context)
+                  //             .textTheme
+                  //             .bodyMedium!
+                  //             .copyWith(color: secondaryColor.darken(0.5))),
+                  //   ),
+                  // )
+                ],
+              )),
+        ),
+      ),
+    );
+  }
+}
+
+class ClinicBranchButton extends StatelessWidget {
+  const ClinicBranchButton(
+      {super.key, required this.provider, required this.providerBranch});
+  final Provider provider;
+  final ProviderBranch providerBranch;
+
+  @override
+  Widget build(BuildContext context) {
+    final logicalSize = MediaQuery.of(context).size;
+    final physicalSize = View.of(context).physicalSize;
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+
+    final calculatedZoom = physicalSize.width / logicalSize.width;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Material(
+        elevation: 1,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: () {
+            String branch = GoRouter.of(context)
+                .routeInformationProvider
+                .value
+                .uri
+                .pathSegments[0];
+
+            context.push(
+                '/$branch/clinic_branch/${providerBranch.spId}/${providerBranch.id}');
+          },
+          splashFactory: InkRipple.splashFactory,
+          child: SizedBox(
+              width: 200,
+              child: Column(
+                children: [
+                  SizedBox(
+                      width: 1000,
+                      height: calculatedZoom > 2.8 ? 80 : 128,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            topRight: Radius.circular(16)),
+                        child: RetryImage(
+                          imageUrl:
+                              '$hostUrlBase/public/storage/${provider.photo}',
+                          fit: BoxFit.fill,
+                        ),
+                      )),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Align(
+                        alignment: getTextDirectionLocal(context),
+                        child: Text(
+                          providerBranch.localName,
+                          style: Theme.of(context).textTheme.titleMedium,
+                          overflow: TextOverflow.ellipsis,
+                        )),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Align(
+                        alignment: getTextDirectionLocal(context),
+                        child: Text(
+                          providerBranch.localShortAddress,
+                          overflow: TextOverflow.ellipsis,
+                        )),
                   ),
                   // Padding(
                   //   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -494,6 +785,9 @@ class WideButton extends StatelessWidget {
     this.radius,
     this.color,
     this.disabled = false,
+    this.borderColor,
+    this.width,
+    this.height,
   });
   final Widget title;
   final IconData? icon;
@@ -501,6 +795,9 @@ class WideButton extends StatelessWidget {
   final BorderRadius? radius;
   final Color? color;
   final bool disabled;
+  final Color? borderColor;
+  final double? width;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -518,11 +815,12 @@ class WideButton extends StatelessWidget {
         splashColor: Colors.white.withAlpha(100),
         splashFactory: InkRipple.splashFactory,
         child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: 64,
+          width: width ?? MediaQuery.of(context).size.width,
+          height: height ?? 64,
           decoration: BoxDecoration(
               borderRadius: radius ?? BorderRadius.circular(8),
-              border: Border.all(width: 0.5),
+              border:
+                  Border.all(width: 0.5, color: borderColor ?? Colors.black),
               color: Colors.transparent),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -562,6 +860,7 @@ class ElevatedContainer extends StatelessWidget {
     this.padding,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.height,
+    this.radius,
   });
 
   final Color blackWhite;
@@ -571,11 +870,12 @@ class ElevatedContainer extends StatelessWidget {
   final EdgeInsets? padding;
   final MainAxisAlignment mainAxisAlignment;
   final double? height;
+  final BorderRadius? radius;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: radius ?? BorderRadius.circular(16),
         elevation: 1,
         child: Container(
             padding: padding ??
@@ -583,7 +883,7 @@ class ElevatedContainer extends StatelessWidget {
             width: width ?? getScreenWidth(context),
             height: height,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: radius ?? BorderRadius.circular(16),
               color: blackWhite == black ? white : black,
             ),
             child: Column(
@@ -701,7 +1001,9 @@ class CarouselAdBanner extends StatefulWidget {
       this.infinityScroll = true,
       this.height,
       this.aspectRatio,
-      required this.onTap});
+      required this.onTap,
+      this.decompress = false,
+      this.fit = BoxFit.fill});
 
   final bool skeleton;
   final Color blackWhite;
@@ -713,7 +1015,8 @@ class CarouselAdBanner extends StatefulWidget {
   final double? height;
   final double? aspectRatio;
   final VoidCallback onTap;
-
+  final bool decompress;
+  final BoxFit fit;
   @override
   State<CarouselAdBanner> createState() => _CarouselAdBannerState();
 }
@@ -775,6 +1078,7 @@ class _CarouselAdBannerState extends State<CarouselAdBanner> {
                       : BannerImage(
                           widget: widget,
                           banner: banner,
+                          fit: widget.fit,
                         ),
                 ),
               ),
@@ -814,10 +1118,12 @@ class BannerImage extends StatefulWidget {
     super.key,
     required this.widget,
     required this.banner,
+    this.fit = BoxFit.fill,
   });
 
   final CarouselAdBanner widget;
   final AdBanner banner;
+  final BoxFit fit;
 
   @override
   State<BannerImage> createState() => _BannerImageState();
@@ -827,33 +1133,23 @@ class _BannerImageState extends State<BannerImage> {
   bool errored = false;
   @override
   Widget build(BuildContext context) {
-    return Ink(
-      decoration: BoxDecoration(
+    return Material(
+        color: Colors.transparent,
+        child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          image: DecorationImage(
-              image: errored
-                  ? const AssetImage('assets/images/placeholder.png')
-                  : NetworkImage(
-                      '$hostUrlBase/public/storage/${widget.banner.url}',
-                    ),
-              onError: (e, s) {
-                errored = true;
-                setState(() {});
-              },
-              fit: BoxFit.fill)),
-      child: Material(
-          color: Colors.transparent,
-          child: InkWell(
+          splashColor: widget.widget.blackWhite.inverse.withAlpha(60),
+          splashFactory: InkRipple.splashFactory,
+          onTap: () {
+            if (widget.banner.bannerClickable) {
+              context.go("/feed/advert/${widget.banner.id}");
+            }
+          },
+          child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            splashColor: widget.widget.blackWhite.inverse.withAlpha(60),
-            splashFactory: InkRipple.splashFactory,
-            onTap: () {
-              if (widget.banner.bannerClickable) {
-                context.go("/feed/advert/${widget.banner.id}");
-              }
-            },
-          )),
-    );
+            child: RetryImage(
+                imageUrl: '$hostUrlBase/public/storage/${widget.banner.url}'),
+          ),
+        ));
   }
 }
 
@@ -927,21 +1223,25 @@ class CategoryCircleButton extends StatelessWidget {
             context.push('/$branch/category/${category.id}');
           },
           child: SizedBox(
-            width: 76,
-            height: 128,
+            width: 64,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                    width: 48,
-                    height: 48,
+                    width: 34,
+                    height: 34,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(0),
                         child: Image.asset('assets/images/${category.id}.png',
                             fit: BoxFit.scaleDown))),
-                Text(
-                  formatCatName(category.name),
-                  overflow: TextOverflow.ellipsis,
+                SizedBox(
+                  width: 100,
+                  child: Text(
+                    formatCatName(category.getCategoryName(context)),
+                    style: Theme.of(context).textTheme.bodySmall,
+                    textAlign: TextAlign.center,
+                  ),
                 )
               ],
             ),

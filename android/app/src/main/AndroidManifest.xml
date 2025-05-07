@@ -54,6 +54,7 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+            
         </intent>
           <!-- If your app checks for SMS support -->
   <intent>
@@ -69,5 +70,25 @@
   <intent>
     <action android:name="android.support.customtabs.action.CustomTabsService" />
   </intent>
+
+    <!-- Support for geo: URIs -->
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="geo" />
+    </intent>
+
+    <!-- Support for Google Maps URLs -->
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="https" />
+      <data android:host="www.google.com" />
+    </intent>
+
+    <!-- Optional: support any map app that handles geo links -->
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="https" />
+      <data android:host="maps.google.com" />
+    </intent>
     </queries>
 </manifest>

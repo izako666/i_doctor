@@ -14,6 +14,8 @@ class CommerceController extends GetxController {
   RxList<Subcategory> subcategories = RxList.empty(growable: true);
   RxList<Product> products = RxList.empty(growable: true);
   RxList<Provider> providers = RxList.empty(growable: true);
+  RxList<ProviderBranch> branches = RxList.empty(growable: true);
+  RxList<Currency> currencies = RxList.empty(growable: true);
 
   Future<void> retrieveCategories() async {
     try {
@@ -24,7 +26,8 @@ class CommerceController extends GetxController {
             (resp.data['data']['resource'] as List<dynamic>)
                 .cast<Map<String, dynamic>>();
 
-        categories = dataList.map((val) => Category.fromJson(val)).toList().obs;
+        categories.value =
+            dataList.map((val) => Category.fromJson(val)).toList();
       }
     } catch (e) {
       print("couldn't retrieve categories: $e");
@@ -40,38 +43,39 @@ class CommerceController extends GetxController {
             (resp.data['data']['resource'] as List<dynamic>)
                 .cast<Map<String, dynamic>>();
 
-        subcategories =
-            dataList.map((val) => Subcategory.fromJson(val)).toList().obs;
+        subcategories.value =
+            dataList.map((val) => Subcategory.fromJson(val)).toList();
       }
     } catch (e) {
       print("couldn't retrieve subcategories: $e");
     }
   }
 
-  Future<void> retrieveProducts() async {
+  Future<void> retrieveProducts(int countryId) async {
     try {
-      dio.Response resp = await rest.getProducts();
+      dio.Response resp = await rest.getProducts(countryId);
       if (resp.statusCode == 200) {
         List<Map<String, dynamic>> dataList =
             (resp.data['data'] as List<dynamic>).cast<Map<String, dynamic>>();
 
-        products = dataList.map((val) => Product.fromJson(val)).toList().obs;
+        products.value = dataList.map((val) => Product.fromJson(val)).toList();
       }
     } catch (e) {
       print("couldn't retrieve products: $e");
     }
   }
 
-  Future<void> retrieveProviders() async {
+  Future<void> retrieveProviders(int countryId) async {
     try {
-      dio.Response resp = await rest.getProviders();
+      dio.Response resp = await rest.getProviders(countryId);
       print(resp);
 
       if (resp.statusCode == 200) {
         List<Map<String, dynamic>> dataList =
             (resp.data['data'] as List<dynamic>).cast<Map<String, dynamic>>();
 
-        providers = dataList.map((val) => Provider.fromJson(val)).toList().obs;
+        providers.value =
+            dataList.map((val) => Provider.fromJson(val)).toList();
       }
     } catch (e) {
       print("couldn't retrieve providers: $e");
@@ -90,7 +94,7 @@ class CommerceController extends GetxController {
       basketItems = realmController.getItems(auth.currentUser.value!.email);
 
       // Check if products are available
-      List<Product> products = Get.find<CommerceController>().products ?? [];
+      List<Product> products = Get.find<CommerceController>().products;
       if (products.isEmpty) {
         return;
       }
@@ -134,6 +138,38 @@ class CommerceController extends GetxController {
       }
     } catch (e) {
       print("Failed to resync basket: $e");
+    }
+  }
+
+  Future<void> retrieveBranches(int spId) async {
+    try {
+      dio.Response resp = await rest.getBranches(spId);
+      print(resp);
+
+      if (resp.statusCode == 200) {
+        List<Map<String, dynamic>> dataList =
+            (resp.data['data'] as List<dynamic>).cast<Map<String, dynamic>>();
+        branches.addAll(
+            dataList.map((val) => ProviderBranch.fromJson(val)).toList());
+      }
+    } catch (e) {
+      print("couldn't retrieve branches: $e");
+    }
+  }
+
+  Future<void> retrieveCurrencies() async {
+    try {
+      dio.Response resp = await rest.getCurrencies();
+      print(resp);
+      if (resp.statusCode == 200) {
+        List<Map<String, dynamic>> dataList =
+            (resp.data['data'] as List<dynamic>).cast<Map<String, dynamic>>();
+
+        currencies
+            .addAll(dataList.map((val) => Currency.fromJson(val)).toList());
+      }
+    } catch (e) {
+      print("couldn't retrieve currencies: $e");
     }
   }
 }

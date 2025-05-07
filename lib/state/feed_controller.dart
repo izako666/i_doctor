@@ -52,8 +52,8 @@ class FeedController extends GetxController {
     List<Product> searchedProducts = List.empty(growable: true);
 
     for (Product prod in filteredProducts) {
-      if (prod.name.contains(searchController.text) ||
-          prod.description.contains(searchController.text)) {
+      if (prod.localName.toLowerCase().contains(searchController.text) ||
+          prod.localDesc.toLowerCase().contains(searchController.text)) {
         searchedProducts.add(prod);
       }
     }

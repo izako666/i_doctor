@@ -32,6 +32,24 @@
   <intent>
     <action android:name="android.support.customtabs.action.CustomTabsService" />
   </intent>
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="geo" />
+    </intent>
+
+    <!-- Support for Google Maps URLs -->
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="https" />
+      <data android:host="www.google.com" />
+    </intent>
+
+    <!-- Optional: support any map app that handles geo links -->
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="https" />
+      <data android:host="maps.google.com" />
+    </intent>
 </queries>
 
 </manifest>

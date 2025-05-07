@@ -14,7 +14,8 @@ import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/pages/main_pages/bottom_nav_page.dart';
 import 'package:i_doctor/UI/pages/category_list_page.dart';
 import 'package:i_doctor/UI/pages/clinic_list_view.dart';
-import 'package:i_doctor/UI/pages/clinic_page.dart';
+import 'package:i_doctor/UI/pages/provider_branch_page.dart';
+import 'package:i_doctor/UI/pages/provider_page.dart';
 import 'package:i_doctor/UI/pages/main_pages/settings_page.dart';
 import 'package:i_doctor/UI/pages/notifications_page.dart';
 import 'package:i_doctor/UI/pages/review_view.dart';
@@ -41,6 +42,7 @@ final router = GoRouter(
                   builder: (ctx, state) => const FeedPage(),
                   routes: [
                     GoRoute(
+                        name: "user_info",
                         path: 'user_info',
                         builder: (ctx, state) => const UserInformationPage(),
                         routes: [
@@ -80,8 +82,13 @@ final router = GoRouter(
                             id: state.pathParameters['clinicid']!)),
                     GoRoute(
                         path: '/clinic/:clinicid',
-                        builder: (ctx, state) =>
-                            ClinicPage(id: state.pathParameters['clinicid']!)),
+                        builder: (ctx, state) => ProviderPage(
+                            id: state.pathParameters['clinicid']!)),
+                    GoRoute(
+                        path: '/clinic_branch/:spid/:branchid',
+                        builder: (ctx, state) => ProviderBranchPage(
+                            id: state.pathParameters['branchid']!,
+                            spId: state.pathParameters['spid']!)),
                     GoRoute(
                         path: '/clinics',
                         builder: (ctx, state) => const ClinicListPage()),
@@ -131,8 +138,13 @@ final router = GoRouter(
                             id: state.pathParameters['clinicid']!)),
                     GoRoute(
                         path: '/clinic/:clinicid',
-                        builder: (ctx, state) =>
-                            ClinicPage(id: state.pathParameters['clinicid']!)),
+                        builder: (ctx, state) => ProviderPage(
+                            id: state.pathParameters['clinicid']!)),
+                    GoRoute(
+                        path: '/clinic_branch/:spid/:branchid',
+                        builder: (ctx, state) => ProviderBranchPage(
+                            id: state.pathParameters['branchid']!,
+                            spId: state.pathParameters['spid']!)),
                     GoRoute(
                         path: '/clinics',
                         builder: (ctx, state) => const ClinicListPage()),

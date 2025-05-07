@@ -9,7 +9,7 @@ class RealmController extends GetxController {
     super.onInit();
     var config = Configuration.local(
       [BasketItem.schema],
-      schemaVersion: 3,
+      schemaVersion: 5, // Increment schema version
     );
     realm = Realm(config);
   }

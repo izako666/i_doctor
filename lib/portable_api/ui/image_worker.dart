@@ -9,7 +9,6 @@ import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/portable_api/ui/bottom_sheet.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<T?> imagePickerBottomSheet<T>(BuildContext context,
     {required Function(AssetPathEntity album, AssetEntity image)? onImageTap}) {
@@ -189,21 +188,19 @@ class _ImagePickerState extends State<ImagePicker> {
                                                     currentPhotos![i]);
                                               }
                                             },
-                                            child: Container(
-                                              child: AssetEntityImage(
-                                                currentPhotos![i],
-                                                isOriginal: false,
-                                                thumbnailSize:
-                                                    const ThumbnailSize.square(
-                                                        250),
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (context, error,
-                                                    stacktrace) {
-                                                  return const Center(
-                                                      child: Icon(Icons.error,
-                                                          color: errorColor));
-                                                },
-                                              ),
+                                            child: AssetEntityImage(
+                                              currentPhotos![i],
+                                              isOriginal: false,
+                                              thumbnailSize:
+                                                  const ThumbnailSize.square(
+                                                      250),
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stacktrace) {
+                                                return const Center(
+                                                    child: Icon(Icons.error,
+                                                        color: errorColor));
+                                              },
                                             ),
                                           ))
                                       : (i ==
@@ -244,37 +241,34 @@ class _ImagePickerState extends State<ImagePicker> {
                                               selectingPhotos = true;
                                               setState(() {});
                                             },
-                                            child: Container(
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  SizedBox(
-                                                    width: 180,
-                                                    height: 150,
-                                                    child: ClipRRect(
-                                                      clipBehavior:
-                                                          Clip.hardEdge,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              16),
-                                                      child: AssetEntityImage(
-                                                        albumThumbnails![i],
-                                                        isOriginal: false,
-                                                        fit: BoxFit.cover,
-                                                        thumbnailSize:
-                                                            const ThumbnailSize
-                                                                .square(360),
-                                                      ),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  width: 180,
+                                                  height: 150,
+                                                  child: ClipRRect(
+                                                    clipBehavior: Clip.hardEdge,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                    child: AssetEntityImage(
+                                                      albumThumbnails![i],
+                                                      isOriginal: false,
+                                                      fit: BoxFit.cover,
+                                                      thumbnailSize:
+                                                          const ThumbnailSize
+                                                              .square(360),
                                                     ),
                                                   ),
-                                                  Text(albums![i].name,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleSmall)
-                                                ],
-                                              ),
+                                                ),
+                                                Text(albums![i].name,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleSmall)
+                                              ],
                                             ),
                                           ));
                                     },
@@ -543,37 +537,34 @@ class _ImageLcPickerState extends State<ImageLcPicker> {
                                               selectingPhotos = true;
                                               setState(() {});
                                             },
-                                            child: Container(
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  SizedBox(
-                                                    width: 180,
-                                                    height: 150,
-                                                    child: ClipRRect(
-                                                      clipBehavior:
-                                                          Clip.hardEdge,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              16),
-                                                      child: AssetEntityImage(
-                                                        albumThumbnails![i],
-                                                        isOriginal: false,
-                                                        fit: BoxFit.cover,
-                                                        thumbnailSize:
-                                                            const ThumbnailSize
-                                                                .square(360),
-                                                      ),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  width: 180,
+                                                  height: 150,
+                                                  child: ClipRRect(
+                                                    clipBehavior: Clip.hardEdge,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                    child: AssetEntityImage(
+                                                      albumThumbnails![i],
+                                                      isOriginal: false,
+                                                      fit: BoxFit.cover,
+                                                      thumbnailSize:
+                                                          const ThumbnailSize
+                                                              .square(360),
                                                     ),
                                                   ),
-                                                  Text(albums![i].name,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleSmall)
-                                                ],
-                                              ),
+                                                ),
+                                                Text(albums![i].name,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .titleSmall)
+                                              ],
                                             ),
                                           ));
                                     },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/appointments_page.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
@@ -101,11 +102,20 @@ class _BasketPageState extends State<BasketPage> {
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: WideButton(
-                            title: Text(t(context).toPayment,
+                            color: basketList.isNotEmpty
+                                ? successColor
+                                : primaryColor,
+                            title: Text(
+                                basketList.isEmpty
+                                    ? t(context).exploreServices
+                                    : t(context).toPayment,
                                 style: Theme.of(context).textTheme.titleLarge),
-                            disabled: basketList.isEmpty,
                             onTap: () {
-                              context.go('/cart/confirm');
+                              if (basketList.isEmpty) {
+                                context.go("/feed");
+                              } else {
+                                context.go('/cart/confirm');
+                              }
                             }),
                       ),
                     )

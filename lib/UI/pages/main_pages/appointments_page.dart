@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
 import 'package:i_doctor/UI/util/cancel_app_dialog.dart';
+import 'package:i_doctor/UI/util/data_from_id.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/UI/util/leave_review_dialog.dart';
 import 'package:i_doctor/UI/util/price_text.dart';
@@ -39,113 +40,121 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: IAppBar(
-        title: t(context).appointments,
-        toolbarHeight: kToolbarHeight,
-        hasBackButton: false,
-      ),
-      body: Get.find<AuthController>().currentUser.value == null
-          ? Center(
-              child: Text(
-                t(context).pleaseLoginFirst,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            )
-          : CustomScrollView(
-              slivers: [
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 16),
-                ),
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    width: getScreenWidth(context),
-                    height: 64,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border(
-                                  bottom: pageIndex == 0
-                                      ? const BorderSide(
-                                          color: primaryColor, width: 2)
-                                      : BorderSide.none),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  pageIndex = 0;
-                                  setState(() {});
-                                },
-                                child: Column(
-                                  children: [
-                                    Icon(Icons.event,
-                                        color: pageIndex == 0
-                                            ? primaryColor
-                                            : Colors.grey),
-                                    Text(t(context).currentAppointments)
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    bottom: pageIndex == 1
-                                        ? const BorderSide(
-                                            color: primaryColor, width: 2)
-                                        : BorderSide.none)),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  pageIndex = 1;
-                                  setState(() {});
-                                },
-                                child: Column(
-                                  children: [
-                                    Icon(Icons.event_available,
-                                        color: pageIndex == 1
-                                            ? primaryColor
-                                            : Colors.grey),
-                                    Text(t(context).oldAppointments)
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
+        appBar: IAppBar(
+          title: t(context).appointments,
+          toolbarHeight: kToolbarHeight,
+          hasBackButton: false,
+        ),
+        body: Obx(() {
+          return Get.find<AuthController>().currentUser.value == null
+              ? Center(
+                  child: Text(
+                    t(context).pleaseLoginFirst,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                ),
-                if (pageIndex == 0)
-                  SliverList.builder(
-                    itemBuilder: (ctx, i) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 4),
-                      child:
-                          AppointmentCard(appointment: currentAppointments[i]),
-                    ),
-                    itemCount: currentAppointments.length,
+                )
+              : Center(
+                  child: Text(
+                    t(context).comingSoon,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                if (pageIndex == 1)
-                  SliverList.builder(
-                    itemBuilder: (ctx, i) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 4),
-                      child: AppointmentCard(appointment: pastAppointments[i]),
-                    ),
-                    itemCount: pastAppointments.length,
-                  )
-              ],
-            ),
-    );
+                );
+          // : CustomScrollView(
+          //     slivers: [
+          //       const SliverToBoxAdapter(
+          //         child: SizedBox(height: 16),
+          //       ),
+          //       SliverToBoxAdapter(
+          //         child: SizedBox(
+          //           width: getScreenWidth(context),
+          //           height: 64,
+          //           child: Row(
+          //             mainAxisSize: MainAxisSize.max,
+          //             children: [
+          //               Expanded(
+          //                 child: Container(
+          //                   decoration: BoxDecoration(
+          //                     border: Border(
+          //                         bottom: pageIndex == 0
+          //                             ? const BorderSide(
+          //                                 color: primaryColor, width: 2)
+          //                             : BorderSide.none),
+          //                   ),
+          //                   child: Material(
+          //                     color: Colors.transparent,
+          //                     child: InkWell(
+          //                       onTap: () {
+          //                         pageIndex = 0;
+          //                         setState(() {});
+          //                       },
+          //                       child: Column(
+          //                         children: [
+          //                           Icon(Icons.event,
+          //                               color: pageIndex == 0
+          //                                   ? primaryColor
+          //                                   : Colors.grey),
+          //                           Text(t(context).currentAppointments)
+          //                         ],
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ),
+          //               Expanded(
+          //                 child: Container(
+          //                   decoration: BoxDecoration(
+          //                       border: Border(
+          //                           bottom: pageIndex == 1
+          //                               ? const BorderSide(
+          //                                   color: primaryColor, width: 2)
+          //                               : BorderSide.none)),
+          //                   child: Material(
+          //                     color: Colors.transparent,
+          //                     child: InkWell(
+          //                       onTap: () {
+          //                         pageIndex = 1;
+          //                         setState(() {});
+          //                       },
+          //                       child: Column(
+          //                         children: [
+          //                           Icon(Icons.event_available,
+          //                               color: pageIndex == 1
+          //                                   ? primaryColor
+          //                                   : Colors.grey),
+          //                           Text(t(context).oldAppointments)
+          //                         ],
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ),
+          //               )
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //       if (pageIndex == 0)
+          //         SliverList.builder(
+          //           itemBuilder: (ctx, i) => Padding(
+          //             padding: const EdgeInsets.symmetric(
+          //                 vertical: 8.0, horizontal: 4),
+          //             child: AppointmentCard(
+          //                 appointment: currentAppointments[i]),
+          //           ),
+          //           itemCount: currentAppointments.length,
+          //         ),
+          //       if (pageIndex == 1)
+          //         SliverList.builder(
+          //           itemBuilder: (ctx, i) => Padding(
+          //             padding: const EdgeInsets.symmetric(
+          //                 vertical: 8.0, horizontal: 4),
+          //             child:
+          //                 AppointmentCard(appointment: pastAppointments[i]),
+          //           ),
+          //           itemCount: pastAppointments.length,
+          //         )
+          //     ],
+          //   );
+        }));
   }
 }
 
@@ -237,7 +246,10 @@ class AppointmentCard extends StatelessWidget {
                 children: [
                   Text(t(context).priceWord),
                   PriceText(
-                      price: appointment.price, discount: appointment.discount)
+                    price: appointment.price,
+                    discount: appointment.discount,
+                    currency: Currency(id: 0, name1: "SAR", name2: "س.ر."),
+                  )
                 ],
               ),
             ),
@@ -330,7 +342,12 @@ class BasketCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(t(context).offer),
-                      Text(basketItem.name),
+                      Text(Get.find<CommerceController>()
+                              .products
+                              .where((p) => p.id == basketItem.productId)
+                              .firstOrNull
+                              ?.localName ??
+                          basketItem.name),
                     ],
                   ),
                 ],
@@ -341,48 +358,48 @@ class BasketCard extends StatelessWidget {
               endIndent: 8,
               color: secondaryColor,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(t(context).serviceProvider),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(basketItem.spId),
-                      SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: IconButton(
-                          iconSize: 12,
-                          onPressed: () {
-                            Provider? provider = Get.find<CommerceController>()
-                                .providers
-                                .where((test) => test.name == basketItem.spId)
-                                .firstOrNull;
-                            if (provider != null) {
-                              List<double> numbers = provider.location
-                                  .split(',')
-                                  .map((e) => double.parse(e))
-                                  .toList();
+            if (basketItem.spId != null &&
+                getProviderFromId(basketItem.spId!) != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(t(context).serviceProvider),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(getProviderFromId(basketItem.spId!)!.localName),
+                        SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: IconButton(
+                            iconSize: 12,
+                            onPressed: () {
+                              Provider? provider =
+                                  getProviderFromId(basketItem.spId!);
+                              if (provider != null) {
+                                List<double> numbers = provider.location
+                                    .split(',')
+                                    .map((e) => double.parse(e))
+                                    .toList();
 
-                              MapUtils.openMap(numbers[0], numbers[1]);
-                            }
-                          },
-                          // onPressed: () => MapUtils.openMap(
-                          //     appointment.location.latitude,
-                          //     appointment.location.longitude),
-                          icon: const Icon(
-                            Icons.location_pin,
+                                MapUtils.openMap(numbers[0], numbers[1]);
+                              }
+                            },
+                            // onPressed: () => MapUtils.openMap(
+                            //     appointment.location.latitude,
+                            //     appointment.location.longitude),
+                            icon: const Icon(
+                              Icons.location_pin,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
             const Divider(
               indent: 8,
               endIndent: 8,
@@ -413,8 +430,11 @@ class BasketCard extends StatelessWidget {
                 children: [
                   Text(t(context).priceWord),
                   PriceText(
-                      price: double.parse(basketItem.idocPrice),
-                      discount: double.parse(basketItem.idocDiscountAmt))
+                    price: double.parse(basketItem.idocPrice),
+                    discount: double.parse(basketItem.idocDiscountAmt),
+                    currency: getCurrencyFromId(basketItem.currency) ??
+                        Currency(id: 0, name1: "SAR", name2: "س.ر."),
+                  )
                 ],
               ),
             ),
@@ -600,10 +620,7 @@ class _CartCardState extends State<CartCard> {
   @override
   void initState() {
     super.initState();
-    provider = Get.find<CommerceController>()
-        .providers
-        .where((test) => test.name == widget.basketItem.spId)
-        .firstOrNull;
+    provider = getProviderFromId(widget.basketItem.spId ?? -1);
   }
 
   @override
@@ -613,6 +630,7 @@ class _CartCardState extends State<CartCard> {
 
   @override
   Widget build(BuildContext context) {
+    double zoomScale = getZoomScale(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ElevatedContainer(
@@ -631,17 +649,12 @@ class _CartCardState extends State<CartCard> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
+                        child: RetryImage(
                             width: getScreenWidth(context) * 0.3,
                             height: getScreenWidth(context) * 0.3,
                             fit: BoxFit.fill,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  width: getScreenWidth(context) * 0.3,
-                                  height: getScreenWidth(context) * 0.3,
-                                  color: Colors.black,
-                                ),
-                            '$hostUrlBase/public/storage/${widget.basketItem.photo}'),
+                            imageUrl:
+                                '$hostUrlBase/public/storage/${widget.basketItem.photo}'),
                       ),
                     ],
                   ),
@@ -649,192 +662,212 @@ class _CartCardState extends State<CartCard> {
                 const SizedBox(
                   width: 4,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    MediaQuery.removePadding(
-                        context: context,
-                        child: TextButton(
-                            style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                tapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap),
-                            onPressed: () {
-                              String branch = GoRouter.of(context)
-                                  .routeInformationProvider
-                                  .value
-                                  .uri
-                                  .pathSegments[0];
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      MediaQuery.removePadding(
+                          context: context,
+                          child: TextButton(
+                              style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap),
+                              onPressed: () {
+                                String branch = GoRouter.of(context)
+                                    .routeInformationProvider
+                                    .value
+                                    .uri
+                                    .pathSegments[0];
 
-                              context.push(
-                                  '/$branch/advert/${widget.basketItem.productId}');
-                            },
-                            child: Text(
-                              widget.basketItem.name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(color: primaryColor),
-                            ))),
-                    const SizedBox(height: 4),
-                    Text(widget.basketItem.spId,
-                        style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: 2),
-                    if (provider != null)
+                                context.push(
+                                    '/$branch/advert/${widget.basketItem.productId}');
+                              },
+                              child: Text(
+                                Get.find<CommerceController>()
+                                        .products
+                                        .where((p) =>
+                                            p.id == widget.basketItem.productId)
+                                        .firstOrNull
+                                        ?.localName ??
+                                    widget.basketItem.name,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(color: primaryColor),
+                              ))),
+                      const SizedBox(height: 4),
+                      if (widget.basketItem.spId != null)
+                        Text(provider!.localName,
+                            style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 2),
+                      if (provider != null)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      softWrap: true,
+                                      maxLines: 3,
+                                      '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.name}, ${provider!.localShortAddress}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  List<double> numbers = provider!.location
+                                      .split(',')
+                                      .map((e) => double.parse(e))
+                                      .toList();
+
+                                  MapUtils.openMap(numbers[0], numbers[1]);
+                                },
+                                icon: const Icon(
+                                  Icons.location_pin,
+                                  color: secondaryColor,
+                                ))
+                          ],
+                        ),
+                      const SizedBox(height: 2),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.name}, ${provider!.shortAddress}',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium),
-                            ],
+                          Text(t(context).date),
+                          const SizedBox(
+                            width: 4,
                           ),
-                          IconButton(
-                              onPressed: () {
-                                List<double> numbers = provider!.location
-                                    .split(',')
-                                    .map((e) => double.parse(e))
-                                    .toList();
-
-                                MapUtils.openMap(numbers[0], numbers[1]);
-                              },
-                              icon: const Icon(
-                                Icons.location_pin,
-                                color: secondaryColor,
-                              ))
+                          Expanded(
+                            child: Text(
+                                softWrap: true,
+                                maxLines: 3,
+                                '${formatDate(DateTime.parse(widget.basketItem.startDate))} - ${formatDate(DateTime.parse(widget.basketItem.endDate))}'),
+                          )
                         ],
                       ),
-                    const SizedBox(height: 2),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(t(context).date),
-                        Text(
-                            ' ${formatDate(DateTime.parse(widget.basketItem.startDate))} - ${formatDate(DateTime.parse(widget.basketItem.endDate))}')
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      formatPrice(double.parse(widget.basketItem.idocPrice)),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(color: primaryColor),
-                    ),
-                    const SizedBox(
-                      height: 0,
-                    )
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        formatPrice(
+                            double.parse(widget.basketItem.idocPrice),
+                            getCurrencyFromId(widget.basketItem.currency) ??
+                                Currency(id: 0, name1: "SAR", name2: "س.ر.")),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: primaryColor),
+                      ),
+                      const SizedBox(
+                        height: 0,
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
             if (!widget.isDisplay)
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Flexible(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(t(context).count)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 36,
-                                  height: 36,
-                                  child: IconButton(
-                                      iconSize: 16,
-                                      onPressed: () {
-                                        int newQuantity =
-                                            widget.basketItem.quantity - 1;
-                                        if (newQuantity == 0) {
-                                        } else {
-                                          RealmController realmController =
-                                              Get.find<RealmController>();
-                                          realmController.updateQuantity(
-                                              widget.basketItem, newQuantity);
-                                          widget.onDelete();
-                                        }
-                                      },
-                                      icon: const Icon(
-                                        Icons.remove,
-                                        fill: 1,
-                                      )),
-                                ),
-                                Text(widget.basketItem.quantity.toString()),
-                                SizedBox(
-                                  width: 36,
-                                  height: 36,
-                                  child: IconButton(
-                                      iconSize: 16,
-                                      onPressed: () {
-                                        RealmController realmController =
-                                            Get.find<RealmController>();
-                                        if (widget.basketItem
-                                                .availablePurchases <=
-                                            (widget.basketItem.quantity + 1)) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  content: Text(t(context)
-                                                      .cantRequestMoreProduct)));
-
-                                          return;
-                                        }
-                                        realmController.updateQuantity(
-                                            widget.basketItem,
-                                            widget.basketItem.quantity + 1);
-                                        widget.onDelete();
-                                      },
-                                      icon: const Icon(
-                                        Icons.add,
-                                        fill: 1.0,
-                                      )),
-                                )
-                              ],
-                            ),
-                          ],
+                        SizedBox(
+                          width: zoomScale > 2.8 ? 36 : 42,
+                          height: zoomScale > 2.8 ? 36 : 42,
+                          child: IconButton(
+                              iconSize: 28,
+                              onPressed: () {
+                                int newQuantity =
+                                    widget.basketItem.quantity - 1;
+                                if (newQuantity == 0) {
+                                } else {
+                                  RealmController realmController =
+                                      Get.find<RealmController>();
+                                  realmController.updateQuantity(
+                                      widget.basketItem, newQuantity);
+                                  widget.onDelete();
+                                }
+                              },
+                              icon: const Icon(
+                                Icons.remove,
+                                fill: 1,
+                              )),
                         ),
+                        Padding(
+                          padding:
+                              EdgeInsets.only(left: zoomScale > 2.8 ? 8.0 : 0),
+                          child: Text(widget.basketItem.quantity.toString()),
+                        ),
+                        SizedBox(
+                          width: zoomScale > 2.8 ? 36 : 42,
+                          height: zoomScale > 2.8 ? 36 : 42,
+                          child: IconButton(
+                              iconSize: 28,
+                              onPressed: () {
+                                RealmController realmController =
+                                    Get.find<RealmController>();
+                                if (widget.basketItem.availablePurchases <=
+                                    (widget.basketItem.quantity + 1)) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(t(context)
+                                              .cantRequestMoreProduct)));
+
+                                  return;
+                                }
+                                realmController.updateQuantity(
+                                    widget.basketItem,
+                                    widget.basketItem.quantity + 1);
+                                widget.onDelete();
+                              },
+                              icon: const Icon(
+                                Icons.add,
+                                fill: 1.0,
+                              )),
+                        )
                       ],
                     ),
                   ),
-                  Flexible(
-                    flex: 3,
-                    child: WideButton(
-                        radius: BorderRadius.only(
-                            bottomLeft: !(Directionality.of(context) ==
-                                    TextDirection.rtl)
-                                ? const Radius.circular(0)
-                                : const Radius.circular(16),
-                            topLeft: !(Directionality.of(context) ==
-                                    TextDirection.rtl)
-                                ? const Radius.circular(0)
-                                : const Radius.circular(16),
-                            bottomRight:
-                                Directionality.of(context) == TextDirection.rtl
-                                    ? const Radius.circular(0)
-                                    : const Radius.circular(16),
-                            topRight:
-                                Directionality.of(context) == TextDirection.rtl
-                                    ? const Radius.circular(0)
-                                    : const Radius.circular(16)),
-                        title: Text(t(context).delete),
-                        color: errorColor,
-                        onTap: () {
-                          _showCancelDialog(
-                              context, Get.find<RealmController>());
-                        }),
-                  ),
+                  WideButton(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      borderColor: Colors.grey,
+                      radius: BorderRadius.only(
+                          bottomLeft:
+                              !(Directionality.of(context) == TextDirection.rtl)
+                                  ? const Radius.circular(0)
+                                  : const Radius.circular(16),
+                          topLeft:
+                              !(Directionality.of(context) == TextDirection.rtl)
+                                  ? const Radius.circular(0)
+                                  : const Radius.circular(0),
+                          bottomRight:
+                              Directionality.of(context) == TextDirection.rtl
+                                  ? const Radius.circular(0)
+                                  : const Radius.circular(16),
+                          topRight:
+                              Directionality.of(context) == TextDirection.rtl
+                                  ? const Radius.circular(0)
+                                  : const Radius.circular(0)),
+                      title: Text(
+                        t(context).delete,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(color: errorColor),
+                      ),
+                      color: Colors.white,
+                      onTap: () {
+                        _showCancelDialog(context, Get.find<RealmController>());
+                      }),
                 ],
               ),
             if (widget.isDisplay)

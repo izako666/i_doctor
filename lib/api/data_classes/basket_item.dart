@@ -8,10 +8,10 @@ class _BasketItem {
   late String id;
   late int productId;
   late String userId;
-  late String catId;
-  late String subcatId;
-  late String spId;
-  late String spbId;
+  late int catId;
+  late int? subcatId;
+  late int? spId;
+  late int spbId;
   late String name;
   late String description;
   late String photo;
@@ -29,4 +29,7 @@ class _BasketItem {
   late String updatedAt;
   late int quantity;
   late bool isFavorite;
+  late String? name2;
+  late String? description2;
+  late int currency;
 }

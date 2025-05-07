@@ -1,11 +1,19 @@
+import 'package:get/get.dart';
+import 'package:i_doctor/state/auth_controller.dart';
+
 class Product {
   final int id;
-  final String catId;
-  final String subcatId;
-  final String spId;
-  final String spbId;
+  final int catId;
+  final int? subcatId;
+  final int? spId;
+  final int spbId;
+  final int countryId;
+  final int cityId;
+  final int currency;
   final String name;
+  final String? name2;
   final String description;
+  final String? description2;
   final String photo;
   final int active;
   final String spPrice;
@@ -29,7 +37,9 @@ class Product {
     required this.spId,
     required this.spbId,
     required this.name,
+    required this.name2,
     required this.description,
+    required this.description2,
     required this.photo,
     required this.active,
     required this.spPrice,
@@ -43,19 +53,24 @@ class Product {
     required this.startDate,
     required this.endDate,
     required this.availablePurchases,
+    required this.countryId,
+    required this.cityId,
+    required this.currency,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory Product.fromJson(Map<String, dynamic> data) {
     return Product(
-        id: data['id'],
+        id: data['pro_id'],
         catId: data['cat_id'],
         subcatId: data['subcat_id'],
         spId: data['sp_id'],
         spbId: data['spb_id'],
-        name: data['Name'],
-        description: data['Description'],
+        name: data['Name1'],
+        name2: data['Name2'],
+        description: data['Description1'],
+        description2: data['Description2'],
         photo: data['Photo'],
         active: data['active'],
         spPrice: data['sp_price'],
@@ -70,6 +85,15 @@ class Product {
         endDate: data['end_date'],
         availablePurchases: data['available_purchase'],
         createdAt: data['created_at'],
-        updatedAt: data['updated_at']);
+        updatedAt: data['updated_at'],
+        countryId: data['country_id'],
+        cityId: data['city_id'],
+        currency: data['currency']);
   }
+
+  String get localName =>
+      Get.find<AuthController>().atFirstLocale() ? name : name2 ?? name;
+  String get localDesc => Get.find<AuthController>().atFirstLocale()
+      ? description
+      : description2 ?? description;
 }

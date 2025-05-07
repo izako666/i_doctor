@@ -4,14 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/appointments_page.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
+import 'package:i_doctor/UI/util/data_from_id.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/api/data_classes/basket_item.dart';
+import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/realm_controller.dart';
-import 'package:intl/intl.dart';
 
 class ConfirmBasketPage extends StatefulWidget {
   const ConfirmBasketPage({super.key});
@@ -71,67 +72,97 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
                       ),
                       itemCount: basketItems.length,
                     ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 16),
-                        child: ElevatedContainer(
-                            blackWhite: getBlackWhite(context),
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(t(context).originalPrice),
-                                        Text(formatPrice(totalPrice))
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(t(context).tax),
-                                        Text(formatPrice(0.0)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(t(context).discount),
-                                        Text(formatPrice(totalDiscount)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    const Divider(),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(t(context).totalPrice,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold)),
-                                        Text(
-                                            formatPrice(
-                                                (totalPrice - totalDiscount)),
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold)),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ]),
+                    if (basketItems.isNotEmpty)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 16),
+                          child: ElevatedContainer(
+                              blackWhite: getBlackWhite(context),
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(t(context).originalPrice),
+                                          Text(formatPrice(
+                                              totalPrice,
+                                              getCurrencyFromId(basketItems[0]
+                                                      .currency) ??
+                                                  Currency(
+                                                      id: 0,
+                                                      name1: "SAR",
+                                                      name2: "س.ر.")))
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(t(context).tax),
+                                          Text(formatPrice(
+                                            0.0,
+                                            getCurrencyFromId(
+                                                    basketItems[0].currency) ??
+                                                Currency(
+                                                    id: 0,
+                                                    name1: "SAR",
+                                                    name2: "س.ر."),
+                                          )),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(t(context).discount),
+                                          Text(formatPrice(
+                                              totalDiscount,
+                                              getCurrencyFromId(basketItems[0]
+                                                      .currency) ??
+                                                  Currency(
+                                                      id: 0,
+                                                      name1: "SAR",
+                                                      name2: "س.ر."))),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      const Divider(),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(t(context).totalPrice,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(
+                                              formatPrice(
+                                                  (totalPrice - totalDiscount),
+                                                  getCurrencyFromId(
+                                                          basketItems[0]
+                                                              .currency) ??
+                                                      Currency(
+                                                          id: 0,
+                                                          name1: "SAR",
+                                                          name2: "س.ر.")),
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ]),
+                        ),
                       ),
-                    ),
                     const SliverToBoxAdapter(
                       child: SizedBox(height: 8),
                     ),
@@ -155,14 +186,17 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
   Future<void> loadAsync() async {
     try {
       // Retrieve products and basket items
-      await Get.find<CommerceController>().retrieveProducts();
-      RealmController realmController = Get.find<RealmController>();
       AuthController auth = Get.find<AuthController>();
+      if (auth.currentCountry.value != null) {
+        await Get.find<CommerceController>()
+            .retrieveProducts(auth.currentCountry.value!.id);
+      }
+      RealmController realmController = Get.find<RealmController>();
 
       basketItems = realmController.getItems(auth.currentUser.value!.email);
 
       // Check if products are available
-      List<Product> products = Get.find<CommerceController>().products ?? [];
+      List<Product> products = Get.find<CommerceController>().products;
       if (products.isEmpty) {
         loaded = true;
         failed = true;

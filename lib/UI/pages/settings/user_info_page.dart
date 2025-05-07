@@ -18,7 +18,17 @@ class UserInformationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AuthController auth = Get.find<AuthController>();
-
+    List<Map> languages = [
+      {"name": "English", "flag": "🇺🇸", "locale": "en"},
+      {"name": "العربية", "flag": "🇸🇦", "locale": "ar"},
+      {"name": "Türkçe", "flag": "🇹🇷", "locale": "tr"}
+    ]
+        .where(
+          (element) =>
+              element["locale"] == auth.currentCountry.value!.lang1 ||
+              element["locale"] == auth.currentCountry.value!.lang2,
+        )
+        .toList();
     return Scaffold(
       appBar: IAppBar(
         title: t(context).myInfo,
@@ -34,7 +44,7 @@ class UserInformationPage extends StatelessWidget {
                   height: 32,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -48,19 +58,35 @@ class UserInformationPage extends StatelessWidget {
                       const SizedBox(
                         height: 4,
                       ),
-                      Text(
-                        auth.currentUser.value!.id.toString(),
-                        style: Theme.of(context).textTheme.bodyLarge,
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        height: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.numbers),
+                              const SizedBox(
+                                height: 25,
+                                child: VerticalDivider(color: Colors.grey),
+                              ),
+                              Text(
+                                auth.currentUser.value!.id.toString(),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
                       )
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(),
-                ),
+                const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -74,19 +100,35 @@ class UserInformationPage extends StatelessWidget {
                       const SizedBox(
                         height: 4,
                       ),
-                      Text(
-                        auth.currentUser.value!.custArbName,
-                        style: Theme.of(context).textTheme.bodyLarge,
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        height: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.person),
+                              const SizedBox(
+                                height: 25,
+                                child: VerticalDivider(color: Colors.grey),
+                              ),
+                              Text(
+                                auth.currentUser.value!.custArbName,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
                       )
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(),
-                ),
+                const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -100,19 +142,35 @@ class UserInformationPage extends StatelessWidget {
                       const SizedBox(
                         height: 4,
                       ),
-                      Text(
-                        auth.currentUser.value!.email,
-                        style: Theme.of(context).textTheme.bodyLarge,
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        height: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.email),
+                              const SizedBox(
+                                height: 25,
+                                child: VerticalDivider(color: Colors.grey),
+                              ),
+                              Text(
+                                auth.currentUser.value!.email,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
                       )
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(),
-                ),
+                const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -126,19 +184,39 @@ class UserInformationPage extends StatelessWidget {
                       const SizedBox(
                         height: 4,
                       ),
-                      Text(
-                        auth.currentUser.value!.nationalityId.toString(),
-                        style: Theme.of(context).textTheme.bodyLarge,
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        height: 40,
+                        child: Row(
+                          children: [
+                            const Icon(Icons.flag),
+                            const SizedBox(
+                              height: 25,
+                              child: VerticalDivider(color: Colors.grey),
+                            ),
+                            Text(
+                              Get.find<AuthController>()
+                                      .nationalities!
+                                      .where((test) =>
+                                          test.id ==
+                                          auth.currentUser.value!.nationalityId)
+                                      .firstOrNull
+                                      ?.name ??
+                                  "",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
                       )
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(),
-                ),
+                const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -152,24 +230,40 @@ class UserInformationPage extends StatelessWidget {
                       const SizedBox(
                         height: 4,
                       ),
-                      Text(
-                        auth.currentUser.value!.mobile,
-                        style: Theme.of(context).textTheme.bodyLarge,
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        height: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.phone),
+                              const SizedBox(
+                                height: 25,
+                                child: VerticalDivider(color: Colors.grey),
+                              ),
+                              Text(
+                                auth.currentUser.value!.mobile,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
                       )
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(),
-                ),
+                const SizedBox(height: 8),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        t(context).city,
+                        t(context).country,
                         style: Theme.of(context)
                             .textTheme
                             .labelMedium!
@@ -178,91 +272,176 @@ class UserInformationPage extends StatelessWidget {
                       const SizedBox(
                         height: 4,
                       ),
-                      Text(
-                        auth.currentUser.value!.cityId.toString(),
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      )
-                    ],
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0, left: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        t(context).language,
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      Obx(
-                        () => DropdownButton2<String>(
-                          value: Get.find<LanguageController>().locale.value,
-                          items: Get.find<LanguageController>()
-                              .localeLangMap
-                              .keys
-                              .map((k) => DropdownMenuItem(
-                                  value: k,
-                                  child: Text(Get.find<LanguageController>()
-                                      .localeLangMap[k]!)))
-                              .toList(),
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          onChanged: (v) {
-                            if (v != null) {
-                              Get.find<LanguageController>().setLocale(v);
-                            }
-                          },
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        height: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.public),
+                              const SizedBox(
+                                height: 25,
+                                child: VerticalDivider(color: Colors.grey),
+                              ),
+                              Text(
+                                Get.find<AuthController>()
+                                        .countries!
+                                        .where((test) =>
+                                            test.id ==
+                                            auth.currentUser.value!.countryId)
+                                        .firstOrNull
+                                        ?.name ??
+                                    "",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     ],
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Divider(),
-                ),
+                const SizedBox(height: 8),
+                if (auth.currentUser.value!.cityId != -1) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t(context).city,
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelMedium!
+                              .copyWith(color: Colors.grey),
+                        ),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          height: 40,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.location_city),
+                                const SizedBox(
+                                  height: 25,
+                                  child: VerticalDivider(color: Colors.grey),
+                                ),
+                                Text(
+                                  Get.find<AuthController>()
+                                          .cities!
+                                          .where((test) =>
+                                              test.id ==
+                                              auth.currentUser.value!.cityId)
+                                          .firstOrNull
+                                          ?.name ??
+                                      "",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                ],
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 0),
-                        onTap: () {
-                          RealmController realmController =
-                              Get.find<RealmController>();
-                          bool isEmpty = realmController
-                              .getFavoriteItems(Get.find<AuthController>()
-                                  .currentUser
-                                  .value!
-                                  .email)
-                              .isEmpty;
-                          if (isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content:
-                                    Text(t(context).noProductsFavoriteList)));
-                            return;
-                          }
-                          context.go("/feed/user_info/favorites");
-                        },
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 12,
-                        ),
-                        title: Text(
-                          t(context).favoritedProductsList,
-                        ),
+                      Text(
+                        t(context).language,
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelMedium!
+                            .copyWith(color: Colors.grey),
                       ),
                       const SizedBox(
                         height: 4,
                       ),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        height: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.language),
+                              const SizedBox(
+                                height: 25,
+                                child: VerticalDivider(color: Colors.grey),
+                              ),
+                              Obx(
+                                () => DropdownButton2<String>(
+                                  underline: const SizedBox(),
+                                  dropdownStyleData: DropdownStyleData(
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(16))),
+                                  value: Get.find<LanguageController>()
+                                      .locale
+                                      .value,
+                                  items: languages
+                                      .map((k) => DropdownMenuItem(
+                                          value: k["locale"] as String,
+                                          child: Text(k["name"]!)))
+                                      .toList(),
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                  onChanged: (v) {
+                                    if (v != null) {
+                                      Get.find<LanguageController>()
+                                          .setLocale(v);
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                     ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 16.0),
+                  child: WideButton(
+                    icon: Icons.arrow_forward_ios_rounded,
+                    onTap: () {
+                      RealmController realmController =
+                          Get.find<RealmController>();
+                      bool isEmpty = realmController
+                          .getFavoriteItems(Get.find<AuthController>()
+                              .currentUser
+                              .value!
+                              .email)
+                          .isEmpty;
+                      if (isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(t(context).noProductsFavoriteList)));
+                        return;
+                      }
+                      context.go("/feed/user_info/favorites");
+                    },
+                    title: Text(
+                      t(context).favoritedProductsList,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 100)
@@ -323,15 +502,19 @@ class UserInformationPage extends StatelessWidget {
                                           ))),
                                   Expanded(
                                       child: InkWell(
-                                          onTap: () {
+                                          onTap: () async {
                                             auth.currentUser.value = null;
                                             auth.authToken.value = null;
+                                            await auth.reInitData();
+
                                             LocalDataHandler.deleteData(
                                                 'email');
                                             LocalDataHandler.deleteData(
                                                 'password');
-                                            context.pop();
+
                                             if (context.mounted) {
+                                              context.pop();
+
                                               GoRouter.of(context)
                                                   .clearStackAndNavigate(
                                                       '/feed');

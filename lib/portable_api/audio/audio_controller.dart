@@ -81,7 +81,6 @@ class AudioController extends GetxController {
   Future<File?> startRecording() async {
     waveformData.clear();
     PermissionStatus status = await Permission.microphone.request();
-    var tempDir = await getTemporaryDirectory();
     if (status == PermissionStatus.denied) return null;
     String id = const Uuid().v4();
     File outputFile = await createFile(id);

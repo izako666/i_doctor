@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:i_doctor/UI/util/data_from_id.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
 import 'package:i_doctor/api/data_classes/subcategory.dart';
@@ -23,11 +24,14 @@ class FilterController extends GetxController {
   final List<Subcategory>? subCategoriesTotal;
   List<Provider> totalProviders = List.empty(growable: true);
   RxList<Provider> selectedProviders = RxList.empty(growable: true);
+  //just in case category has no subcategories
+  Category? mainCategory;
 
   RxString selectedSortCategory = 'appointment_time'.obs;
   final bool filterServiceProviders;
   FilterController(
       {required this.categoryType,
+      this.mainCategory,
       this.subCategoriesTotal,
       this.categoriesTotal,
       this.filterServiceProviders = true});
@@ -36,13 +40,13 @@ class FilterController extends GetxController {
   void onInit() {
     super.onInit();
     if (categoryType == 0) {
-      categoriesSelected.value = List.from(categoriesTotal!);
+      categoriesSelected.value = List.empty(growable: true);
     } else if (categoryType == 1) {
-      subcategoriesSelected.value = List.from(subCategoriesTotal!);
+      subcategoriesSelected.value = List.empty(growable: true);
     } else {
-      subcategoriesSelected.value = List.from(subCategoriesTotal!);
+      subcategoriesSelected.value = List.empty(growable: true);
 
-      categoriesSelected.value = List.from(categoriesTotal!);
+      categoriesSelected.value = List.empty(growable: true);
     }
   }
 
@@ -53,9 +57,7 @@ class FilterController extends GetxController {
     Set<Provider> uniqueProviders = {};
 
     for (Product prod in prods) {
-      Provider? prov = Get.find<CommerceController>()
-          .providers
-          .firstWhereOrNull((test) => test.name == prod.spId);
+      Provider? prov = getProviderFromId(prod.spId ?? -1);
 
       if (prov != null) {
         uniqueProviders.add(prov);
@@ -63,18 +65,18 @@ class FilterController extends GetxController {
     }
 
     totalProviders.addAll(uniqueProviders);
-    selectedProviders.addAll(totalProviders);
+    //selectedProviders.addAll(totalProviders);
   }
 
   void init() {
     if (categoryType == 0) {
-      categoriesSelected.value = List.from(categoriesTotal!);
+      categoriesSelected.value = List.empty(growable: true);
     } else if (categoryType == 1) {
-      subcategoriesSelected.value = List.from(subCategoriesTotal!);
+      subcategoriesSelected.value = List.empty(growable: true);
     } else {
-      subcategoriesSelected.value = List.from(subCategoriesTotal!);
+      subcategoriesSelected.value = List.empty(growable: true);
 
-      categoriesSelected.value = List.from(categoriesTotal!);
+      categoriesSelected.value = List.empty(growable: true);
     }
   }
 
@@ -88,24 +90,48 @@ class FilterController extends GetxController {
           double.parse(prod.idocNet) >= startPrice.value &&
           DateTime.parse(prod.endDate).compareTo(endTime.value) < 0 &&
           DateTime.parse(prod.startDate).compareTo(startTime.value) > 0 &&
-          selectedProviders
-                  .where((test) => test.name == prod.spId)
-                  .firstOrNull !=
-              null) {
+          (selectedProviders
+                      .where((test) => test.id == prod.spId)
+                      .firstOrNull !=
+                  null ||
+              prod.spId == null ||
+              selectedProviders.isEmpty)) {
         if (categoryType == 0 &&
-            categoriesSelected
-                .where((test) => test.name == prod.catId)
-                .isNotEmpty) {
+            (categoriesSelected
+                    .where((test) => test.id == prod.catId)
+                    .isNotEmpty ||
+                categoriesSelected.isEmpty)) {
           filteredProducts.add(prod);
-        } else if (categoryType == 1 &&
-            subcategoriesSelected
-                .where((test) => test.name == prod.subcatId)
-                .isNotEmpty) {
+        } else if ((categoryType == 1 &&
+                subCategoriesTotal!.isEmpty &&
+                mainCategory!.id == prod.catId) ||
+            (categoryType == 1 &&
+                (subcategoriesSelected
+                        .where((test) => test.id == prod.subcatId)
+                        .isNotEmpty ||
+                    subcategoriesSelected.isEmpty))) {
           filteredProducts.add(prod);
-        } else if (subcategoriesSelected
-            .where((test) => test.name == prod.subcatId)
-            .isNotEmpty) {
-          filteredProducts.add(prod);
+        } else if (categoryType == 2) {
+          bool addItem = subcategoriesSelected
+                  .where((test) => test.id == prod.subcatId)
+                  .isNotEmpty ||
+              subcategoriesSelected.isEmpty;
+          for (Category cat in (categoriesSelected.isEmpty
+              ? categoriesTotal!
+              : categoriesSelected)) {
+            bool catNoSub = subCategoriesTotal!
+                .where((test) => test.catId == cat.id)
+                .isEmpty;
+            if (catNoSub) {
+              if (cat.id == prod.catId && subcategoriesSelected.isEmpty) {
+                addItem = true;
+                break;
+              }
+            }
+          }
+          if (addItem) {
+            filteredProducts.add(prod);
+          }
         }
       }
     }
@@ -126,11 +152,11 @@ class FilterController extends GetxController {
           sortedProducts.sort((t1, t2) {
             Provider? prov1 = Get.find<CommerceController>()
                 .providers
-                .where((test) => test.name == t1.spId)
+                .where((test) => test.id == t1.spId)
                 .firstOrNull;
             Provider? prov2 = Get.find<CommerceController>()
                 .providers
-                .where((test) => test.name == t2.spId)
+                .where((test) => test.id == t2.spId)
                 .firstOrNull;
             if (prov1 == null && prov2 == null) {
               return 0;

@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
+import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/portable_api/helper.dart';
+import 'package:i_doctor/portable_api/local_data/local_data.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/language_controller.dart';
 import 'package:i_doctor/state/settings_controller.dart';
@@ -106,11 +108,41 @@ class SettingsPage extends StatelessWidget {
             //   ),
             // ),
             const SizedBox(height: 16),
+            if (Get.find<AuthController>().currentUser.value != null)
+              Material(
+                elevation: 2,
+                color: getBlackWhite(context) == black ? white : black,
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16)),
+                child: InkWell(
+                  splashColor: primaryColor.withAlpha(50),
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16)),
+                  onTap: () {
+                    context.pushNamed("user_info");
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ListTile(
+                      splashColor: Colors.grey,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(t(context).userInfo),
+                      leading: const Icon(Icons.person),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                    ),
+                  ),
+                ),
+              ),
             Material(
               elevation: 2,
               color: getBlackWhite(context) == black ? white : black,
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+              borderRadius: Get.find<AuthController>().currentUser.value != null
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16))
+                  : const BorderRadius.only(),
               child: InkWell(
                 splashColor: primaryColor.withAlpha(50),
                 borderRadius: const BorderRadius.only(
@@ -135,6 +167,41 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
             ),
+            Obx(() {
+              if (auth.currentUser.value == null) {
+                return Material(
+                  elevation: 2,
+                  color: getBlackWhite(context) == black ? white : black,
+                  borderRadius: const BorderRadius.only(),
+                  child: InkWell(
+                    splashColor: primaryColor.withAlpha(50),
+                    borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16)),
+                    onTap: () {
+                      showCountryBottomSheet(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ListTile(
+                        splashColor: Colors.grey,
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(t(context).searchRegion),
+                        leading: Text(
+                          countryNameToEmoji([
+                            auth.currentCountry.value!.name1,
+                            auth.currentCountry.value!.name2
+                          ]),
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                      ),
+                    ),
+                  ),
+                );
+              }
+              return Container();
+            }),
             Material(
               elevation: 2,
               color: getBlackWhite(context) == black ? white : black,
@@ -348,12 +415,21 @@ void _launchURL(String url) async {
   }
 }
 
-void showLanguageBottomSheet(BuildContext context) {
-  final List<Map<String, String>> languages = [
-    {"name": "English", "flag": "🇺🇸"},
-    {"name": "العربية", "flag": "🇸🇦"},
+Future<void> showLanguageBottomSheet(BuildContext context) async {
+  List<Map<String, String>> languages = [
+    {"name": "English", "flag": "🇺🇸", "locale": "en"},
+    {"name": "العربية", "flag": "🇸🇦", "locale": "ar"},
+    {"name": "Türkçe", "flag": "🇹🇷", "locale": "tr"}
   ];
 
+  Country? country = await Get.find<AuthController>().getCurrentCountry();
+  if (country != null) {
+    languages = languages
+        .where((test) =>
+            test['locale'] == country.lang1 || test['locale'] == country.lang2)
+        .toList();
+  }
+  if (!context.mounted) return;
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -405,7 +481,6 @@ class _LanguageSheetState extends State<LanguageSheet> {
                   height: 180,
                   child: StatefulBuilder(
                     builder: (context, setState) {
-                      int selectedIndex = 0;
                       return ListWheelScrollView.useDelegate(
                         itemExtent: 60,
                         squeeze: 0.9,
@@ -413,12 +488,7 @@ class _LanguageSheetState extends State<LanguageSheet> {
                         diameterRatio: 2.5,
                         physics: const FixedExtentScrollPhysics(),
                         childDelegate: ListWheelChildListDelegate(
-                          children: (Get.find<LanguageController>()
-                                          .locale
-                                          .value ==
-                                      "en"
-                                  ? widget.languages
-                                  : widget.languages.reversed)
+                          children: widget.languages
                               .map((l) => AnimatedContainer(
                                     duration: const Duration(milliseconds: 200),
                                     curve: Curves.easeInOut,
@@ -436,9 +506,120 @@ class _LanguageSheetState extends State<LanguageSheet> {
                                       onTap: () {
                                         context.pop(context);
                                         Get.find<LanguageController>()
-                                            .setLocale(l["name"] == "English"
-                                                ? "en"
-                                                : "ar");
+                                            .setLocale(l["locale"]!);
+                                      },
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+void showCountryBottomSheet(BuildContext context) {
+  if (Get.find<AuthController>().countries == null) return;
+  List<Country> countries = Get.find<AuthController>().countries!;
+
+  if (!context.mounted) return;
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return CountrySheet(countries: countries);
+    },
+  );
+}
+
+class CountrySheet extends StatefulWidget {
+  const CountrySheet({
+    super.key,
+    required this.countries,
+  });
+
+  final List<Country> countries;
+
+  @override
+  State<CountrySheet> createState() => _CountrySheetState();
+}
+
+class _CountrySheetState extends State<CountrySheet> {
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: IAppBar(
+          toolbarHeight: kToolbarHeight,
+          hasBackButton: false,
+          automaticallyImplyLeading: false,
+          leading: null,
+          actions: const [],
+          title: t(context).selectCountry,
+        ),
+        body: Container(
+          height: 350,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, // Centers everything
+            children: [
+              Center(
+                child: SizedBox(
+                  height: 180,
+                  child: StatefulBuilder(
+                    builder: (context, setState) {
+                      return ListWheelScrollView.useDelegate(
+                        itemExtent: 60,
+                        squeeze: 0.9,
+                        overAndUnderCenterOpacity: 0.5,
+                        diameterRatio: 2.5,
+                        physics: const FixedExtentScrollPhysics(),
+                        childDelegate: ListWheelChildListDelegate(
+                          children: widget.countries
+                              .map((l) => AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    curve: Curves.easeInOut,
+                                    decoration: BoxDecoration(
+                                      color: primaryColor,
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: ListTile(
+                                      //By setting the name to be name1, we can expect (judging by the database) that all names will be in english.
+                                      title: Text(l.name1,
+                                          style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500)),
+
+                                      trailing: Text(
+                                        countryNameToEmoji([l.name1, l.name2]),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge,
+                                      ),
+                                      onTap: () async {
+                                        context.pop(context);
+                                        Get.find<AuthController>()
+                                            .currentCountry
+                                            .value = l;
+                                        LocalDataHandler.addData(
+                                            "selected_search_country", l.id);
+                                        await Get.find<AuthController>()
+                                            .reInitData();
+                                        Get.find<LanguageController>()
+                                            .setLocale(l.lang1);
                                       },
                                     ),
                                   ))

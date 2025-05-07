@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/state/language_controller.dart';
 
@@ -9,15 +10,17 @@ class PriceText extends StatelessWidget {
       required this.price,
       required this.discount,
       this.align,
-      this.style});
+      this.style,
+      required this.currency});
   final double price;
   final double discount;
   final TextAlign? align;
   final TextStyle? style;
+  final Currency currency;
   @override
   Widget build(BuildContext context) {
     if (discount == 0) {
-      return Text(formatPrice(price),
+      return Text(formatPrice(price, currency),
           style: style ?? Theme.of(context).textTheme.bodyMedium);
     }
     return Text.rich(
@@ -31,15 +34,12 @@ class PriceText extends StatelessWidget {
                 .copyWith(decoration: TextDecoration.lineThrough),
         children: [
           TextSpan(
-            text: formatPrice(price - discount),
+            text: formatPrice(price - discount, currency),
             style: style ?? Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),
       textAlign: align,
-      textDirection: Get.find<LanguageController>().locale.value == "en"
-          ? TextDirection.ltr
-          : TextDirection.rtl, // Force RTL for proper layout
     );
   }
 }
@@ -49,6 +49,7 @@ class PriceText2 extends StatelessWidget {
       {super.key,
       required this.price,
       required this.spPrice,
+      required this.currency,
       this.align,
       this.style,
       this.smallStyle});
@@ -57,6 +58,7 @@ class PriceText2 extends StatelessWidget {
   final TextAlign? align;
   final TextStyle? style;
   final TextStyle? smallStyle;
+  final Currency currency;
   @override
   Widget build(BuildContext context) {
     return Text.rich(
@@ -68,15 +70,12 @@ class PriceText2 extends StatelessWidget {
                 decoration: TextDecoration.lineThrough, color: Colors.grey),
         children: [
           TextSpan(
-            text: formatPrice(price),
+            text: formatPrice(price, currency),
             style: style ?? Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),
       textAlign: align,
-      textDirection: Get.find<LanguageController>().locale.value == "en"
-          ? TextDirection.ltr
-          : TextDirection.rtl, // Force RTL for proper layout
     );
   }
 }

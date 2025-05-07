@@ -1,23 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
-import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/ad_list_page.dart';
-import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
-import 'package:i_doctor/UI/util/filter_sort_sheet.dart';
 import 'package:i_doctor/UI/util/i_app_bar.dart';
-import 'package:i_doctor/UI/util/price_text.dart';
 import 'package:i_doctor/api/data_classes/basket_item.dart';
-import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
-import 'package:i_doctor/api/networking/rest_functions.dart';
 import 'package:i_doctor/portable_api/helper.dart';
-import 'package:i_doctor/portable_api/maps/map_utils.dart';
-import 'package:i_doctor/portable_api/ui/bottom_sheet.dart';
 import 'package:i_doctor/state/auth_controller.dart';
-import 'package:i_doctor/state/commerce_controller.dart';
 import 'package:i_doctor/state/filter_controller.dart';
 import 'package:i_doctor/state/realm_controller.dart';
 import 'package:realm/realm.dart';
@@ -41,33 +29,36 @@ class _FavoritesPageState extends State<FavoritesPage> {
     RealmController realmController = Get.find<RealmController>();
     if (Get.find<AuthController>().currentUser.value != null) {
       favoriteProducts = realmController
-              .getFavoriteItems(
-                  Get.find<AuthController>().currentUser.value!.email)
-              .map((b) => Product(
-                  id: b.productId,
-                  catId: b.catId,
-                  subcatId: b.subcatId,
-                  spId: b.spId,
-                  spbId: b.spbId,
-                  name: b.name,
-                  description: b.description,
-                  photo: b.photo,
-                  active: b.active,
-                  spPrice: b.spPrice,
-                  spDiscountPercent: null,
-                  spDiscountAmount: null,
-                  spTotal: b.spTotal,
-                  idocPrice: b.idocPrice,
-                  idocDiscountAmt: b.idocDiscountAmt,
-                  idocNet: b.idocNet,
-                  idocType: b.idocType,
-                  startDate: b.startDate,
-                  endDate: b.endDate,
-                  availablePurchases: b.availablePurchases,
-                  createdAt: b.createdAt,
-                  updatedAt: b.updatedAt))
-              .toList() ??
-          [];
+          .getFavoriteItems(Get.find<AuthController>().currentUser.value!.email)
+          .map((b) => Product(
+              id: b.productId,
+              catId: b.catId,
+              subcatId: b.subcatId,
+              spId: b.spId,
+              spbId: b.spbId,
+              name: b.name,
+              name2: b.name2,
+              description: b.description,
+              description2: b.description2,
+              photo: b.photo,
+              active: b.active,
+              spPrice: b.spPrice,
+              spDiscountPercent: null,
+              spDiscountAmount: null,
+              countryId: -1,
+              cityId: -1,
+              currency: b.currency,
+              spTotal: b.spTotal,
+              idocPrice: b.idocPrice,
+              idocDiscountAmt: b.idocDiscountAmt,
+              idocNet: b.idocNet,
+              idocType: b.idocType,
+              startDate: b.startDate,
+              endDate: b.endDate,
+              availablePurchases: b.availablePurchases,
+              createdAt: b.createdAt,
+              updatedAt: b.updatedAt))
+          .toList();
     }
   }
 
@@ -99,12 +90,17 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     spId: b.spId,
                     spbId: b.spbId,
                     name: b.name,
+                    name2: b.name2,
                     description: b.description,
+                    description2: b.description2,
                     photo: b.photo,
                     active: b.active,
                     spPrice: b.spPrice,
                     spDiscountPercent: null,
                     spDiscountAmount: null,
+                    countryId: -1,
+                    cityId: -1,
+                    currency: b.currency,
                     spTotal: b.spTotal,
                     idocPrice: b.idocPrice,
                     idocDiscountAmt: b.idocDiscountAmt,
@@ -140,12 +136,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                       child: BigProductCard(
                                         product: favoriteProducts[i],
                                         pushRoute: true,
-                                        provider: Get.find<CommerceController>()
-                                            .providers
-                                            .where((test) =>
-                                                test.name ==
-                                                favoriteProducts[i].spId)
-                                            .firstOrNull,
                                       ),
                                     );
                                   },

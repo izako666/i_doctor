@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' as getRepo;
+import 'package:get/get.dart' as get_repo;
 import 'package:go_router/go_router.dart';
 import 'package:i_doctor/UI/app_theme.dart';
 import 'package:i_doctor/UI/pages/main_pages/feed_page.dart';
@@ -23,8 +23,8 @@ class _SignupPageState extends State<SignupPage> {
   bool loadingSignUpButton = false;
   @override
   Widget build(BuildContext context) {
-    return getRepo.Obx(() {
-      AuthController auth = getRepo.Get.find<AuthController>();
+    return get_repo.Obx(() {
+      AuthController auth = get_repo.Get.find<AuthController>();
       List<City>? filteredCities = auth.cities;
       if (auth.cities != null && auth.countryId.value != -1) {
         filteredCities = auth.cities!
@@ -69,7 +69,7 @@ class _SignupPageState extends State<SignupPage> {
             children: [
               SingleChildScrollView(
                 child: Center(
-                  child: getRepo.Obx(
+                  child: get_repo.Obx(
                     () => Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -286,7 +286,7 @@ class _SignupPageState extends State<SignupPage> {
                                     child: Row(
                                       textDirection: TextDirection.ltr,
                                       children: [
-                                        getRepo.Obx(
+                                        get_repo.Obx(
                                           () => Expanded(
                                               child: Padding(
                                                   padding:
@@ -300,10 +300,24 @@ class _SignupPageState extends State<SignupPage> {
                                                         MainAxisAlignment
                                                             .spaceBetween,
                                                     children: [
-                                                      Text(
-                                                          t(context).birthdate),
-                                                      Text(auth
-                                                          .dateOfBirth.value)
+                                                      Text(t(context).birthdate,
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .bodyLarge!
+                                                              .copyWith(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500)),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal:
+                                                                    8.0),
+                                                        child: Text(auth
+                                                            .dateOfBirth.value),
+                                                      )
                                                     ],
                                                   ))),
                                         ),
@@ -337,8 +351,8 @@ class _SignupPageState extends State<SignupPage> {
                                         padding: const EdgeInsets.only(
                                             left: 4,
                                             right: 4,
-                                            top: 4,
-                                            bottom: 0),
+                                            top: 0,
+                                            bottom: 2),
                                         child: TextFormField(
                                           controller: auth.sPhoneController,
                                           keyboardType: TextInputType.number,
@@ -376,7 +390,7 @@ class _SignupPageState extends State<SignupPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(t(context).nationality),
-                              getRepo.Obx(
+                              get_repo.Obx(
                                 () => DropdownButton2<int>(
                                   value: auth.nationalityId.value == -1
                                       ? null
@@ -399,7 +413,8 @@ class _SignupPageState extends State<SignupPage> {
                                       .map((Nationality nationality) {
                                     return DropdownMenuItem<int>(
                                       value: nationality.id,
-                                      child: Text(nationality.localName),
+                                      child: Text(nationality
+                                          .getNationalityName(context)),
                                     );
                                   }).toList(),
                                   onChanged: (int? nationalityId) {
@@ -432,7 +447,7 @@ class _SignupPageState extends State<SignupPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(t(context).country),
-                              getRepo.Obx(
+                              get_repo.Obx(
                                 () => DropdownButton2<int>(
                                   value: auth.countryId.value == -1
                                       ? null
@@ -489,7 +504,7 @@ class _SignupPageState extends State<SignupPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(t(context).city),
-                                getRepo.Obx(
+                                get_repo.Obx(
                                   () => DropdownButton2<int>(
                                     value: auth.cityId.value == -1
                                         ? null
@@ -544,7 +559,7 @@ class _SignupPageState extends State<SignupPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(t(context).gender),
-                              getRepo.Obx(
+                              get_repo.Obx(
                                 () => DropdownButton2<int>(
                                   value: auth.genderId.value == -1
                                       ? null
@@ -566,7 +581,8 @@ class _SignupPageState extends State<SignupPage> {
                                   items: auth.genders!.map((Gender gender) {
                                     return DropdownMenuItem<int>(
                                       value: gender.id,
-                                      child: Text(gender.localName),
+                                      child:
+                                          Text(gender.getGenderName(context)),
                                     );
                                   }).toList(),
                                   onChanged: (int? selectedGender) {
@@ -715,6 +731,48 @@ class _SignupPageState extends State<SignupPage> {
                             ],
                           ),
                         ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        SizedBox(
+                          height: 60,
+                          child: Column(
+                            children: [
+                              Container(
+                                  decoration: BoxDecoration(
+                                      color: backgroundColor,
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(4)),
+                                  height: 40,
+                                  width: getScreenWidth(context) * 0.8,
+                                  child: Row(
+                                    textDirection: TextDirection.ltr,
+                                    children: [
+                                      Expanded(
+                                          child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 4,
+                                            right: 4,
+                                            top: 4,
+                                            bottom: 0),
+                                        child: TextFormField(
+                                          controller:
+                                              auth.representativeNumController,
+                                          decoration: InputDecoration(
+                                            hintText:
+                                                t(context).representativeNum,
+                                            border: InputBorder.none,
+                                            isDense: true,
+                                          ),
+                                          validator: (value) => null,
+                                        ),
+                                      )),
+                                    ],
+                                  )),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
                         const SizedBox(height: 128),
                       ],
                     ),
@@ -736,7 +794,9 @@ class _SignupPageState extends State<SignupPage> {
 
                         if (isValid) {
                           Response resp = await register({
-                            'CustArbName':
+                            'Name1':
+                                '${auth.firstNameController.text} ${auth.lastNameController.text}',
+                            'Name2':
                                 '${auth.firstNameController.text} ${auth.lastNameController.text}',
                             'email': auth.sEmailController.text,
                             'password': auth.sPasswordController.text,
@@ -746,7 +806,9 @@ class _SignupPageState extends State<SignupPage> {
                             'CityID': auth.cityId.value,
                             'Gender': auth.genderId.value,
                             'DOB': auth.dateOfBirth.value,
-                            'CustEngName': 'NULL',
+                            if (auth
+                                .representativeNumController.text.isNotEmpty)
+                              'ParentID': auth.representativeNumController.text
                           });
                           if (resp.statusCode == 200) {
                             loadingSignUpButton = false;
@@ -777,6 +839,10 @@ class _SignupPageState extends State<SignupPage> {
                                       content: Text(t(context).errorOccured)));
                             }
                           }
+                        }
+                        loadingSignUpButton = false;
+                        if (context.mounted) {
+                          setState(() {});
                         }
                       }),
                 ),

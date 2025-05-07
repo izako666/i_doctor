@@ -1,10 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/scheduler/ticker.dart';
+import 'package:flutter/scheduler.dart';
 
 class SwipeReply extends StatefulWidget {
-  const SwipeReply({super.key, required this.left, required this.child, required this.onReply});
+  const SwipeReply(
+      {super.key,
+      required this.left,
+      required this.child,
+      required this.onReply});
   final bool left;
   final Widget child;
   final Function onReply;
@@ -12,7 +16,8 @@ class SwipeReply extends StatefulWidget {
   State<SwipeReply> createState() => _SwipeReplyState();
 }
 
-class _SwipeReplyState extends State<SwipeReply> with SingleTickerProviderStateMixin {
+class _SwipeReplyState extends State<SwipeReply>
+    with SingleTickerProviderStateMixin {
   double pos = 0.0;
   late Ticker _ticker;
   late StreamController<double> anim;
@@ -62,7 +67,8 @@ class _SwipeReplyState extends State<SwipeReply> with SingleTickerProviderStateM
             initialData: 0.0,
             stream: anim.stream,
             builder: (ctx, snap) {
-              return Transform.translate(offset: Offset(pos, 0), child: widget.child);
+              return Transform.translate(
+                  offset: Offset(pos, 0), child: widget.child);
             }));
   }
 }

@@ -13,10 +13,8 @@ class BasketItem extends _BasketItem
     String id,
     int productId,
     String userId,
-    String catId,
-    String subcatId,
-    String spId,
-    String spbId,
+    int catId,
+    int spbId,
     String name,
     String description,
     String photo,
@@ -34,7 +32,12 @@ class BasketItem extends _BasketItem
     String updatedAt,
     int quantity,
     bool isFavorite,
-  ) {
+    int currency, {
+    int? subcatId,
+    int? spId,
+    String? name2,
+    String? description2,
+  }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'productId', productId);
     RealmObjectBase.set(this, 'userId', userId);
@@ -59,6 +62,9 @@ class BasketItem extends _BasketItem
     RealmObjectBase.set(this, 'updatedAt', updatedAt);
     RealmObjectBase.set(this, 'quantity', quantity);
     RealmObjectBase.set(this, 'isFavorite', isFavorite);
+    RealmObjectBase.set(this, 'name2', name2);
+    RealmObjectBase.set(this, 'description2', description2);
+    RealmObjectBase.set(this, 'currency', currency);
   }
 
   BasketItem._();
@@ -79,25 +85,24 @@ class BasketItem extends _BasketItem
   set userId(String value) => RealmObjectBase.set(this, 'userId', value);
 
   @override
-  String get catId => RealmObjectBase.get<String>(this, 'catId') as String;
+  int get catId => RealmObjectBase.get<int>(this, 'catId') as int;
   @override
-  set catId(String value) => RealmObjectBase.set(this, 'catId', value);
+  set catId(int value) => RealmObjectBase.set(this, 'catId', value);
 
   @override
-  String get subcatId =>
-      RealmObjectBase.get<String>(this, 'subcatId') as String;
+  int? get subcatId => RealmObjectBase.get<int>(this, 'subcatId') as int?;
   @override
-  set subcatId(String value) => RealmObjectBase.set(this, 'subcatId', value);
+  set subcatId(int? value) => RealmObjectBase.set(this, 'subcatId', value);
 
   @override
-  String get spId => RealmObjectBase.get<String>(this, 'spId') as String;
+  int? get spId => RealmObjectBase.get<int>(this, 'spId') as int?;
   @override
-  set spId(String value) => RealmObjectBase.set(this, 'spId', value);
+  set spId(int? value) => RealmObjectBase.set(this, 'spId', value);
 
   @override
-  String get spbId => RealmObjectBase.get<String>(this, 'spbId') as String;
+  int get spbId => RealmObjectBase.get<int>(this, 'spbId') as int;
   @override
-  set spbId(String value) => RealmObjectBase.set(this, 'spbId', value);
+  set spbId(int value) => RealmObjectBase.set(this, 'spbId', value);
 
   @override
   String get name => RealmObjectBase.get<String>(this, 'name') as String;
@@ -196,6 +201,23 @@ class BasketItem extends _BasketItem
   set isFavorite(bool value) => RealmObjectBase.set(this, 'isFavorite', value);
 
   @override
+  String? get name2 => RealmObjectBase.get<String>(this, 'name2') as String?;
+  @override
+  set name2(String? value) => RealmObjectBase.set(this, 'name2', value);
+
+  @override
+  String? get description2 =>
+      RealmObjectBase.get<String>(this, 'description2') as String?;
+  @override
+  set description2(String? value) =>
+      RealmObjectBase.set(this, 'description2', value);
+
+  @override
+  int get currency => RealmObjectBase.get<int>(this, 'currency') as int;
+  @override
+  set currency(int value) => RealmObjectBase.set(this, 'currency', value);
+
+  @override
   Stream<RealmObjectChanges<BasketItem>> get changes =>
       RealmObjectBase.getChanges<BasketItem>(this);
 
@@ -232,6 +254,9 @@ class BasketItem extends _BasketItem
       'updatedAt': updatedAt.toEJson(),
       'quantity': quantity.toEJson(),
       'isFavorite': isFavorite.toEJson(),
+      'name2': name2.toEJson(),
+      'description2': description2.toEJson(),
+      'currency': currency.toEJson(),
     };
   }
 
@@ -244,8 +269,6 @@ class BasketItem extends _BasketItem
         'productId': EJsonValue productId,
         'userId': EJsonValue userId,
         'catId': EJsonValue catId,
-        'subcatId': EJsonValue subcatId,
-        'spId': EJsonValue spId,
         'spbId': EJsonValue spbId,
         'name': EJsonValue name,
         'description': EJsonValue description,
@@ -264,14 +287,13 @@ class BasketItem extends _BasketItem
         'updatedAt': EJsonValue updatedAt,
         'quantity': EJsonValue quantity,
         'isFavorite': EJsonValue isFavorite,
+        'currency': EJsonValue currency,
       } =>
         BasketItem(
           fromEJson(id),
           fromEJson(productId),
           fromEJson(userId),
           fromEJson(catId),
-          fromEJson(subcatId),
-          fromEJson(spId),
           fromEJson(spbId),
           fromEJson(name),
           fromEJson(description),
@@ -290,6 +312,11 @@ class BasketItem extends _BasketItem
           fromEJson(updatedAt),
           fromEJson(quantity),
           fromEJson(isFavorite),
+          fromEJson(currency),
+          subcatId: fromEJson(ejson['subcatId']),
+          spId: fromEJson(ejson['spId']),
+          name2: fromEJson(ejson['name2']),
+          description2: fromEJson(ejson['description2']),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -303,10 +330,10 @@ class BasketItem extends _BasketItem
       SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('productId', RealmPropertyType.int),
       SchemaProperty('userId', RealmPropertyType.string),
-      SchemaProperty('catId', RealmPropertyType.string),
-      SchemaProperty('subcatId', RealmPropertyType.string),
-      SchemaProperty('spId', RealmPropertyType.string),
-      SchemaProperty('spbId', RealmPropertyType.string),
+      SchemaProperty('catId', RealmPropertyType.int),
+      SchemaProperty('subcatId', RealmPropertyType.int, optional: true),
+      SchemaProperty('spId', RealmPropertyType.int, optional: true),
+      SchemaProperty('spbId', RealmPropertyType.int),
       SchemaProperty('name', RealmPropertyType.string),
       SchemaProperty('description', RealmPropertyType.string),
       SchemaProperty('photo', RealmPropertyType.string),
@@ -324,6 +351,9 @@ class BasketItem extends _BasketItem
       SchemaProperty('updatedAt', RealmPropertyType.string),
       SchemaProperty('quantity', RealmPropertyType.int),
       SchemaProperty('isFavorite', RealmPropertyType.bool),
+      SchemaProperty('name2', RealmPropertyType.string, optional: true),
+      SchemaProperty('description2', RealmPropertyType.string, optional: true),
+      SchemaProperty('currency', RealmPropertyType.int),
     ]);
   }();
 

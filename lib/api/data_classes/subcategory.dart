@@ -1,5 +1,5 @@
-import 'package:get/get.dart';
-import 'package:i_doctor/state/language_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:i_doctor/portable_api/helper.dart';
 
 class Subcategory {
   final int id;
@@ -29,7 +29,38 @@ class Subcategory {
         updatedAt: data['updated_at'],
         engName: data['EngName']);
   }
-  String get localName => Get.find<LanguageController>().locale.value == "en"
-      ? engName ?? name
-      : name;
+  String getSubCategoryName(BuildContext context) {
+    switch (name) {
+      case "Areas laser":
+        return t(context).areasLaser;
+      case "Complete laser":
+        return t(context).completeLaser;
+
+      case "Cosmetic dental":
+        return t(context).cosmeticDental;
+
+      case "Dental cleaning":
+        return t(context).dentalCleaning;
+
+      case "Dental crowns":
+        return t(context).dentalCrowns;
+
+      case "Dental treatment":
+        return t(context).dentalTreatment;
+
+      case "Orthodontics":
+        return t(context).orthodontics;
+
+      case "X-ray":
+        return t(context).xRay;
+
+      case "رجال":
+        return t(context).men;
+
+      case "نساء":
+        return t(context).women;
+      default:
+        return t(context).areasLaser;
+    }
+  }
 }

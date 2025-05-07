@@ -1,24 +1,27 @@
+import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:i_doctor/UI/pages/review_view.dart';
 import 'package:i_doctor/UI/util/filter_sort_sheet.dart';
 import 'package:i_doctor/api/data_classes/clinic.dart';
 import 'package:i_doctor/api/data_classes/message.dart';
-import 'package:i_doctor/api/data_classes/notification.dart';
+import 'package:i_doctor/api/data_classes/notification.dart' as notif;
 import 'package:i_doctor/api/data_classes/user.dart';
+import 'package:i_doctor/portable_api/helper.dart';
 
 List<Review> reviews = [
   Review(
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -29,13 +32,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -46,13 +50,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -63,13 +68,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -80,13 +86,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -97,13 +104,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -114,13 +122,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -131,13 +140,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -148,13 +158,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -165,13 +176,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -182,13 +194,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -199,13 +212,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -216,13 +230,14 @@ List<Review> reviews = [
     user: User(
         id: 1,
         custArbName: '',
-        nationalityId: "1",
+        custEngName: '',
+        nationalityId: 1,
         email: '',
         mobile: '',
-        countryId: "1",
-        gender: '',
+        countryId: 1,
+        gender: 1,
         dateOfBirth: '',
-        cityId: "1"),
+        cityId: 1),
     review:
         'شصيشبشثلشب شصب شصبشص بشب شصب شصشب شصب شصب شصب شصبش بشل سثلبش ثبسي لسثلسق سلهشثب سقسهل شثلس قهلسقهلت سقلهس لسخقل سهلتسق لخسقلا سهلتس لخل سقهلت سقخلس قلبحسل سحلسقخ ل',
     rating: 3.5,
@@ -262,13 +277,15 @@ Clinic clinic = Clinic(
     logoUrl: 'assets/images/dummy-logo.png',
     imageUrl: 'assets/images/placeholder.png');
 
-List<SortCategory> sortCategories = [
-  SortCategory('appointment_time', 'من اقرب موعد'),
-  SortCategory("distance", 'من القريب للبعيد'),
-  // SortCategory('rating', 'التقييم الاعلى'),
-  SortCategory('price_high_first', 'من اعلى سعر'),
-  SortCategory('price_low_first', 'من اقل سعر'),
-];
+List<SortCategory> getSortCategories(BuildContext context) {
+  return [
+    SortCategory('appointment_time', t(context).fromClosestAppointment),
+    SortCategory("distance", t(context).fromCloseToFar),
+    // SortCategory('rating', 'التقييم الاعلى'),
+    SortCategory('price_high_first', t(context).fromHighestPrice),
+    SortCategory('price_low_first', t(context).fromLowestPrice),
+  ];
+}
 
 // List<String> cities = [
 //   "الرياض",
@@ -350,83 +367,83 @@ List<Message> messages = [
       false, '', DateTime.now()),
 ];
 
-List<Notification> notifications = [
-  Notification(
+List<notif.Notification> notifications = [
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: false),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: true),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: false),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: true),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: false),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: true),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: false),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: true),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: false),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: true),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: false),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: true),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: false),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: true),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
       seen: false),
-  Notification(
+  notif.Notification(
       message: 'شصخيشصي يشص بثل بص بص بشص بشصبشصبشصبيشصيشصبصشب',
       category: 'ad',
       date: DateTime.now(),
