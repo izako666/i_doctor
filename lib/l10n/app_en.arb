@@ -242,9 +242,11 @@
   "clinicBranchPage": "Clinic Branch Page",
   "exploreServices": "Explore Services",
   "userInfo": "User Information",
-  "fromClosestAppointment": "من اقرب موعد",
-  "fromCloseToFar": "من القريب للبعيد",
-  "fromHighestPrice": "من اعلى سعر",
-  "fromLowestPrice": "من اقل سعر",
-  "comingSoon": "Coming Soon"
+  "fromClosestAppointment": "From the nearest appointment",
+  "fromCloseToFar": "From near to far",
+  "fromHighestPrice": "From highest price",
+  "fromLowestPrice": "From lowest price",
+  "comingSoon": "Coming Soon",
+  "tax_short": "Tax",
+  "featuredProducts": "Featured Products"
 }

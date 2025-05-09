@@ -9,6 +9,8 @@ import 'package:i_doctor/UI/util/i_app_bar.dart';
 import 'package:i_doctor/api/data_classes/basket_item.dart';
 import 'package:i_doctor/api/data_classes/id_mappers.dart';
 import 'package:i_doctor/api/data_classes/product.dart';
+import 'package:i_doctor/api/data_classes/tax.dart';
+import 'package:i_doctor/api/networking/rest_functions.dart';
 import 'package:i_doctor/portable_api/helper.dart';
 import 'package:i_doctor/state/auth_controller.dart';
 import 'package:i_doctor/state/commerce_controller.dart';
@@ -27,7 +29,7 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
   bool showErrorDialogue = false;
   double totalPrice = 0;
   double totalDiscount = 0;
-
+  Tax? tax;
   List<BasketItem> basketItems = List.empty(growable: true);
   @override
   void initState() {
@@ -100,23 +102,26 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
                                                       name2: "س.ر.")))
                                         ],
                                       ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(t(context).tax),
-                                          Text(formatPrice(
-                                            0.0,
-                                            getCurrencyFromId(
-                                                    basketItems[0].currency) ??
-                                                Currency(
-                                                    id: 0,
-                                                    name1: "SAR",
-                                                    name2: "س.ر."),
-                                          )),
-                                        ],
-                                      ),
+                                      if (tax != null) ...[
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                                "${t(context).tax_short} (${tax!.name})"),
+                                            Text(formatPrice(
+                                              double.parse(tax!.tax),
+                                              getCurrencyFromId(basketItems[0]
+                                                      .currency) ??
+                                                  Currency(
+                                                      id: 0,
+                                                      name1: "SAR",
+                                                      name2: "س.ر."),
+                                            )),
+                                          ],
+                                        ),
+                                      ],
                                       const SizedBox(height: 4),
                                       Row(
                                         mainAxisAlignment:
@@ -145,7 +150,12 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
                                                   fontWeight: FontWeight.bold)),
                                           Text(
                                               formatPrice(
-                                                  (totalPrice - totalDiscount),
+                                                  (totalPrice -
+                                                      totalDiscount +
+                                                      (tax != null
+                                                          ? double.parse(
+                                                              tax!.tax)
+                                                          : 0.0)),
                                                   getCurrencyFromId(
                                                           basketItems[0]
                                                               .currency) ??
@@ -194,16 +204,19 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
       RealmController realmController = Get.find<RealmController>();
 
       basketItems = realmController.getItems(auth.currentUser.value!.email);
+      var resp = await getTax(auth.currentUser.value!.countryId);
+      tax = Tax.fromJson(resp.data['data'][0]);
 
       // Check if products are available
       List<Product> products = Get.find<CommerceController>().products;
       if (products.isEmpty) {
         loaded = true;
         failed = true;
-        setState(() {});
         return;
       }
-
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {});
+      });
       // Sync basket items with products
       for (BasketItem basketItem in basketItems) {
         try {
@@ -251,12 +264,16 @@ class _ConfirmBasketPageState extends State<ConfirmBasketPage> {
       loaded = true;
       realmController.updateAllItems(basketItems);
 
-      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {});
+      });
     } catch (e) {
       loaded = true;
       failed = true;
       print("Failed to load data: $e");
-      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {});
+      });
     }
   }
 }

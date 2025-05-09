@@ -138,7 +138,7 @@ class SettingsPage extends StatelessWidget {
             Material(
               elevation: 2,
               color: getBlackWhite(context) == black ? white : black,
-              borderRadius: Get.find<AuthController>().currentUser.value != null
+              borderRadius: Get.find<AuthController>().currentUser.value == null
                   ? const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16))
@@ -401,6 +401,9 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(
+              height: 100,
+            )
           ],
         ),
       ),

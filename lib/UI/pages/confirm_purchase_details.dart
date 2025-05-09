@@ -78,7 +78,6 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                   height: 0,
                 ),
                 SizedBox(
-                  height: 60,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -88,7 +87,6 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                               color: backgroundColor,
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(4)),
-                          height: 40,
                           width: getScreenWidth(context) * 0.8,
                           child: Padding(
                             padding: const EdgeInsets.only(top: 8.0),
@@ -115,7 +113,6 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                     height: 16,
                   ),
                   SizedBox(
-                    height: 60,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -125,24 +122,21 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                                 color: backgroundColor,
                                 border: Border.all(),
                                 borderRadius: BorderRadius.circular(4)),
-                            height: 40,
                             width: getScreenWidth(context) * 0.8,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: TextFormField(
-                                enabled: false,
-                                initialValue: getCityFromId(
-                                        auth.currentUser.value!.cityId)!
-                                    .name,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                                decoration: const InputDecoration(
-                                  contentPadding: EdgeInsets.zero,
-                                  isCollapsed: true,
-                                  border: InputBorder.none,
-                                ),
-                                textDirection: TextDirection.rtl,
-                                validator: (value) => null,
+                            child: TextFormField(
+                              enabled: false,
+                              initialValue:
+                                  getCityFromId(auth.currentUser.value!.cityId)!
+                                      .name,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                              decoration: const InputDecoration(
+                                contentPadding: EdgeInsets.zero,
+                                isCollapsed: true,
+                                isDense: true,
+                                border: InputBorder.none,
                               ),
+                              textDirection: TextDirection.rtl,
+                              validator: (value) => null,
                             )),
                       ],
                     ),
@@ -152,7 +146,6 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                   height: 16,
                 ),
                 SizedBox(
-                  height: 60,
                   child: Column(
                     children: [
                       Container(
@@ -194,7 +187,6 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: 60,
                   child: Column(
                     children: [
                       Container(
@@ -202,23 +194,20 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                               color: backgroundColor,
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(4)),
-                          height: 40,
                           width: getScreenWidth(context) * 0.8,
                           child: Row(
                             children: [
                               Expanded(
-                                  child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 4, right: 4, top: 4, bottom: 0),
-                                child: TextFormField(
-                                  decoration: InputDecoration(
-                                    hintText: t(context).cardName,
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                  ),
-                                  textDirection: TextDirection.rtl,
-                                  validator: (value) => null,
+                                  child: TextFormField(
+                                decoration: InputDecoration(
+                                  hintText: t(context).cardName,
+                                  contentPadding: EdgeInsets.zero,
+                                  isCollapsed: true,
+                                  border: InputBorder.none,
+                                  isDense: true,
                                 ),
+                                textDirection: TextDirection.rtl,
+                                validator: (value) => null,
                               )),
                             ],
                           )),
@@ -227,7 +216,6 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  height: 60,
                   child: Column(
                     children: [
                       Container(
@@ -235,46 +223,45 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                               color: backgroundColor,
                               border: Border.all(),
                               borderRadius: BorderRadius.circular(4)),
-                          height: 40,
                           width: getScreenWidth(context) * 0.8,
                           child: Row(
                             children: [
                               Expanded(
-                                  child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 16, right: 4, top: 4, bottom: 0),
-                                child: TextFormField(
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    CreditCardNumberInputFormatter()
-                                  ],
-                                  textInputAction: TextInputAction.done,
-                                  keyboardType: TextInputType.number,
-                                  textDirection: TextDirection.ltr,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                    prefixIcon: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: RetryImage(
-                                        imageUrl:
-                                            'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/800px-Mastercard-logo.svg.png',
-                                        height: 30,
-                                        width: 30,
-                                      ),
+                                  child: TextFormField(
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  CreditCardNumberInputFormatter()
+                                ],
+                                textInputAction: TextInputAction.done,
+                                keyboardType: TextInputType.number,
+                                textDirection: TextDirection.ltr,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  isCollapsed: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  isDense: true,
+                                  icon: const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: RetryImage(
+                                      imageUrl:
+                                          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/800px-Mastercard-logo.svg.png',
+                                      height: 30,
+                                      width: 34,
+                                      fit: BoxFit.contain,
                                     ),
-                                    hintText: t(context).cardNumber,
                                   ),
-                                  onChanged: (value) {},
+                                  hintText: t(context).cardNumber,
                                 ),
+                                onChanged: (value) {},
                               )),
                             ],
                           )),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
                 SizedBox(
-                  height: 60,
                   width: getScreenWidth(context) * 0.8,
                   child: Row(
                     children: [
@@ -286,26 +273,26 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                                     color: backgroundColor,
                                     border: Border.all(),
                                     borderRadius: BorderRadius.circular(4)),
-                                height: 40,
                                 width: getScreenWidth(context) * 0.4,
                                 child: Row(
                                   children: [
                                     Expanded(
-                                        child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 4, right: 4, top: 4, bottom: 0),
-                                      child: TextFormField(
-                                        keyboardType: TextInputType.datetime,
-                                        inputFormatters: [
-                                          CreditCardExpirationDateFormatter()
-                                        ],
-                                        decoration: InputDecoration(
-                                          hintText: t(context).expirationDate,
-                                          border: InputBorder.none,
-                                          isDense: true,
-                                        ),
-                                        validator: (value) => null,
+                                        child: TextFormField(
+                                      keyboardType: TextInputType.datetime,
+                                      inputFormatters: [
+                                        CreditCardExpirationDateFormatter()
+                                      ],
+                                      decoration: InputDecoration(
+                                        hintText: t(context).expirationDate,
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                        border: InputBorder.none,
+                                        isCollapsed: true,
+                                        contentPadding: EdgeInsets.zero,
+                                        isDense: true,
                                       ),
+                                      validator: (value) => null,
                                     )),
                                   ],
                                 )),
@@ -321,26 +308,22 @@ class ConfirmPurchaseDetailsPage extends StatelessWidget {
                                     color: backgroundColor,
                                     border: Border.all(),
                                     borderRadius: BorderRadius.circular(4)),
-                                height: 40,
                                 width: getScreenWidth(context) * 0.4,
                                 child: Row(
                                   children: [
                                     Expanded(
-                                        child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 4, right: 4, top: 4, bottom: 0),
-                                      child: TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          CreditCardCvcInputFormatter()
-                                        ],
-                                        decoration: const InputDecoration(
+                                        child: TextFormField(
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        CreditCardCvcInputFormatter()
+                                      ],
+                                      decoration: const InputDecoration(
                                           hintText: 'CVV',
                                           border: InputBorder.none,
                                           isDense: true,
-                                        ),
-                                        validator: (value) => null,
-                                      ),
+                                          isCollapsed: true,
+                                          contentPadding: EdgeInsets.zero),
+                                      validator: (value) => null,
                                     )),
                                   ],
                                 )),

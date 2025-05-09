@@ -240,11 +240,13 @@
   "noProductsFoundInRegion": "لا توجد منتجات متاحة في منطقتك.",
   "branches": "الفروع",
   "clinicBranchPage": "صفحة فرع العيادة",
-  "exploreServices": "Explore Services",
-  "userInfo": "User Information",
+  "exploreServices": "استكشاف الخدمات",
+  "userInfo": "معلومات المستخدم",
   "fromClosestAppointment": "من اقرب موعد",
   "fromCloseToFar": "من القريب للبعيد",
   "fromHighestPrice": "من اعلى سعر",
   "fromLowestPrice": "من اقل سعر",
-  "comingSoon": "Coming Soon"
+  "comingSoon": "قريبًا",
+  "tax_short": "ضريبة",
+  "featuredProducts": "منتجات مميزة"
 }

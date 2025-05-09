@@ -284,23 +284,75 @@ class _FeedPageState extends State<FeedPage> {
                                           child: Column(children: [
                                             const SizedBox(height: 16),
                                             if (adBarProducts.isNotEmpty)
-                                              CarouselAdBanner(
-                                                onTap: () {
-                                                  //   context.push('/feed/advert/1234');
-                                                },
-                                                skeleton:
-                                                    controller.skeleton.value,
-                                                blackWhite: blackWhite,
-                                                decompress: true,
-                                                fit: BoxFit.cover,
-                                                banners: adBarProducts
-                                                    .map((prod) => AdBanner(
-                                                        url: prod.photo,
-                                                        id: prod.id))
-                                                    .toList(),
-                                                autoPlay: true,
-                                                showIndicator: true,
-                                              ),
+                                              ElevatedContainer(
+                                                  blackWhite:
+                                                      getBlackWhite(context),
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            t(context)
+                                                                .featuredProducts,
+                                                            softWrap: true,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .titleLarge,
+                                                          ),
+                                                        ),
+                                                        TextButton(
+                                                          style: ButtonStyle(
+                                                              overlayColor: WidgetStateColor.resolveWith((states) => states
+                                                                      .contains(
+                                                                          WidgetState
+                                                                              .pressed)
+                                                                  ? secondaryColor
+                                                                  : Colors
+                                                                      .transparent)),
+                                                          onPressed: () {
+                                                            controller
+                                                                .openFeedView
+                                                                .value = false;
+                                                          },
+                                                          child: Text(
+                                                              t(context)
+                                                                  .showAll,
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyMedium!
+                                                                  .copyWith(
+                                                                      color:
+                                                                          secondaryColor)),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    CarouselAdBanner(
+                                                      onTap: () {
+                                                        //   context.push('/feed/advert/1234');
+                                                      },
+                                                      skeleton: controller
+                                                          .skeleton.value,
+                                                      blackWhite: blackWhite,
+                                                      decompress: true,
+                                                      fit: BoxFit.cover,
+                                                      banners: adBarProducts
+                                                          .map((prod) =>
+                                                              AdBanner(
+                                                                  url: prod
+                                                                      .photo,
+                                                                  id: prod.id))
+                                                          .toList(),
+                                                      autoPlay: true,
+                                                      showIndicator: true,
+                                                    ),
+                                                  ]),
                                             const SizedBox(height: 16),
                                             Material(
                                               borderRadius:
@@ -635,39 +687,49 @@ class ClinicButton extends StatelessWidget {
               width: 128,
               child: Column(
                 children: [
-                  SizedBox(
-                      width: 1000,
-                      height: calculatedZoom > 2.8 ? 80 : 128,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16)),
-                        child: RetryImage(
-                          imageUrl:
-                              '$hostUrlBase/public/storage/${provider.photo}',
-                          fit: BoxFit.fill,
-                        ),
-                      )),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          provider.localName,
-                          style: Theme.of(context).textTheme.titleMedium,
-                          overflow: TextOverflow.ellipsis,
+                  Flexible(
+                    flex: 10,
+                    child: SizedBox(
+                        width: 1000,
+                        height: calculatedZoom > 2.8 ? 160 : 140,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(16)),
+                          child: RetryImage(
+                            imageUrl:
+                                '$hostUrlBase/public/storage/${provider.photo}',
+                            fit: BoxFit.cover,
+                          ),
                         )),
                   ),
-                  const SizedBox(height: 8),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          provider.localShortAddress,
-                          overflow: TextOverflow.ellipsis,
-                        )),
+                  Flexible(
+                    flex: 16,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                provider.localName,
+                                style: Theme.of(context).textTheme.titleMedium,
+                                overflow: TextOverflow.ellipsis,
+                              )),
+                        ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                provider.localShortAddress,
+                                overflow: TextOverflow.ellipsis,
+                              )),
+                        ),
+                      ],
+                    ),
                   ),
                   // Padding(
                   //   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -824,6 +886,7 @@ class WideButton extends StatelessWidget {
               color: Colors.transparent),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
                   padding: const EdgeInsets.symmetric(
@@ -833,7 +896,10 @@ class WideButton extends StatelessWidget {
                     icon ?? Icons.abc,
                     color: Colors.transparent,
                   )),
-              Padding(padding: const EdgeInsets.only(right: 0), child: title),
+              Expanded(
+                  child: Padding(
+                      padding: const EdgeInsets.only(right: 0),
+                      child: Center(child: title))),
               Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -1279,7 +1345,7 @@ class SearchBox extends StatelessWidget {
           border: Border.all(color: blackWhite),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Flexible(
               flex: 5,
@@ -1290,6 +1356,7 @@ class SearchBox extends StatelessWidget {
                   focusNode: controller.node,
                   onSubmitted: onSubmit,
                   decoration: InputDecoration(
+                    isDense: true,
                     icon: const Icon(
                       Icons.search,
                       size: 24,

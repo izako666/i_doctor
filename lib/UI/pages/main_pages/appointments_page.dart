@@ -642,7 +642,6 @@ class _CartCardState extends State<CartCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 200,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     mainAxisSize: MainAxisSize.max,
@@ -669,101 +668,40 @@ class _CartCardState extends State<CartCard> {
                       const SizedBox(
                         height: 16,
                       ),
-                      MediaQuery.removePadding(
-                          context: context,
-                          child: TextButton(
-                              style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap),
-                              onPressed: () {
-                                String branch = GoRouter.of(context)
-                                    .routeInformationProvider
-                                    .value
-                                    .uri
-                                    .pathSegments[0];
+                      TextButton(
+                          style: TextButton.styleFrom(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                          onPressed: () {
+                            String branch = GoRouter.of(context)
+                                .routeInformationProvider
+                                .value
+                                .uri
+                                .pathSegments[0];
 
-                                context.push(
-                                    '/$branch/advert/${widget.basketItem.productId}');
-                              },
-                              child: Text(
-                                Get.find<CommerceController>()
-                                        .products
-                                        .where((p) =>
-                                            p.id == widget.basketItem.productId)
-                                        .firstOrNull
-                                        ?.localName ??
-                                    widget.basketItem.name,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge!
-                                    .copyWith(color: primaryColor),
-                              ))),
+                            context.push(
+                                '/$branch/advert/${widget.basketItem.productId}');
+                          },
+                          child: Text(
+                            Get.find<CommerceController>()
+                                    .products
+                                    .where((p) =>
+                                        p.id == widget.basketItem.productId)
+                                    .firstOrNull
+                                    ?.localName ??
+                                widget.basketItem.name,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(color: primaryColor),
+                          )),
                       const SizedBox(height: 4),
                       if (widget.basketItem.spId != null)
-                        Text(provider!.localName,
-                            style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 2),
-                      if (provider != null)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                      softWrap: true,
-                                      maxLines: 3,
-                                      '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.name}, ${provider!.localShortAddress}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  List<double> numbers = provider!.location
-                                      .split(',')
-                                      .map((e) => double.parse(e))
-                                      .toList();
-
-                                  MapUtils.openMap(numbers[0], numbers[1]);
-                                },
-                                icon: const Icon(
-                                  Icons.location_pin,
-                                  color: secondaryColor,
-                                ))
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(provider!.localName,
+                              style: Theme.of(context).textTheme.titleMedium),
                         ),
-                      const SizedBox(height: 2),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(t(context).date),
-                          const SizedBox(
-                            width: 4,
-                          ),
-                          Expanded(
-                            child: Text(
-                                softWrap: true,
-                                maxLines: 3,
-                                '${formatDate(DateTime.parse(widget.basketItem.startDate))} - ${formatDate(DateTime.parse(widget.basketItem.endDate))}'),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        formatPrice(
-                            double.parse(widget.basketItem.idocPrice),
-                            getCurrencyFromId(widget.basketItem.currency) ??
-                                Currency(id: 0, name1: "SAR", name2: "س.ر.")),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(color: primaryColor),
-                      ),
                       const SizedBox(
                         height: 0,
                       )
@@ -771,6 +709,65 @@ class _CartCardState extends State<CartCard> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 2),
+            if (provider != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            softWrap: true,
+                            maxLines: 3,
+                            '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.name}, ${provider!.localShortAddress}',
+                            style: Theme.of(context).textTheme.titleMedium),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        List<double> numbers = provider!.location
+                            .split(',')
+                            .map((e) => double.parse(e))
+                            .toList();
+
+                        MapUtils.openMap(numbers[0], numbers[1]);
+                      },
+                      icon: const Icon(
+                        Icons.location_pin,
+                        color: secondaryColor,
+                      ))
+                ],
+              ),
+            const SizedBox(height: 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(t(context).date),
+                const SizedBox(
+                  width: 4,
+                ),
+                Expanded(
+                  child: Text(
+                      softWrap: true,
+                      maxLines: 3,
+                      '${formatDate(DateTime.parse(widget.basketItem.startDate))} - ${formatDate(DateTime.parse(widget.basketItem.endDate))}'),
+                )
+              ],
+            ),
+            const SizedBox(height: 2),
+            Text(
+              formatPrice(
+                  double.parse(widget.basketItem.idocPrice),
+                  getCurrencyFromId(widget.basketItem.currency) ??
+                      Currency(id: 0, name1: "SAR", name2: "س.ر.")),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .copyWith(color: primaryColor),
             ),
             if (!widget.isDisplay)
               Row(

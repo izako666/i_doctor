@@ -242,9 +242,11 @@
   "clinicBranchPage": "Klinik Şube Sayfası",
   "exploreServices": "Explore Services",
   "userInfo": "User Information",
-  "fromClosestAppointment": "من اقرب موعد",
-  "fromCloseToFar": "من القريب للبعيد",
-  "fromHighestPrice": "من اعلى سعر",
-  "fromLowestPrice": "من اقل سعر",
-  "comingSoon": "Coming Soon"
+  "fromClosestAppointment": "En yakın randevudan",
+  "fromCloseToFar": "Yakından uzağa",
+  "fromHighestPrice": "En yüksek fiyattan",
+  "fromLowestPrice": "En düşük fiyattan",
+  "comingSoon": "Çok Yakında",
+  "tax_short": "Vergi",
+  "featuredProducts": "Öne Çıkan Ürünler"
 }

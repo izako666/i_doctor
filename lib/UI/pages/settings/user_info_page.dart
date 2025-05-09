@@ -63,7 +63,6 @@ class UserInformationPage extends StatelessWidget {
                           border: Border.all(color: Colors.grey, width: 1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        height: 40,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -105,7 +104,6 @@ class UserInformationPage extends StatelessWidget {
                           border: Border.all(color: Colors.grey, width: 1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        height: 40,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -147,7 +145,6 @@ class UserInformationPage extends StatelessWidget {
                           border: Border.all(color: Colors.grey, width: 1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        height: 40,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -189,26 +186,29 @@ class UserInformationPage extends StatelessWidget {
                           border: Border.all(color: Colors.grey, width: 1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        height: 40,
-                        child: Row(
-                          children: [
-                            const Icon(Icons.flag),
-                            const SizedBox(
-                              height: 25,
-                              child: VerticalDivider(color: Colors.grey),
-                            ),
-                            Text(
-                              Get.find<AuthController>()
-                                      .nationalities!
-                                      .where((test) =>
-                                          test.id ==
-                                          auth.currentUser.value!.nationalityId)
-                                      .firstOrNull
-                                      ?.name ??
-                                  "",
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.flag),
+                              const SizedBox(
+                                height: 25,
+                                child: VerticalDivider(color: Colors.grey),
+                              ),
+                              Text(
+                                Get.find<AuthController>()
+                                        .nationalities!
+                                        .where((test) =>
+                                            test.id ==
+                                            auth.currentUser.value!
+                                                .nationalityId)
+                                        .firstOrNull
+                                        ?.name ??
+                                    "",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     ],
@@ -235,7 +235,6 @@ class UserInformationPage extends StatelessWidget {
                           border: Border.all(color: Colors.grey, width: 1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        height: 40,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -277,7 +276,6 @@ class UserInformationPage extends StatelessWidget {
                           border: Border.all(color: Colors.grey, width: 1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        height: 40,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -327,7 +325,6 @@ class UserInformationPage extends StatelessWidget {
                             border: Border.all(color: Colors.grey, width: 1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          height: 40,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
@@ -377,7 +374,6 @@ class UserInformationPage extends StatelessWidget {
                           border: Border.all(color: Colors.grey, width: 1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        height: 40,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -389,6 +385,7 @@ class UserInformationPage extends StatelessWidget {
                               ),
                               Obx(
                                 () => DropdownButton2<String>(
+                                  isDense: true,
                                   underline: const SizedBox(),
                                   dropdownStyleData: DropdownStyleData(
                                       decoration: BoxDecoration(
@@ -441,6 +438,7 @@ class UserInformationPage extends StatelessWidget {
                     },
                     title: Text(
                       t(context).favoritedProductsList,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),

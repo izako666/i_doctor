@@ -188,3 +188,16 @@ Future<Response> getCurrencies() async {
 
   return resp;
 }
+
+Future<Response> getTax(int countryId) async {
+  Dio dio = get_repo.Get.find<DioController>().dio;
+  String url = '$hostUrl/tax/$countryId';
+  Response resp = await dio.get(url,
+      options: Options(headers: {
+        'Authorization':
+            'Bearer ${get_repo.Get.find<AuthController>().getAuthToken()}',
+        'Accept': 'application/json'
+      }));
+
+  return resp;
+}
