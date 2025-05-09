@@ -429,20 +429,25 @@ class _BigProductCardState extends State<BigProductCard> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
                                   '${Get.find<AuthController>().countries!.where((test) => test.id == provider!.countryId).first.name}, ${provider!.localShortAddress}',
                                   style:
-                                      Theme.of(context).textTheme.titleMedium),
-                              Text(
-                                  '${provider!.localDistrict}, ${provider!.localStreet}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(color: Colors.grey)),
-                            ],
+                                      Theme.of(context).textTheme.titleMedium,
+                                  softWrap: true,
+                                ),
+                                Text(
+                                    '${provider!.localDistrict}, ${provider!.localStreet}',
+                                    softWrap: true,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(color: Colors.grey)),
+                              ],
+                            ),
                           ),
                           IconButton(
                               onPressed: () {

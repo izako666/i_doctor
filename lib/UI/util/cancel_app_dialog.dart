@@ -15,35 +15,36 @@ class CancelAppointmentDialog extends StatelessWidget {
         Text(t(context).areYouSureWithDecision,
             style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 32),
-        Row(
-          children: [
-            Expanded(
-                child: InkWell(
-                    onTap: () {
-                      context.pop(false);
-                    },
-                    child: Container(
-                      height: 64,
-                      decoration: const BoxDecoration(
-                          color: errorColor,
-                          borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(16))),
-                      child: Center(child: Text(t(context).cancel)),
-                    ))),
-            Expanded(
-                child: InkWell(
-                    onTap: () {
-                      context.pop(true);
-                    },
-                    child: Container(
-                      height: 64,
-                      decoration: const BoxDecoration(
-                          color: successColor,
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(16))),
-                      child: Center(child: Text(t(context).confirm)),
-                    )))
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                  child: InkWell(
+                      onTap: () {
+                        context.pop(false);
+                      },
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            color: errorColor,
+                            borderRadius: BorderRadius.only(
+                                bottomRight: Radius.circular(16))),
+                        child: Center(child: Text(t(context).cancel)),
+                      ))),
+              Expanded(
+                  child: InkWell(
+                      onTap: () {
+                        context.pop(true);
+                      },
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            color: successColor,
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(16))),
+                        child: Center(child: Text(t(context).confirm)),
+                      )))
+            ],
+          ),
         )
       ],
     );

@@ -79,7 +79,6 @@ class _SignupPageState extends State<SignupPage> {
                           height: 32,
                         ),
                         SizedBox(
-                          height: 60,
                           width: getScreenWidth(context) * 0.8,
                           child: Row(
                             children: [
@@ -92,27 +91,20 @@ class _SignupPageState extends State<SignupPage> {
                                             border: Border.all(),
                                             borderRadius:
                                                 BorderRadius.circular(4)),
-                                        height: 40,
                                         width: getScreenWidth(context) * 0.4,
                                         child: Row(
                                           children: [
                                             Expanded(
-                                                child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 4,
-                                                  right: 4,
-                                                  top: 4,
-                                                  bottom: 0),
-                                              child: TextFormField(
-                                                controller:
-                                                    auth.firstNameController,
-                                                decoration: InputDecoration(
-                                                  hintText: t(context).name,
-                                                  border: InputBorder.none,
-                                                  isDense: true,
-                                                ),
-                                                validator: (value) => null,
+                                                child: TextFormField(
+                                              controller:
+                                                  auth.firstNameController,
+                                              decoration: InputDecoration(
+                                                contentPadding: EdgeInsets.zero,
+                                                hintText: t(context).name,
+                                                border: InputBorder.none,
+                                                isDense: true,
                                               ),
+                                              validator: (value) => null,
                                             )),
                                           ],
                                         )),
@@ -141,28 +133,20 @@ class _SignupPageState extends State<SignupPage> {
                                             border: Border.all(),
                                             borderRadius:
                                                 BorderRadius.circular(4)),
-                                        height: 40,
                                         width: getScreenWidth(context) * 0.4,
                                         child: Row(
                                           children: [
                                             Expanded(
-                                                child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 4,
-                                                  right: 4,
-                                                  top: 4,
-                                                  bottom: 0),
-                                              child: TextFormField(
-                                                controller:
-                                                    auth.lastNameController,
-                                                decoration: InputDecoration(
-                                                  hintText:
-                                                      t(context).familyName,
-                                                  border: InputBorder.none,
-                                                  isDense: true,
-                                                ),
-                                                validator: (value) => null,
+                                                child: TextFormField(
+                                              controller:
+                                                  auth.lastNameController,
+                                              decoration: InputDecoration(
+                                                contentPadding: EdgeInsets.zero,
+                                                hintText: t(context).familyName,
+                                                border: InputBorder.none,
+                                                isDense: true,
                                               ),
+                                              validator: (value) => null,
                                             )),
                                           ],
                                         )),
@@ -184,8 +168,8 @@ class _SignupPageState extends State<SignupPage> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 16),
                         SizedBox(
-                          height: 60,
                           child: Column(
                             children: [
                               Container(
@@ -193,27 +177,20 @@ class _SignupPageState extends State<SignupPage> {
                                       color: backgroundColor,
                                       border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
-                                  height: 40,
                                   width: getScreenWidth(context) * 0.8,
                                   child: Row(
                                     textDirection: TextDirection.ltr,
                                     children: [
                                       Expanded(
-                                          child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 4,
-                                            right: 4,
-                                            top: 4,
-                                            bottom: 0),
-                                        child: TextFormField(
-                                          controller: auth.sEmailController,
-                                          decoration: InputDecoration(
-                                            hintText: t(context).email,
-                                            border: InputBorder.none,
-                                            isDense: true,
-                                          ),
-                                          validator: (value) => null,
+                                          child: TextFormField(
+                                        controller: auth.sEmailController,
+                                        decoration: InputDecoration(
+                                          hintText: t(context).email,
+                                          contentPadding: EdgeInsets.zero,
+                                          border: InputBorder.none,
+                                          isDense: true,
                                         ),
+                                        validator: (value) => null,
                                       )),
                                     ],
                                   )),
@@ -234,7 +211,6 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                         const SizedBox(height: 16),
                         SizedBox(
-                          height: 60,
                           child: Column(
                             children: [
                               GestureDetector(
@@ -243,35 +219,30 @@ class _SignupPageState extends State<SignupPage> {
                                       context: context,
                                       builder: (BuildContext context) {
                                         return Dialog(
-                                          child: SizedBox(
-                                            width:
-                                                getScreenWidth(context) * 0.8,
-                                            height:
-                                                getScreenHeight(context) * 0.6,
-                                            child: SfDateRangePicker(
-                                              view: DateRangePickerView.decade,
-                                              confirmText:
-                                                  t(context).confirmSmall,
-                                              cancelText: t(context).cancel,
-                                              showActionButtons: true,
-                                              // onSelectionChanged: (args) {
-                                              //   auth.dateOfBirthDate =
-                                              //       (args.value as DateTime);
-                                              //   auth.dateOfBirth.value =
-                                              //       "${auth.dateOfBirthDate.year}-${auth.dateOfBirthDate.month.toString().padLeft(2, '0')}-${auth.dateOfBirthDate.day.toString().padLeft(2, '0')}";
-                                              // },
-                                              onSubmit: (val) {
-                                                if (val is DateTime) {
-                                                  auth.dateOfBirthDate = val;
-                                                  auth.dateOfBirth.value =
-                                                      "${auth.dateOfBirthDate.year}-${auth.dateOfBirthDate.month.toString().padLeft(2, '0')}-${auth.dateOfBirthDate.day.toString().padLeft(2, '0')}";
-                                                }
-                                                context.pop();
-                                              },
-                                              onCancel: () {
-                                                context.pop();
-                                              },
-                                            ),
+                                          insetPadding: const EdgeInsets.all(8),
+                                          child: SfDateRangePicker(
+                                            view: DateRangePickerView.decade,
+                                            confirmText:
+                                                t(context).confirmSmall,
+                                            cancelText: t(context).cancel,
+                                            showActionButtons: true,
+                                            // onSelectionChanged: (args) {
+                                            //   auth.dateOfBirthDate =
+                                            //       (args.value as DateTime);
+                                            //   auth.dateOfBirth.value =
+                                            //       "${auth.dateOfBirthDate.year}-${auth.dateOfBirthDate.month.toString().padLeft(2, '0')}-${auth.dateOfBirthDate.day.toString().padLeft(2, '0')}";
+                                            // },
+                                            onSubmit: (val) {
+                                              if (val is DateTime) {
+                                                auth.dateOfBirthDate = val;
+                                                auth.dateOfBirth.value =
+                                                    "${auth.dateOfBirthDate.year}-${auth.dateOfBirthDate.month.toString().padLeft(2, '0')}-${auth.dateOfBirthDate.day.toString().padLeft(2, '0')}";
+                                              }
+                                              context.pop();
+                                            },
+                                            onCancel: () {
+                                              context.pop();
+                                            },
                                           ),
                                         );
                                       });
@@ -281,45 +252,35 @@ class _SignupPageState extends State<SignupPage> {
                                         color: backgroundColor,
                                         border: Border.all(),
                                         borderRadius: BorderRadius.circular(4)),
-                                    height: 40,
                                     width: getScreenWidth(context) * 0.8,
                                     child: Row(
                                       textDirection: TextDirection.ltr,
                                       children: [
                                         get_repo.Obx(
                                           () => Expanded(
-                                              child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 4,
-                                                          right: 4,
-                                                          top: 4,
-                                                          bottom: 0),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Text(t(context).birthdate,
-                                                          style: Theme.of(
-                                                                  context)
-                                                              .textTheme
-                                                              .bodyLarge!
-                                                              .copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500)),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal:
-                                                                    8.0),
-                                                        child: Text(auth
-                                                            .dateOfBirth.value),
-                                                      )
-                                                    ],
-                                                  ))),
+                                              child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(t(context).birthdate,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyLarge!
+                                                      .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.w500)),
+                                              const SizedBox(
+                                                width: 8,
+                                              ),
+                                              Expanded(
+                                                child: Text(
+                                                  auth.dateOfBirth.value,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              )
+                                            ],
+                                          )),
                                         ),
                                       ],
                                     )),
@@ -329,7 +290,6 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                         const SizedBox(height: 16),
                         SizedBox(
-                          height: 60,
                           child: Column(
                             children: [
                               Container(
@@ -337,7 +297,6 @@ class _SignupPageState extends State<SignupPage> {
                                       color: backgroundColor,
                                       border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
-                                  height: 40,
                                   width: getScreenWidth(context) * 0.8,
                                   child: Row(
                                     textDirection: TextDirection.ltr,
@@ -347,22 +306,15 @@ class _SignupPageState extends State<SignupPage> {
                                               horizontal: 4),
                                           child: Text('+')),
                                       Expanded(
-                                          child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 4,
-                                            right: 4,
-                                            top: 0,
-                                            bottom: 2),
-                                        child: TextFormField(
-                                          controller: auth.sPhoneController,
-                                          keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
-                                            hintText: t(context).phoneNumber,
-                                            border: InputBorder.none,
-                                          ),
-                                          textDirection: TextDirection.ltr,
-                                          validator: (value) => null,
+                                          child: TextFormField(
+                                        controller: auth.sPhoneController,
+                                        keyboardType: TextInputType.number,
+                                        decoration: InputDecoration(
+                                          hintText: t(context).phoneNumber,
+                                          border: InputBorder.none,
                                         ),
+                                        textDirection: TextDirection.ltr,
+                                        validator: (value) => null,
                                       )),
                                     ],
                                   )),
@@ -385,23 +337,25 @@ class _SignupPageState extends State<SignupPage> {
                           height: 16,
                         ),
                         SizedBox(
-                          height: 80,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(t(context).nationality),
                               get_repo.Obx(
                                 () => DropdownButton2<int>(
+                                  isExpanded: true,
                                   value: auth.nationalityId.value == -1
                                       ? null
                                       : auth.nationalityId.value,
                                   underline: const SizedBox(),
-                                  hint: Text(t(context).selectNationality),
+                                  hint: Text(
+                                    t(context).selectNationality,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                   dropdownStyleData: DropdownStyleData(
                                     maxHeight: getScreenHeight(context) * 0.3,
                                   ),
                                   buttonStyleData: ButtonStyleData(
-                                      height: 40,
                                       width: getScreenWidth(context) * 0.8,
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
@@ -442,23 +396,25 @@ class _SignupPageState extends State<SignupPage> {
                           height: 16,
                         ),
                         SizedBox(
-                          height: 80,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(t(context).country),
                               get_repo.Obx(
                                 () => DropdownButton2<int>(
+                                  isExpanded: true,
                                   value: auth.countryId.value == -1
                                       ? null
                                       : auth.countryId.value,
                                   underline: const SizedBox(),
-                                  hint: Text(t(context).selectCountry),
+                                  hint: Text(
+                                    t(context).selectCountry,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                   dropdownStyleData: DropdownStyleData(
                                     maxHeight: getScreenHeight(context) * 0.3,
                                   ),
                                   buttonStyleData: ButtonStyleData(
-                                      height: 40,
                                       width: getScreenWidth(context) * 0.8,
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
@@ -499,13 +455,13 @@ class _SignupPageState extends State<SignupPage> {
                             height: 16,
                           ),
                           SizedBox(
-                            height: 80,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(t(context).city),
                                 get_repo.Obx(
                                   () => DropdownButton2<int>(
+                                    isExpanded: true,
                                     value: auth.cityId.value == -1
                                         ? null
                                         : auth.cityId.value,
@@ -515,7 +471,6 @@ class _SignupPageState extends State<SignupPage> {
                                       maxHeight: getScreenHeight(context) * 0.3,
                                     ),
                                     buttonStyleData: ButtonStyleData(
-                                        height: 40,
                                         width: getScreenWidth(context) * 0.8,
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
@@ -526,7 +481,10 @@ class _SignupPageState extends State<SignupPage> {
                                     items: filteredCities!.map((City city) {
                                       return DropdownMenuItem<int>(
                                         value: city.id,
-                                        child: Text(city.name),
+                                        child: Text(
+                                          city.name,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       );
                                     }).toList(),
                                     onChanged: (int? selectedCity) {
@@ -554,13 +512,13 @@ class _SignupPageState extends State<SignupPage> {
                           height: 16,
                         ),
                         SizedBox(
-                          height: 80,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(t(context).gender),
                               get_repo.Obx(
                                 () => DropdownButton2<int>(
+                                  isExpanded: true,
                                   value: auth.genderId.value == -1
                                       ? null
                                       : auth.genderId.value,
@@ -570,7 +528,6 @@ class _SignupPageState extends State<SignupPage> {
                                     maxHeight: getScreenHeight(context) * 0.3,
                                   ),
                                   buttonStyleData: ButtonStyleData(
-                                      height: 40,
                                       width: getScreenWidth(context) * 0.8,
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
@@ -581,8 +538,10 @@ class _SignupPageState extends State<SignupPage> {
                                   items: auth.genders!.map((Gender gender) {
                                     return DropdownMenuItem<int>(
                                       value: gender.id,
-                                      child:
-                                          Text(gender.getGenderName(context)),
+                                      child: Text(
+                                        gender.getGenderName(context),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     );
                                   }).toList(),
                                   onChanged: (int? selectedGender) {
@@ -607,7 +566,6 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                         const SizedBox(height: 16),
                         SizedBox(
-                          height: 60,
                           child: Column(
                             children: [
                               Container(
@@ -615,7 +573,6 @@ class _SignupPageState extends State<SignupPage> {
                                       color: backgroundColor,
                                       border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
-                                  height: 40,
                                   width: getScreenWidth(context) * 0.8,
                                   child: Row(
                                     textDirection: TextDirection.ltr,
@@ -632,24 +589,17 @@ class _SignupPageState extends State<SignupPage> {
                                             size: 24,
                                           )),
                                       Expanded(
-                                          child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 4,
-                                            right: 4,
-                                            top: 4,
-                                            bottom: 0),
-                                        child: TextFormField(
-                                          controller: auth.sPasswordController,
-                                          obscureText:
-                                              !auth.showSPassword.value,
-                                          decoration: InputDecoration(
-                                            hintText: t(context).password,
-                                            border: InputBorder.none,
-                                            isDense: true,
-                                          ),
-                                          textDirection: TextDirection.ltr,
-                                          validator: (value) => null,
+                                          child: TextFormField(
+                                        controller: auth.sPasswordController,
+                                        obscureText: !auth.showSPassword.value,
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.zero,
+                                          hintText: t(context).password,
+                                          border: InputBorder.none,
+                                          isDense: true,
                                         ),
+                                        textDirection: TextDirection.ltr,
+                                        validator: (value) => null,
                                       )),
                                     ],
                                   )),
@@ -670,7 +620,6 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                         const SizedBox(height: 16),
                         SizedBox(
-                          height: 60,
                           child: Column(
                             children: [
                               Container(
@@ -678,7 +627,6 @@ class _SignupPageState extends State<SignupPage> {
                                       color: backgroundColor,
                                       border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
-                                  height: 40,
                                   width: getScreenWidth(context) * 0.8,
                                   child: Row(
                                     textDirection: TextDirection.ltr,
@@ -695,24 +643,17 @@ class _SignupPageState extends State<SignupPage> {
                                             size: 24,
                                           )),
                                       Expanded(
-                                          child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 4,
-                                            right: 4,
-                                            top: 4,
-                                            bottom: 0),
-                                        child: TextFormField(
-                                          controller: auth.rePasswordController,
-                                          obscureText:
-                                              !auth.showRePassword.value,
-                                          decoration: InputDecoration(
-                                            hintText: t(context).repeatPassword,
-                                            border: InputBorder.none,
-                                            isDense: true,
-                                          ),
-                                          textDirection: TextDirection.ltr,
-                                          validator: (value) => null,
+                                          child: TextFormField(
+                                        controller: auth.rePasswordController,
+                                        obscureText: !auth.showRePassword.value,
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.zero,
+                                          hintText: t(context).repeatPassword,
+                                          border: InputBorder.none,
+                                          isDense: true,
                                         ),
+                                        textDirection: TextDirection.ltr,
+                                        validator: (value) => null,
                                       )),
                                     ],
                                   )),
@@ -735,7 +676,6 @@ class _SignupPageState extends State<SignupPage> {
                           height: 16,
                         ),
                         SizedBox(
-                          height: 60,
                           child: Column(
                             children: [
                               Container(
@@ -743,29 +683,22 @@ class _SignupPageState extends State<SignupPage> {
                                       color: backgroundColor,
                                       border: Border.all(),
                                       borderRadius: BorderRadius.circular(4)),
-                                  height: 40,
                                   width: getScreenWidth(context) * 0.8,
                                   child: Row(
                                     textDirection: TextDirection.ltr,
                                     children: [
                                       Expanded(
-                                          child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 4,
-                                            right: 4,
-                                            top: 4,
-                                            bottom: 0),
-                                        child: TextFormField(
-                                          controller:
-                                              auth.representativeNumController,
-                                          decoration: InputDecoration(
-                                            hintText:
-                                                t(context).representativeNum,
-                                            border: InputBorder.none,
-                                            isDense: true,
-                                          ),
-                                          validator: (value) => null,
+                                          child: TextFormField(
+                                        controller:
+                                            auth.representativeNumController,
+                                        decoration: InputDecoration(
+                                          contentPadding: EdgeInsets.zero,
+                                          hintText:
+                                              t(context).representativeNum,
+                                          border: InputBorder.none,
+                                          isDense: true,
                                         ),
+                                        validator: (value) => null,
                                       )),
                                     ],
                                   )),

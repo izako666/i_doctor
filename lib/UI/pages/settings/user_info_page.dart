@@ -72,9 +72,11 @@ class UserInformationPage extends StatelessWidget {
                                 height: 25,
                                 child: VerticalDivider(color: Colors.grey),
                               ),
-                              Text(
-                                auth.currentUser.value!.id.toString(),
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              Expanded(
+                                child: Text(
+                                  auth.currentUser.value!.id.toString(),
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ),
                             ],
                           ),
@@ -113,9 +115,11 @@ class UserInformationPage extends StatelessWidget {
                                 height: 25,
                                 child: VerticalDivider(color: Colors.grey),
                               ),
-                              Text(
-                                auth.currentUser.value!.custArbName,
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              Expanded(
+                                child: Text(
+                                  auth.currentUser.value!.custArbName,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ),
                             ],
                           ),
@@ -154,9 +158,11 @@ class UserInformationPage extends StatelessWidget {
                                 height: 25,
                                 child: VerticalDivider(color: Colors.grey),
                               ),
-                              Text(
-                                auth.currentUser.value!.email,
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              Expanded(
+                                child: Text(
+                                  auth.currentUser.value!.email,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ),
                             ],
                           ),
@@ -195,17 +201,19 @@ class UserInformationPage extends StatelessWidget {
                                 height: 25,
                                 child: VerticalDivider(color: Colors.grey),
                               ),
-                              Text(
-                                Get.find<AuthController>()
-                                        .nationalities!
-                                        .where((test) =>
-                                            test.id ==
-                                            auth.currentUser.value!
-                                                .nationalityId)
-                                        .firstOrNull
-                                        ?.name ??
-                                    "",
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              Expanded(
+                                child: Text(
+                                  Get.find<AuthController>()
+                                          .nationalities!
+                                          .where((test) =>
+                                              test.id ==
+                                              auth.currentUser.value!
+                                                  .nationalityId)
+                                          .firstOrNull
+                                          ?.name ??
+                                      "",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ),
                             ],
                           ),
@@ -244,9 +252,11 @@ class UserInformationPage extends StatelessWidget {
                                 height: 25,
                                 child: VerticalDivider(color: Colors.grey),
                               ),
-                              Text(
-                                auth.currentUser.value!.mobile,
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              Expanded(
+                                child: Text(
+                                  auth.currentUser.value!.mobile,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ),
                             ],
                           ),
@@ -285,16 +295,18 @@ class UserInformationPage extends StatelessWidget {
                                 height: 25,
                                 child: VerticalDivider(color: Colors.grey),
                               ),
-                              Text(
-                                Get.find<AuthController>()
-                                        .countries!
-                                        .where((test) =>
-                                            test.id ==
-                                            auth.currentUser.value!.countryId)
-                                        .firstOrNull
-                                        ?.name ??
-                                    "",
-                                style: Theme.of(context).textTheme.bodyLarge,
+                              Expanded(
+                                child: Text(
+                                  Get.find<AuthController>()
+                                          .countries!
+                                          .where((test) =>
+                                              test.id ==
+                                              auth.currentUser.value!.countryId)
+                                          .firstOrNull
+                                          ?.name ??
+                                      "",
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ),
                             ],
                           ),
@@ -334,16 +346,19 @@ class UserInformationPage extends StatelessWidget {
                                   height: 25,
                                   child: VerticalDivider(color: Colors.grey),
                                 ),
-                                Text(
-                                  Get.find<AuthController>()
-                                          .cities!
-                                          .where((test) =>
-                                              test.id ==
-                                              auth.currentUser.value!.cityId)
-                                          .firstOrNull
-                                          ?.name ??
-                                      "",
-                                  style: Theme.of(context).textTheme.bodyLarge,
+                                Expanded(
+                                  child: Text(
+                                    Get.find<AuthController>()
+                                            .cities!
+                                            .where((test) =>
+                                                test.id ==
+                                                auth.currentUser.value!.cityId)
+                                            .firstOrNull
+                                            ?.name ??
+                                        "",
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
                                 ),
                               ],
                             ),
@@ -384,28 +399,35 @@ class UserInformationPage extends StatelessWidget {
                                 child: VerticalDivider(color: Colors.grey),
                               ),
                               Obx(
-                                () => DropdownButton2<String>(
-                                  isDense: true,
-                                  underline: const SizedBox(),
-                                  dropdownStyleData: DropdownStyleData(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(16))),
-                                  value: Get.find<LanguageController>()
-                                      .locale
-                                      .value,
-                                  items: languages
-                                      .map((k) => DropdownMenuItem(
-                                          value: k["locale"] as String,
-                                          child: Text(k["name"]!)))
-                                      .toList(),
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                  onChanged: (v) {
-                                    if (v != null) {
-                                      Get.find<LanguageController>()
-                                          .setLocale(v);
-                                    }
-                                  },
+                                () => Expanded(
+                                  child: DropdownButton2<String>(
+                                    isExpanded: true,
+                                    isDense: false,
+                                    underline: const SizedBox(),
+                                    dropdownStyleData: DropdownStyleData(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(16))),
+                                    value: Get.find<LanguageController>()
+                                        .locale
+                                        .value,
+                                    items: languages
+                                        .map((k) => DropdownMenuItem(
+                                            value: k["locale"] as String,
+                                            child: Text(
+                                                softWrap: true,
+                                                overflow: TextOverflow.ellipsis,
+                                                k["name"] as String)))
+                                        .toList(),
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                    onChanged: (v) {
+                                      if (v != null) {
+                                        Get.find<LanguageController>()
+                                            .setLocale(v);
+                                      }
+                                    },
+                                  ),
                                 ),
                               ),
                             ],
@@ -464,8 +486,9 @@ class UserInformationPage extends StatelessWidget {
                               color: backgroundColor,
                               borderRadius: BorderRadius.circular(16)),
                           width: getScreenWidth(ctx) * 0.5,
-                          height: getScreenWidth(ctx) * 0.5,
+                          // height: getScreenWidth(ctx) * 0.5,
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               const SizedBox(
                                 height: 32,
@@ -475,66 +498,73 @@ class UserInformationPage extends StatelessWidget {
                                 style:
                                     Theme.of(context).textTheme.headlineSmall,
                               ),
-                              const Spacer(),
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: InkWell(
-                                          onTap: () {
-                                            context.pop();
-                                          },
-                                          child: Container(
-                                            height: 32,
-                                            decoration: const BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                    bottomRight:
-                                                        Radius.circular(16))),
-                                            child: Center(
-                                                child: Text(
-                                              t(context).cancel,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .copyWith(color: errorColor),
-                                            )),
-                                          ))),
-                                  Expanded(
-                                      child: InkWell(
-                                          onTap: () async {
-                                            auth.currentUser.value = null;
-                                            auth.authToken.value = null;
-                                            await auth.reInitData();
-
-                                            LocalDataHandler.deleteData(
-                                                'email');
-                                            LocalDataHandler.deleteData(
-                                                'password');
-
-                                            if (context.mounted) {
+                              const SizedBox(height: 16),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                        child: InkWell(
+                                            onTap: () {
                                               context.pop();
+                                            },
+                                            child: Container(
+                                              decoration: const BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                  16))),
+                                              child: Center(
+                                                  child: Text(
+                                                t(context).cancel,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .copyWith(
+                                                        color: errorColor),
+                                              )),
+                                            ))),
+                                    Expanded(
+                                        child: InkWell(
+                                            onTap: () async {
+                                              auth.currentUser.value = null;
+                                              auth.authToken.value = null;
+                                              await auth.reInitData();
 
-                                              GoRouter.of(context)
-                                                  .clearStackAndNavigate(
-                                                      '/feed');
-                                            }
-                                          },
-                                          child: Container(
-                                            height: 32,
-                                            decoration: const BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                    bottomLeft:
-                                                        Radius.circular(16))),
-                                            child: Center(
-                                                child: Text(
-                                              t(context).confirm,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .copyWith(
-                                                      color: successColor),
-                                            )),
-                                          )))
-                                ],
+                                              LocalDataHandler.deleteData(
+                                                  'email');
+                                              LocalDataHandler.deleteData(
+                                                  'password');
+
+                                              if (context.mounted) {
+                                                context.pop();
+
+                                                GoRouter.of(context)
+                                                    .clearStackAndNavigate(
+                                                        '/feed');
+                                              }
+                                            },
+                                            child: Container(
+                                              decoration: const BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                  16))),
+                                              child: Center(
+                                                  child: Text(
+                                                t(context).confirm,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .copyWith(
+                                                        color: successColor),
+                                              )),
+                                            )))
+                                  ],
+                                ),
                               )
                             ],
                           ),

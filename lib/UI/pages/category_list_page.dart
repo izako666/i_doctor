@@ -111,7 +111,6 @@ class _CategoryListPageState extends State<CategoryListPage> {
                 SliverToBoxAdapter(
                   child: SizedBox(
                     width: getScreenWidth(context),
-                    height: 64,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [

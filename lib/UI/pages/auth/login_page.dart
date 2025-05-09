@@ -52,7 +52,6 @@ class _LoginPageState extends State<LoginPage> {
                       height: 32,
                     ),
                     SizedBox(
-                      height: 60,
                       child: Column(
                         children: [
                           Container(
@@ -60,24 +59,20 @@ class _LoginPageState extends State<LoginPage> {
                                   color: backgroundColor,
                                   border: Border.all(),
                                   borderRadius: BorderRadius.circular(4)),
-                              height: 40,
                               width: getScreenWidth(context) * 0.8,
                               child: Row(
                                 textDirection: TextDirection.ltr,
                                 children: [
                                   Expanded(
-                                      child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 4, right: 4, top: 4, bottom: 0),
-                                    child: TextFormField(
-                                      controller: auth.emailController,
-                                      decoration: InputDecoration(
-                                        hintText: t(context).email,
-                                        border: InputBorder.none,
-                                        isDense: true,
-                                      ),
-                                      validator: (value) => null,
+                                      child: TextFormField(
+                                    controller: auth.emailController,
+                                    decoration: InputDecoration(
+                                      hintText: t(context).email,
+                                      contentPadding: EdgeInsets.zero,
+                                      border: InputBorder.none,
+                                      isDense: true,
                                     ),
+                                    validator: (value) => null,
                                   )),
                                 ],
                               )),
@@ -100,7 +95,6 @@ class _LoginPageState extends State<LoginPage> {
                       height: 16,
                     ),
                     SizedBox(
-                      height: 60,
                       child: Column(
                         children: [
                           Container(
@@ -108,7 +102,6 @@ class _LoginPageState extends State<LoginPage> {
                                   color: backgroundColor,
                                   border: Border.all(),
                                   borderRadius: BorderRadius.circular(4)),
-                              height: 40,
                               width: getScreenWidth(context) * 0.8,
                               child: Row(
                                 textDirection: TextDirection.ltr,
@@ -125,21 +118,18 @@ class _LoginPageState extends State<LoginPage> {
                                         size: 24,
                                       )),
                                   Expanded(
-                                      child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 4, right: 4, top: 4, bottom: 0),
-                                    child: TextFormField(
-                                      controller: auth.passwordController,
-                                      obscureText: !auth.showPassword.value,
-                                      decoration: InputDecoration(
-                                        hintText: t(context).password,
-                                        border: InputBorder.none,
-                                        isDense: true,
-                                      ),
-                                      textDirection: TextDirection.ltr,
-                                      validator: (value) =>
-                                          t(context).passwordIncorrect,
+                                      child: TextFormField(
+                                    controller: auth.passwordController,
+                                    obscureText: !auth.showPassword.value,
+                                    decoration: InputDecoration(
+                                      contentPadding: EdgeInsets.zero,
+                                      hintText: t(context).password,
+                                      border: InputBorder.none,
+                                      isDense: true,
                                     ),
+                                    textDirection: TextDirection.ltr,
+                                    validator: (value) =>
+                                        t(context).passwordIncorrect,
                                   )),
                                 ],
                               )),

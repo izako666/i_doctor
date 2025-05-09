@@ -88,7 +88,6 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
               const SizedBox(height: 8),
               SizedBox(
                 width: getScreenWidth(context),
-                height: 64,
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
@@ -632,8 +631,8 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
           decoration: BoxDecoration(
               color: backgroundColor, borderRadius: BorderRadius.circular(16)),
           width: getScreenWidth(ctx) * (zoomScale > 2.8 ? 0.9 : 0.5),
-          height: getScreenWidth(ctx) * 0.5,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(
                 height: 32,
@@ -645,48 +644,52 @@ class _FilterSortSheetState extends State<FilterSortSheet> {
                     : Theme.of(ctx).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                      child: InkWell(
-                          onTap: () {
-                            ctx.pop(false);
-                          },
-                          child: Container(
-                            height: 32,
-                            decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(16))),
-                            child: Center(
-                                child: Text(
-                              t(context).cancel,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(color: errorColor),
-                            )),
-                          ))),
-                  Expanded(
-                      child: InkWell(
-                          onTap: () {
-                            ctx.pop(true);
-                          },
-                          child: Container(
-                            height: 32,
-                            decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(16))),
-                            child: Center(
-                                child: Text(
-                              t(context).confirm,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(color: successColor),
-                            )),
-                          )))
-                ],
+              const SizedBox(
+                height: 32,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: InkWell(
+                            onTap: () {
+                              ctx.pop(false);
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(16))),
+                              child: Center(
+                                  child: Text(
+                                t(context).cancel,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(color: errorColor),
+                              )),
+                            ))),
+                    const SizedBox(width: 4),
+                    Expanded(
+                        child: InkWell(
+                            onTap: () {
+                              ctx.pop(true);
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(16))),
+                              child: Center(
+                                  child: Text(
+                                t(context).confirm,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(color: successColor),
+                              )),
+                            )))
+                  ],
+                ),
               )
             ],
           ),

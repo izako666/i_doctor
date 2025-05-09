@@ -65,6 +65,7 @@ class _FeedPageState extends State<FeedPage> {
       FeedController controller = Get.find<FeedController>();
       CommerceController commerceController = Get.find<CommerceController>();
       List<Category> categories = List.empty(growable: true);
+      adBarProducts = getRecentProducts(commerceController.products);
       categories.addAll(commerceController.categories);
 
       categories.sort((cat1, cat2) => cat1.id.compareTo(cat2.id));
@@ -319,6 +320,36 @@ class _FeedPageState extends State<FeedPage> {
                                                             controller
                                                                 .openFeedView
                                                                 .value = false;
+                                                            controller.controller = Get.put(
+                                                                FilterController(
+                                                                    categoryType:
+                                                                        2,
+                                                                    categoriesTotal:
+                                                                        Get.find<CommerceController>()
+                                                                            .categories,
+                                                                    subCategoriesTotal:
+                                                                        Get.find<CommerceController>()
+                                                                            .subcategories),
+                                                                permanent:
+                                                                    false);
+                                                            controller
+                                                                .controller!
+                                                                .addProviders(Get
+                                                                        .find<
+                                                                            CommerceController>()
+                                                                    .products);
+                                                            controller
+                                                                .controller!
+                                                                .onInit();
+                                                            controller
+                                                                .openFeedView
+                                                                .value = false;
+
+                                                            controller
+                                                                    .searchFocus
+                                                                    .value =
+                                                                controller.node
+                                                                    .hasFocus;
                                                           },
                                                           child: Text(
                                                               t(context)
@@ -606,6 +637,7 @@ class _FeedPageState extends State<FeedPage> {
                                         Center(
                                             child: Text(
                                           t(context).noProductsFoundInRegion,
+                                          textAlign: TextAlign.center,
                                           style: Theme.of(context)
                                               .textTheme
                                               .titleMedium!
@@ -638,7 +670,6 @@ List<Product> getRecentProducts(List<Product> products) {
     return startDate.isAfter(now.subtract(const Duration(days: 7)));
   }).toList();
   if (recentProducts.isEmpty) {
-    recentProducts.clear();
     recentProducts.addAll(products);
     recentProducts.sort((a, b) {
       DateTime dateA = DateTime.parse(a.startDate);
