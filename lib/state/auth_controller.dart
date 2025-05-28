@@ -229,6 +229,9 @@ class AuthController extends GetxController {
         await controller.retrieveProducts(currentCountry.value!.id);
       }
     } else {
+      if (countries == null) {
+        await retrieveCountries();
+      }
       currentCountry.value = countries!
           .where((Country item) => item.id == currentUser.value!.countryId)
           .first;

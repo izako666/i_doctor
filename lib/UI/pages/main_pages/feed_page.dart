@@ -45,6 +45,15 @@ class _FeedPageState extends State<FeedPage> {
   void initState() {
     super.initState();
     CommerceController commerceController = Get.find<CommerceController>();
+    Get.find<AuthController>().loaded.listen((data) {
+      if (data) {
+        CommerceController commerceController = Get.find<CommerceController>();
+        products = commerceController.products.toList();
+        catScrollController = ScrollController();
+        clinicCarController = CarouselSliderController();
+        adBarProducts = getRecentProducts(products);
+      }
+    });
     products = commerceController.products.toList();
     catScrollController = ScrollController();
     clinicCarController = CarouselSliderController();
